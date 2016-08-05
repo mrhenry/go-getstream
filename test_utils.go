@@ -51,5 +51,4 @@ func testCleanUp(client *Client, flats []*FlatFeedActivity, notifications []*Not
 	}
 
 	return nil
-
 }

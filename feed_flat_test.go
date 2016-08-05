@@ -44,6 +44,47 @@ func TestFlatFeedAddActivity(t *testing.T) {
 	}
 }
 
+func TestFlatFeedListActivities(t *testing.T) {
+
+	client, err := testSetup()
+	if err != nil {
+		t.Fail()
+		return
+	}
+
+	feed, err := client.FlatFeed("flat", "bob")
+	if err != nil {
+		t.Fail()
+		return
+	}
+
+	_, err = feed.AddActivity(&FlatFeedActivity{
+		Verb:      "post",
+		ForeignID: "099978b6-3b72-4f5c-bc43-247ba6ae2dd9",
+		Object:    FeedID("flat:eric"),
+		Actor:     FeedID("flat:john"),
+	})
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	activities, err := feed.Activities(&GetFlatFeedInput{})
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	err = testCleanUp(client, activities.Activities, nil)
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+}
+
 func TestFlatFeedAddActivities(t *testing.T) {
 
 	client, err := testSetup()
