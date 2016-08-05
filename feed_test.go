@@ -1,11 +1,15 @@
 package getstream
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 func TestGeneralFeedBasic(t *testing.T) {
 
 	client, err := New("a key", "a secret", "11111", "us-east")
 	if err != nil {
+		fmt.Println(err)
 		t.Fail()
 	}
 
@@ -46,6 +50,7 @@ func TestFlatFeedBasic(t *testing.T) {
 
 	client, err := New("a key", "a secret", "11111", "us-east")
 	if err != nil {
+		fmt.Println(err)
 		t.Fail()
 	}
 
@@ -86,6 +91,7 @@ func TestNotificationFeedBasic(t *testing.T) {
 
 	client, err := New("a key", "a secret", "11111", "us-east")
 	if err != nil {
+		fmt.Println(err)
 		t.Fail()
 	}
 

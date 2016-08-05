@@ -9,12 +9,14 @@ func TestFlatFeedAddActivity(t *testing.T) {
 
 	client, err := testSetup()
 	if err != nil {
+		fmt.Println(err)
 		t.Fail()
 		return
 	}
 
 	feed, err := client.FlatFeed("flat", "bob")
 	if err != nil {
+		fmt.Println(err)
 		t.Fail()
 		return
 	}
@@ -48,12 +50,14 @@ func TestFlatFeedRemoveActivity(t *testing.T) {
 
 	client, err := testSetup()
 	if err != nil {
+		fmt.Println(err)
 		t.Fail()
 		return
 	}
 
 	feed, err := client.FlatFeed("flat", "bob")
 	if err != nil {
+		fmt.Println(err)
 		t.Fail()
 		return
 	}
@@ -81,6 +85,7 @@ func TestFlatFeedRemoveActivity(t *testing.T) {
 
 	err = feed.RemoveActivity(&rmActivity)
 	if err != nil {
+		fmt.Println(err)
 		t.Fail()
 		return
 	}
@@ -90,12 +95,14 @@ func TestFlatFeedRemoveByForeignIDActivity(t *testing.T) {
 
 	client, err := testSetup()
 	if err != nil {
+		fmt.Println(err)
 		t.Fail()
 		return
 	}
 
 	feed, err := client.FlatFeed("flat", "bob")
 	if err != nil {
+		fmt.Println(err)
 		t.Fail()
 		return
 	}
@@ -123,6 +130,7 @@ func TestFlatFeedRemoveByForeignIDActivity(t *testing.T) {
 
 	err = feed.RemoveActivityByForeignID(&rmActivity)
 	if err != nil {
+		fmt.Println(err)
 		t.Fail()
 		return
 	}
@@ -132,12 +140,14 @@ func TestFlatFeedListActivities(t *testing.T) {
 
 	client, err := testSetup()
 	if err != nil {
+		fmt.Println(err)
 		t.Fail()
 		return
 	}
 
 	feed, err := client.FlatFeed("flat", "bob")
 	if err != nil {
+		fmt.Println(err)
 		t.Fail()
 		return
 	}
@@ -173,12 +183,14 @@ func TestFlatFeedAddActivities(t *testing.T) {
 
 	client, err := testSetup()
 	if err != nil {
+		fmt.Println(err)
 		t.Fail()
 		return
 	}
 
 	feed, err := client.FlatFeed("flat", "bob")
 	if err != nil {
+		fmt.Println(err)
 		t.Fail()
 		return
 	}
