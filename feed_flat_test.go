@@ -2,13 +2,12 @@ package getstream
 
 import (
 	"fmt"
-	"os"
 	"testing"
 )
 
 func TestFlatFeedAddActivity(t *testing.T) {
 
-	client, err := testFlatFeedSetup()
+	client, err := testSetup()
 	if err != nil {
 		t.Fail()
 		return
@@ -37,63 +36,67 @@ func TestFlatFeedAddActivity(t *testing.T) {
 		return
 	}
 
-	err = testFlatFeedCleanUp(client, []*FlatFeedActivity{activity}, nil)
+	err = testCleanUp(client, []*FlatFeedActivity{activity}, nil)
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+}
+
+func TestFlatFeedAddActivities(t *testing.T) {
+
+	client, err := testSetup()
+	if err != nil {
+		t.Fail()
+		return
+	}
+
+	feed, err := client.FlatFeed("flat", "bob")
+	if err != nil {
+		t.Fail()
+		return
+	}
+
+	activityA, err := feed.AddActivity(&FlatFeedActivity{
+		Verb:      "post",
+		ForeignID: "099978b6-3b72-4f5c-bc43-247ba6ae2dd9",
+		Object:    FeedID("flat:eric"),
+		Actor:     FeedID("flat:john"),
+	})
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
 		return
 	}
 
-}
-
-func testFlatFeedSetup() (*Client, error) {
-
-	testAPIKey := os.Getenv("key")
-	testAPISecret := os.Getenv("secret")
-	testAppID := os.Getenv("app_id")
-	testRegion := os.Getenv("region")
-
-	client, err := New(testAPIKey, testAPISecret, testAppID, testRegion)
+	activityB, err := feed.AddActivity(&FlatFeedActivity{
+		Verb:      "walk",
+		ForeignID: "088878b6-3b72-4f5c-bc43-247ba6ae2dd9",
+		Object:    FeedID("flat:john"),
+		Actor:     FeedID("flat:eric"),
+	})
 	if err != nil {
-		return nil, err
+		fmt.Println(err)
+		t.Fail()
+		return
 	}
 
-	return client, nil
-
-}
-
-func testFlatFeedCleanUp(client *Client, flats []*FlatFeedActivity, notifications []*NotificationFeedActivity) error {
-
-	if len(flats) > 0 {
-
-		feed, err := client.FlatFeed("flat", "bob")
-		if err != nil {
-			return err
-		}
-
-		for _, activity := range flats {
-			err := feed.RemoveActivity(activity)
-			if err != nil {
-				return err
-			}
-		}
+	if activityA.Verb != "post" && activityA.ForeignID != "099978b6-3b72-4f5c-bc43-247ba6ae2dd9" {
+		t.Fail()
+		return
 	}
 
-	if len(notifications) > 0 {
-
-		feed, err := client.NotificationFeed("notification", "bob")
-		if err != nil {
-			return err
-		}
-
-		for _, activity := range notifications {
-			err := feed.RemoveActivity(activity)
-			if err != nil {
-				return err
-			}
-		}
+	if activityB.Verb != "walk" && activityB.ForeignID != "088878b6-3b72-4f5c-bc43-247ba6ae2dd9" {
+		t.Fail()
+		return
 	}
 
-	return nil
+	err = testCleanUp(client, []*FlatFeedActivity{activityA, activityB}, nil)
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
 
 }
