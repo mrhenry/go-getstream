@@ -26,16 +26,16 @@ func (e *Error) Duration() time.Duration {
 	return result
 }
 
-func (err *Error) Error() string {
-	str := err.Exception
-	if err.RawDuration != "" {
-		if duration := err.Duration(); duration > 0 {
+func (e *Error) Error() string {
+	str := e.Exception
+	if e.RawDuration != "" {
+		if duration := e.Duration(); duration > 0 {
 			str += " (" + duration.String() + ")"
 		}
 	}
 
-	if err.Detail != "" {
-		str += ": " + err.Detail
+	if e.Detail != "" {
+		str += ": " + e.Detail
 	}
 
 	return str

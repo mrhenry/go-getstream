@@ -135,15 +135,30 @@ type GetNotificationFeedInput struct {
 
 // GetNotificationFeedOutput is the response from a NotificationFeed Activities Get Request
 type GetNotificationFeedOutput struct {
-	Duration   string
-	Next       string
-	Activities []*NotificationFeedActivity
+	Duration string
+	Next     string
+	Results  []*struct {
+		Activities    []*NotificationFeedActivity
+		ActivityCount int
+		ActorCount    int
+		CreatedAt     string
+		Group         string
+		ID            string
+		IsRead        bool
+		IsSeen        bool
+		UpdatedAt     string
+		Verb          string
+	}
+	Unread int
+	Unseen int
 }
 
 type getNotificationFeedOutput struct {
-	Duration   string                               `json:"duration"`
-	Next       string                               `json:"next"`
-	Activities []*getNotificationFeedOutputActivity `json:"results"`
+	Duration string                             `json:"duration"`
+	Next     string                             `json:"next"`
+	Results  []*getNotificationFeedOutputResult `json:"results"`
+	Unread   int                                `json:"unread"`
+	Unseen   int                                `json:"unseen"`
 }
 
 func (a getNotificationFeedOutput) Output() *GetNotificationFeedOutput {
@@ -151,13 +166,71 @@ func (a getNotificationFeedOutput) Output() *GetNotificationFeedOutput {
 	output := GetNotificationFeedOutput{
 		Duration: a.Duration,
 		Next:     a.Next,
+		Unread:   a.Unread,
+		Unseen:   a.Unseen,
 	}
 
-	for _, activity := range a.Activities {
-		output.Activities = append(output.Activities, activity.Activity())
+	var results []*struct {
+		Activities    []*NotificationFeedActivity
+		ActivityCount int
+		ActorCount    int
+		CreatedAt     string
+		Group         string
+		ID            string
+		IsRead        bool
+		IsSeen        bool
+		UpdatedAt     string
+		Verb          string
 	}
+
+	for _, result := range a.Results {
+
+		outputResult := struct {
+			Activities    []*NotificationFeedActivity
+			ActivityCount int
+			ActorCount    int
+			CreatedAt     string
+			Group         string
+			ID            string
+			IsRead        bool
+			IsSeen        bool
+			UpdatedAt     string
+			Verb          string
+		}{
+			ActivityCount: result.ActivityCount,
+			ActorCount:    result.ActorCount,
+			CreatedAt:     result.CreatedAt,
+			Group:         result.Group,
+			ID:            result.ID,
+			IsRead:        result.IsRead,
+			IsSeen:        result.IsSeen,
+			UpdatedAt:     result.UpdatedAt,
+			Verb:          result.Verb,
+		}
+
+		for _, activity := range result.Activities {
+			outputResult.Activities = append(outputResult.Activities, activity.Activity())
+		}
+
+		results = append(results, &outputResult)
+	}
+
+	output.Results = results
 
 	return &output
+}
+
+type getNotificationFeedOutputResult struct {
+	Activities    []*getNotificationFeedOutputActivity `json:"activities"`
+	ActivityCount int                                  `json:"activity_count"`
+	ActorCount    int                                  `json:"actor_count"`
+	CreatedAt     string                               `json:"created_at"`
+	Group         string                               `json:"group"`
+	ID            string                               `json:"id"`
+	IsRead        bool                                 `json:"is_read"`
+	IsSeen        bool                                 `json:"is_seen"`
+	UpdatedAt     string                               `json:"updated_at"`
+	Verb          string                               `json:"verb"`
 }
 
 type getNotificationFeedOutputActivity struct {
@@ -168,6 +241,7 @@ type getNotificationFeedOutputActivity struct {
 	Target    string          `json:"target,omitempty"`
 	RawTime   string          `json:"time,omitempty"`
 	To        []string        `json:"to,omitempty"`
+	Origin    string          `json:"origin"`
 	ForeignID string          `json:"foreign_id,omitempty"`
 	Data      json.RawMessage `json:"data,omitempty"`
 }
