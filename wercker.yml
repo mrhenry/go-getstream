@@ -12,7 +12,6 @@ build:
       name: go test
       code: |
         go test -coverprofile=coverage.txt -covermode=atomic
-  after-steps:
   - script:
       name: codecov
       code: |
