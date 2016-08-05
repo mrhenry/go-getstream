@@ -17,23 +17,28 @@ func TestGeneralFeedBasic(t *testing.T) {
 
 	if "feedGroupfeedName" != general.Signature() {
 		t.Fail()
+		return
 	}
 
 	if "feedGroup:feedName" != string(general.FeedID()) {
 		t.Fail()
+		return
 	}
 
 	general.SignFeed(general.Client.signer)
 	if "NWH8lcFHfHYEc2xdMs2kOhM-oII" != general.Token() {
 		t.Fail()
+		return
 	}
 
 	if "NWH8lcFHfHYEc2xdMs2kOhM-oII" != general.GenerateToken(general.Client.signer) {
 		t.Fail()
+		return
 	}
 
 	if "feedGroupfeedName NWH8lcFHfHYEc2xdMs2kOhM-oII" != general.Signature() {
 		t.Fail()
+		return
 	}
 }
 
@@ -52,23 +57,28 @@ func TestFlatFeedBasic(t *testing.T) {
 
 	if "feedGroupfeedName" != flatFeed.Signature() {
 		t.Fail()
+		return
 	}
 
 	if "feedGroup:feedName" != string(flatFeed.FeedID()) {
 		t.Fail()
+		return
 	}
 
 	flatFeed.SignFeed(flatFeed.Client.signer)
 	if "NWH8lcFHfHYEc2xdMs2kOhM-oII" != flatFeed.Token() {
 		t.Fail()
+		return
 	}
 
 	if "NWH8lcFHfHYEc2xdMs2kOhM-oII" != flatFeed.GenerateToken(flatFeed.Client.signer) {
 		t.Fail()
+		return
 	}
 
 	if "feedGroupfeedName NWH8lcFHfHYEc2xdMs2kOhM-oII" != flatFeed.Signature() {
 		t.Fail()
+		return
 	}
 }
 
@@ -87,22 +97,27 @@ func TestNotificationFeedBasic(t *testing.T) {
 
 	if "feedGroupfeedName" != notificationFeed.Signature() {
 		t.Fail()
+		return
 	}
 
 	if "feedGroup:feedName" != string(notificationFeed.FeedID()) {
 		t.Fail()
+		return
 	}
 
 	notificationFeed.SignFeed(notificationFeed.Client.signer)
 	if "NWH8lcFHfHYEc2xdMs2kOhM-oII" != notificationFeed.Token() {
 		t.Fail()
+		return
 	}
 
 	if "NWH8lcFHfHYEc2xdMs2kOhM-oII" != notificationFeed.GenerateToken(notificationFeed.Client.signer) {
 		t.Fail()
+		return
 	}
 
 	if "feedGroupfeedName NWH8lcFHfHYEc2xdMs2kOhM-oII" != notificationFeed.Signature() {
 		t.Fail()
+		return
 	}
 }

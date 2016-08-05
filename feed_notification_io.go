@@ -96,7 +96,7 @@ type postNotificationFeedOutputActivities struct {
 	Activities []*postNotificationFeedOutputActivity `json:"activities"`
 }
 
-func (a postNotificationFeedOutputActivity) Activity() *NotificationFeedActivity {
+func (a postNotificationFeedOutputActivity) activity() *NotificationFeedActivity {
 
 	activity := NotificationFeedActivity{
 		ID:        a.ID,

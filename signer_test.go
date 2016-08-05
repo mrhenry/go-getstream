@@ -11,6 +11,7 @@ func TestGenerateToken(t *testing.T) {
 
 	if token != "8SZVOYgCH6gy-ZjBTq_9vydr7TQ" {
 		t.Fail()
+		return
 	}
 }
 
@@ -22,5 +23,6 @@ func TestURLSafe(t *testing.T) {
 
 	if result != "some-test_string=foo" {
 		t.Fail()
+		return
 	}
 }

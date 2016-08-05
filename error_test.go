@@ -14,6 +14,7 @@ func TestError(t *testing.T) {
 	err := json.Unmarshal([]byte(errorResponse), &getStreamError)
 	if err != nil {
 		t.Fail()
+		return
 	}
 
 	testError := Error{
@@ -49,6 +50,7 @@ func TestErrorBadDuration(t *testing.T) {
 
 	if testError.Duration() != time.Duration(0) {
 		t.Fail()
+		return
 	}
 
 }

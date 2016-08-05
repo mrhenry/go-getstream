@@ -70,7 +70,7 @@ func (f *FlatFeed) AddActivity(activity *FlatFeedActivity) (*FlatFeedActivity, e
 		return nil, err
 	}
 
-	return output.Activity(), err
+	return output.activity(), err
 }
 
 // AddActivities is Used to post multiple Activities to a FlatFeed
@@ -108,7 +108,7 @@ func (f *FlatFeed) AddActivities(activities []*FlatFeedActivity) ([]*FlatFeedAct
 
 	var outputActivities []*FlatFeedActivity
 	for _, outputActivity := range output.Activities {
-		activity := outputActivity.Activity()
+		activity := outputActivity.activity()
 		outputActivities = append(outputActivities, activity)
 	}
 

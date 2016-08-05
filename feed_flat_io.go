@@ -95,7 +95,7 @@ type postFlatFeedOutputActivities struct {
 	Activities []*postFlatFeedOutputActivity `json:"activities"`
 }
 
-func (a postFlatFeedOutputActivity) Activity() *FlatFeedActivity {
+func (a postFlatFeedOutputActivity) activity() *FlatFeedActivity {
 
 	activity := FlatFeedActivity{
 		ID:        a.ID,

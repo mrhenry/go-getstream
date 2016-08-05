@@ -70,7 +70,7 @@ func (f *NotificationFeed) AddActivity(activity *NotificationFeedActivity) (*Not
 		return nil, err
 	}
 
-	return output.Activity(), err
+	return output.activity(), err
 }
 
 // AddActivities is Used to post multiple Activities to a NotificationFeed
@@ -108,7 +108,7 @@ func (f *NotificationFeed) AddActivities(activities []*NotificationFeedActivity)
 
 	var outputActivities []*NotificationFeedActivity
 	for _, outputActivity := range output.Activities {
-		activity := outputActivity.Activity()
+		activity := outputActivity.activity()
 		outputActivities = append(outputActivities, activity)
 	}
 

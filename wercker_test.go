@@ -14,5 +14,6 @@ func TestWerckerConfig(t *testing.T) {
 
 	if testAPIKey == "" || testAPISecret == "" || testAppID == "" || testRegion == "" {
 		t.Fail()
+		return
 	}
 }
