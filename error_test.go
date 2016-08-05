@@ -54,7 +54,6 @@ func TestErrorBadDuration(t *testing.T) {
 	}
 
 	if testError.Duration() != time.Duration(0) {
-		fmt.Println(err)
 		t.Fail()
 		return
 	}
