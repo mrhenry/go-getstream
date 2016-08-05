@@ -44,6 +44,90 @@ func TestFlatFeedAddActivity(t *testing.T) {
 	}
 }
 
+func TestFlatFeedRemoveActivity(t *testing.T) {
+
+	client, err := testSetup()
+	if err != nil {
+		t.Fail()
+		return
+	}
+
+	feed, err := client.FlatFeed("flat", "bob")
+	if err != nil {
+		t.Fail()
+		return
+	}
+
+	activity, err := feed.AddActivity(&FlatFeedActivity{
+		Verb:      "post",
+		ForeignID: "099978b6-3b72-4f5c-bc43-247ba6ae2dd9",
+		Object:    FeedID("flat:eric"),
+		Actor:     FeedID("flat:john"),
+	})
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	if activity.Verb != "post" && activity.ForeignID != "099978b6-3b72-4f5c-bc43-247ba6ae2dd9" {
+		t.Fail()
+		return
+	}
+
+	rmActivity := FlatFeedActivity{
+		ID: activity.ID,
+	}
+
+	err = feed.RemoveActivity(&rmActivity)
+	if err != nil {
+		t.Fail()
+		return
+	}
+}
+
+func TestFlatFeedRemoveByForeignIDActivity(t *testing.T) {
+
+	client, err := testSetup()
+	if err != nil {
+		t.Fail()
+		return
+	}
+
+	feed, err := client.FlatFeed("flat", "bob")
+	if err != nil {
+		t.Fail()
+		return
+	}
+
+	activity, err := feed.AddActivity(&FlatFeedActivity{
+		Verb:      "post",
+		ForeignID: "099978b6-3b72-4f5c-bc43-247ba6ae2dd9",
+		Object:    FeedID("flat:eric"),
+		Actor:     FeedID("flat:john"),
+	})
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	if activity.Verb != "post" && activity.ForeignID != "099978b6-3b72-4f5c-bc43-247ba6ae2dd9" {
+		t.Fail()
+		return
+	}
+
+	rmActivity := FlatFeedActivity{
+		ForeignID: activity.ForeignID,
+	}
+
+	err = feed.RemoveActivityByForeignID(&rmActivity)
+	if err != nil {
+		t.Fail()
+		return
+	}
+}
+
 func TestFlatFeedListActivities(t *testing.T) {
 
 	client, err := testSetup()
