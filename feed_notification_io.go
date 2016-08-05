@@ -162,7 +162,7 @@ type getNotificationFeedOutput struct {
 	Unseen   int                                `json:"unseen"`
 }
 
-func (a getNotificationFeedOutput) Output() *GetNotificationFeedOutput {
+func (a getNotificationFeedOutput) output() *GetNotificationFeedOutput {
 
 	output := GetNotificationFeedOutput{
 		Duration: a.Duration,
@@ -210,7 +210,7 @@ func (a getNotificationFeedOutput) Output() *GetNotificationFeedOutput {
 		}
 
 		for _, activity := range result.Activities {
-			outputResult.Activities = append(outputResult.Activities, activity.Activity())
+			outputResult.Activities = append(outputResult.Activities, activity.activity())
 		}
 
 		results = append(results, &outputResult)
@@ -247,7 +247,7 @@ type getNotificationFeedOutputActivity struct {
 	Data      json.RawMessage `json:"data,omitempty"`
 }
 
-func (a getNotificationFeedOutputActivity) Activity() *NotificationFeedActivity {
+func (a getNotificationFeedOutputActivity) activity() *NotificationFeedActivity {
 
 	activity := NotificationFeedActivity{
 		ID:        a.ID,
