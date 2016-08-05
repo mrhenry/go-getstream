@@ -17,9 +17,9 @@ type Error struct {
 var _ error = &Error{}
 
 // Duration is the time it took for the request to be handled
-func (err *Error) Duration() time.Duration {
-	result, e := time.ParseDuration(err.RawDuration)
-	if e != nil {
+func (e *Error) Duration() time.Duration {
+	result, err := time.ParseDuration(e.RawDuration)
+	if err != nil {
 		return time.Duration(0)
 	}
 
