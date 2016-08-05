@@ -52,3 +52,16 @@ func testCleanUp(client *Client, flats []*FlatFeedActivity, notifications []*Not
 
 	return nil
 }
+
+func testCleanUpFollows(client *Client, flats []*FlatFeed) error {
+
+	for _, flat := range flats {
+
+		followers, _ := flat.FollowersWithLimitAndSkip(300, 0)
+
+		for _, follower := range followers {
+			follower.Unfollow(flat)
+		}
+	}
+	return nil
+}

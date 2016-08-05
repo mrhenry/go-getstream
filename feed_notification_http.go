@@ -48,7 +48,7 @@ func (f *NotificationFeed) request(method, path string, signature string, payloa
 	}
 
 	// perform the http request
-	resp, err := f.Client.http.Do(req)
+	resp, err := f.Client.HTTP.Do(req)
 	if err != nil {
 		return nil, err
 	}

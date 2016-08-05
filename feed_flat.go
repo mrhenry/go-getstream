@@ -44,7 +44,7 @@ func (f *FlatFeed) GenerateToken(signer *Signer) string {
 	return signer.generateToken(f.FeedSlug + f.UserID)
 }
 
-// AddActivity is Used to post an Activity to a FlatFeed
+// AddActivity is used to add an Activity to a FlatFeed
 func (f *FlatFeed) AddActivity(activity *FlatFeedActivity) (*FlatFeedActivity, error) {
 
 	input, err := activity.input()
@@ -73,7 +73,7 @@ func (f *FlatFeed) AddActivity(activity *FlatFeedActivity) (*FlatFeedActivity, e
 	return output.activity(), err
 }
 
-// AddActivities is Used to post multiple Activities to a FlatFeed
+// AddActivities is used to add multiple Activities to a FlatFeed
 func (f *FlatFeed) AddActivities(activities []*FlatFeedActivity) ([]*FlatFeedActivity, error) {
 
 	var inputs []*postFlatFeedInputActivity

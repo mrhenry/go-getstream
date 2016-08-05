@@ -58,12 +58,10 @@ func TestFlatFeedAddActivity(t *testing.T) {
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
-		return
 	}
 
 	if activity.Verb != "post" && activity.ForeignID != "48d024fe-3752-467a-8489-23febd1dec4e" {
 		t.Fail()
-		return
 	}
 
 	err = testCleanUp(client, []*FlatFeedActivity{activity}, nil)
@@ -98,12 +96,10 @@ func TestFlatFeedRemoveActivity(t *testing.T) {
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
-		return
 	}
 
 	if activity.Verb != "post" {
 		t.Fail()
-		return
 	}
 
 	rmActivity := FlatFeedActivity{
@@ -143,12 +139,10 @@ func TestFlatFeedRemoveByForeignIDActivity(t *testing.T) {
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
-		return
 	}
 
 	if activity.Verb != "post" && activity.ForeignID != "08f01c47-014f-11e4-aa8f-0cc47a024be0" {
 		t.Fail()
-		return
 	}
 
 	rmActivity := FlatFeedActivity{
@@ -162,9 +156,12 @@ func TestFlatFeedRemoveByForeignIDActivity(t *testing.T) {
 		t.Fail()
 		return
 	}
+
+	testCleanUp(client, []*FlatFeedActivity{activity}, nil)
+
 }
 
-func TestFlatFeedListActivities(t *testing.T) {
+func TestFlatFeedActivities(t *testing.T) {
 
 	client, err := testSetup()
 	if err != nil {
@@ -189,14 +186,12 @@ func TestFlatFeedListActivities(t *testing.T) {
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
-		return
 	}
 
 	activities, err := feed.Activities(&GetFlatFeedInput{})
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
-		return
 	}
 
 	err = testCleanUp(client, activities.Activities, nil)
@@ -232,7 +227,6 @@ func TestFlatFeedAddActivities(t *testing.T) {
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
-		return
 	}
 
 	activityB, err := feed.AddActivity(&FlatFeedActivity{
@@ -244,17 +238,14 @@ func TestFlatFeedAddActivities(t *testing.T) {
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
-		return
 	}
 
 	if activityA.Verb != "post" && activityA.ForeignID != "099978b6-3b72-4f5c-bc43-247ba6ae2dd9" {
 		t.Fail()
-		return
 	}
 
 	if activityB.Verb != "walk" && activityB.ForeignID != "48d024fe-3752-467a-8489-23febd1dec4e" {
 		t.Fail()
-		return
 	}
 
 	err = testCleanUp(client, []*FlatFeedActivity{activityA, activityB}, nil)
@@ -263,5 +254,36 @@ func TestFlatFeedAddActivities(t *testing.T) {
 		t.Fail()
 		return
 	}
+}
+
+func TestFlatFeedFollow(t *testing.T) {
+
+	client, err := testSetup()
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	feedA, err := client.FlatFeed("flat", "bob")
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	feedB, err := client.FlatFeed("flat", "eric")
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	err = feedA.FollowFeedWithCopyLimit(feedB, 20)
+	if err != nil {
+		t.Fail()
+	}
+
+	testCleanUpFollows(client, []*FlatFeed{feedA, feedB})
 
 }

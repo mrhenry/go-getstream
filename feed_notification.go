@@ -44,7 +44,7 @@ func (f *NotificationFeed) GenerateToken(signer *Signer) string {
 	return signer.generateToken(f.FeedSlug + f.UserID)
 }
 
-// AddActivity is Used to post an Activity to a NotificationFeed
+// AddActivity is used to add an Activity to a NotificationFeed
 func (f *NotificationFeed) AddActivity(activity *NotificationFeedActivity) (*NotificationFeedActivity, error) {
 
 	input, err := activity.input()
@@ -73,7 +73,7 @@ func (f *NotificationFeed) AddActivity(activity *NotificationFeedActivity) (*Not
 	return output.activity(), err
 }
 
-// AddActivities is Used to post multiple Activities to a NotificationFeed
+// AddActivities is used to add multiple Activities to a NotificationFeed
 func (f *NotificationFeed) AddActivities(activities []*NotificationFeedActivity) ([]*NotificationFeedActivity, error) {
 
 	var inputs []*postNotificationFeedInputActivity
