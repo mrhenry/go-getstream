@@ -1,6 +1,7 @@
 package getstream
 
 import (
+	"fmt"
 	"os"
 	"testing"
 )
@@ -16,24 +17,31 @@ func TestFlatFeedAddActivity(t *testing.T) {
 	feed, err := client.FlatFeed("flat", "bob")
 	if err != nil {
 		t.Fail()
+		return
 	}
 
 	activity, err := feed.AddActivity(&FlatFeedActivity{
-		ID:        "anID",
 		Verb:      "post",
-		ForeignID: "aForeignID",
+		ForeignID: "099978b6-3b72-4f5c-bc43-247ba6ae2dd9",
+		Object:    FeedID("flat:eric"),
+		Actor:     FeedID("flat:john"),
 	})
 	if err != nil {
+		fmt.Println(err)
 		t.Fail()
+		return
 	}
 
-	if activity.ID != "anID" {
+	if activity.Verb != "post" && activity.ForeignID != "099978b6-3b72-4f5c-bc43-247ba6ae2dd9" {
 		t.Fail()
+		return
 	}
 
 	err = testFlatFeedCleanUp(client, []*FlatFeedActivity{activity}, nil)
 	if err != nil {
+		fmt.Println(err)
 		t.Fail()
+		return
 	}
 
 }
