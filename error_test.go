@@ -2,6 +2,7 @@ package getstream
 
 import (
 	"encoding/json"
+	"fmt"
 	"testing"
 	"time"
 )
@@ -13,7 +14,9 @@ func TestError(t *testing.T) {
 	var getStreamError Error
 	err := json.Unmarshal([]byte(errorResponse), &getStreamError)
 	if err != nil {
+		fmt.Println(err)
 		t.Fail()
+		return
 	}
 
 	testError := Error{
@@ -25,14 +28,17 @@ func TestError(t *testing.T) {
 	}
 
 	if getStreamError != testError {
+		fmt.Println(err)
 		t.Fail()
 	}
 
 	if getStreamError.Duration() != time.Millisecond*36 {
+		fmt.Println(err)
 		t.Fail()
 	}
 
 	if getStreamError.Error() != "an exception (36ms): some detail" {
+		fmt.Println(err)
 		t.Fail()
 	}
 }
@@ -49,6 +55,7 @@ func TestErrorBadDuration(t *testing.T) {
 
 	if testError.Duration() != time.Duration(0) {
 		t.Fail()
+		return
 	}
 
 }

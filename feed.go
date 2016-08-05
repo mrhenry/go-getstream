@@ -24,6 +24,9 @@ type GeneralFeed struct {
 
 // Signature is used to sign Requests : "FeedSlugUserID Token"
 func (f *GeneralFeed) Signature() string {
+	if f.Token() == "" {
+		return f.FeedSlug + f.UserID
+	}
 	return f.FeedSlug + f.UserID + " " + f.Token()
 }
 

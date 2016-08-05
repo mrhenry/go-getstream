@@ -11,5 +11,8 @@ build:
   - script:
       name: go test
       code: |
-        go test
-  after-steps:
+        go test -coverprofile=coverage.txt -covermode=atomic
+  - script:
+      name: codecov
+      code: |
+        bash <(curl -s https://codecov.io/bash)

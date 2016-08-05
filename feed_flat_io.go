@@ -8,10 +8,10 @@ import (
 	"time"
 )
 
-// NotificationFeedActivity is a getstream Activity
-// Use it to post activities to NotificationFeeds
-// It is also the response from NotificationFeed Fetch and List Requests
-type NotificationFeedActivity struct {
+// FlatFeedActivity is a getstream Activity
+// Use it to post activities to FlatFeeds
+// It is also the response from FlatFeed Fetch and List Requests
+type FlatFeedActivity struct {
 	ID        string
 	Actor     FeedID
 	Verb      string
@@ -25,9 +25,9 @@ type NotificationFeedActivity struct {
 	To []Feed
 }
 
-func (a NotificationFeedActivity) input() (*postNotificationFeedInputActivity, error) {
+func (a FlatFeedActivity) input() (*postFlatFeedInputActivity, error) {
 
-	input := postNotificationFeedInputActivity{
+	input := postFlatFeedInputActivity{
 		ID:     a.ID,
 		Actor:  string(a.Actor),
 		Verb:   a.Verb,
@@ -67,7 +67,7 @@ func (a NotificationFeedActivity) input() (*postNotificationFeedInputActivity, e
 	return &input, nil
 }
 
-type postNotificationFeedInputActivity struct {
+type postFlatFeedInputActivity struct {
 	ID        string          `json:"id,omitempty"`
 	Actor     string          `json:"actor"`
 	Verb      string          `json:"verb"`
@@ -79,7 +79,7 @@ type postNotificationFeedInputActivity struct {
 	To        []string        `json:"to,omitempty"`
 }
 
-type postNotificationFeedOutputActivity struct {
+type postFlatFeedOutputActivity struct {
 	ID        string          `json:"id,omitempty"`
 	Actor     string          `json:"actor"`
 	Verb      string          `json:"verb"`
@@ -91,13 +91,13 @@ type postNotificationFeedOutputActivity struct {
 	To        [][]string      `json:"to,omitempty"`
 }
 
-type postNotificationFeedOutputActivities struct {
-	Activities []*postNotificationFeedOutputActivity `json:"activities"`
+type postFlatFeedOutputActivities struct {
+	Activities []*postFlatFeedOutputActivity `json:"activities"`
 }
 
-func (a postNotificationFeedOutputActivity) Activity() *NotificationFeedActivity {
+func (a postFlatFeedOutputActivity) activity() *FlatFeedActivity {
 
-	activity := NotificationFeedActivity{
+	activity := FlatFeedActivity{
 		ID:        a.ID,
 		Actor:     FeedID(a.Actor),
 		Verb:      a.Verb,
@@ -115,13 +115,13 @@ func (a postNotificationFeedOutputActivity) Activity() *NotificationFeedActivity
 	}
 
 	for _, slice := range a.To {
-		parseNotificationFeedToParams(slice, &activity)
+		parseFlatFeedToParams(slice, &activity)
 	}
 	return &activity
 }
 
-// GetNotificationFeedInput is used to Get a list of Activities from a NotificationFeed
-type GetNotificationFeedInput struct {
+// GetFlatFeedInput is used to Get a list of Activities from a FlatFeed
+type GetFlatFeedInput struct {
 	Limit  int `json:"limit,omitempty"`
 	Offset int `json:"offset,omitempty"`
 
@@ -133,22 +133,22 @@ type GetNotificationFeedInput struct {
 	Ranking string `json:"ranking,omitempty"`
 }
 
-// GetNotificationFeedOutput is the response from a NotificationFeed Activities Get Request
-type GetNotificationFeedOutput struct {
+// GetFlatFeedOutput is the response from a FlatFeed Activities Get Request
+type GetFlatFeedOutput struct {
 	Duration   string
 	Next       string
-	Activities []*NotificationFeedActivity
+	Activities []*FlatFeedActivity
 }
 
-type getNotificationFeedOutput struct {
-	Duration   string                               `json:"duration"`
-	Next       string                               `json:"next"`
-	Activities []*getNotificationFeedOutputActivity `json:"results"`
+type getFlatFeedOutput struct {
+	Duration   string                       `json:"duration"`
+	Next       string                       `json:"next"`
+	Activities []*getFlatFeedOutputActivity `json:"results"`
 }
 
-func (a getNotificationFeedOutput) Output() *GetNotificationFeedOutput {
+func (a getFlatFeedOutput) Output() *GetFlatFeedOutput {
 
-	output := GetNotificationFeedOutput{
+	output := GetFlatFeedOutput{
 		Duration: a.Duration,
 		Next:     a.Next,
 	}
@@ -160,7 +160,7 @@ func (a getNotificationFeedOutput) Output() *GetNotificationFeedOutput {
 	return &output
 }
 
-type getNotificationFeedOutputActivity struct {
+type getFlatFeedOutputActivity struct {
 	ID        string          `json:"id,omitempty"`
 	Actor     string          `json:"actor"`
 	Verb      string          `json:"verb"`
@@ -172,9 +172,9 @@ type getNotificationFeedOutputActivity struct {
 	Data      json.RawMessage `json:"data,omitempty"`
 }
 
-func (a getNotificationFeedOutputActivity) Activity() *NotificationFeedActivity {
+func (a getFlatFeedOutputActivity) Activity() *FlatFeedActivity {
 
-	activity := NotificationFeedActivity{
+	activity := FlatFeedActivity{
 		ID:        a.ID,
 		Actor:     FeedID(a.Actor),
 		Verb:      a.Verb,
@@ -191,12 +191,12 @@ func (a getNotificationFeedOutputActivity) Activity() *NotificationFeedActivity 
 		}
 	}
 
-	parseNotificationFeedToParams(a.To, &activity)
+	parseFlatFeedToParams(a.To, &activity)
 
 	return &activity
 }
 
-func parseNotificationFeedToParams(to []string, activity *NotificationFeedActivity) {
+func parseFlatFeedToParams(to []string, activity *FlatFeedActivity) {
 
 	for _, to := range to {
 
@@ -221,24 +221,24 @@ func parseNotificationFeedToParams(to []string, activity *NotificationFeedActivi
 
 }
 
-type getNotificationFeedFollowersInput struct {
+type getFlatFeedFollowersInput struct {
 	Limit int `json:"limit"`
 	Skip  int `json:"offset"`
 }
 
-type getNotificationFeedFollowersOutput struct {
-	Duration string                                      `json:"duration"`
-	Results  []*getNotificationFeedFollowersOutputResult `json:"results"`
+type getFlatFeedFollowersOutput struct {
+	Duration string                              `json:"duration"`
+	Results  []*getFlatFeedFollowersOutputResult `json:"results"`
 }
 
-type getNotificationFeedFollowersOutputResult struct {
+type getFlatFeedFollowersOutputResult struct {
 	CreatedAt string `json:"created_at"`
 	UpdatedAt string `json:"updated_at"`
 	FeedID    string `json:"feed_id"`
 	TargetID  string `json:"target_id"`
 }
 
-type postNotificationFeedFollowingInput struct {
+type postFlatFeedFollowingInput struct {
 	Target            string `json:"target"`
 	ActivityCopyLimit int    `json:"activity_copy_limit"`
 }
