@@ -58,19 +58,19 @@
 				
 				<option value="file1">github.com/mrhenry/go-getstream/error.go (100.0%)</option>
 				
-				<option value="file2">github.com/mrhenry/go-getstream/feed-flat-http.go (0.0%)</option>
+				<option value="file2">github.com/mrhenry/go-getstream/feed.go (100.0%)</option>
 				
-				<option value="file3">github.com/mrhenry/go-getstream/feed-flat-io.go (0.0%)</option>
+				<option value="file3">github.com/mrhenry/go-getstream/feed_flat.go (5.6%)</option>
 				
-				<option value="file4">github.com/mrhenry/go-getstream/feed-flat.go (0.8%)</option>
+				<option value="file4">github.com/mrhenry/go-getstream/feed_flat_http.go (0.0%)</option>
 				
-				<option value="file5">github.com/mrhenry/go-getstream/feed-notification-http.go (0.0%)</option>
+				<option value="file5">github.com/mrhenry/go-getstream/feed_flat_io.go (0.0%)</option>
 				
-				<option value="file6">github.com/mrhenry/go-getstream/feed-notification-io.go (0.0%)</option>
+				<option value="file6">github.com/mrhenry/go-getstream/feed_notification.go (6.7%)</option>
 				
-				<option value="file7">github.com/mrhenry/go-getstream/feed-notification.go (1.0%)</option>
+				<option value="file7">github.com/mrhenry/go-getstream/feed_notification_http.go (0.0%)</option>
 				
-				<option value="file8">github.com/mrhenry/go-getstream/feed.go (0.0%)</option>
+				<option value="file8">github.com/mrhenry/go-getstream/feed_notification_io.go (0.0%)</option>
 				
 				<option value="file9">github.com/mrhenry/go-getstream/signer.go (100.0%)</option>
 				
@@ -258,16 +258,16 @@ func (e *Error) Duration() time.Duration <span class="cov8" title="1">{
         <span class="cov8" title="1">return result</span>
 }
 
-func (err *Error) Error() string <span class="cov8" title="1">{
-        str := err.Exception
-        if err.RawDuration != "" </span><span class="cov8" title="1">{
-                if duration := err.Duration(); duration &gt; 0 </span><span class="cov8" title="1">{
+func (e *Error) Error() string <span class="cov8" title="1">{
+        str := e.Exception
+        if e.RawDuration != "" </span><span class="cov8" title="1">{
+                if duration := e.Duration(); duration &gt; 0 </span><span class="cov8" title="1">{
                         str += " (" + duration.String() + ")"
                 }</span>
         }
 
-        <span class="cov8" title="1">if err.Detail != "" </span><span class="cov8" title="1">{
-                str += ": " + err.Detail
+        <span class="cov8" title="1">if e.Detail != "" </span><span class="cov8" title="1">{
+                str += ": " + e.Detail
         }</span>
 
         <span class="cov8" title="1">return str</span>
@@ -276,330 +276,58 @@ func (err *Error) Error() string <span class="cov8" title="1">{
 		
 		<pre class="file" id="file2" style="display: none">package getstream
 
-import (
-        "bytes"
-        "encoding/json"
-        "io/ioutil"
-        "net/http"
-)
+// FeedID is a typealias of string to create some value safety
+type FeedID string
 
-// get request helper
-func (f *FlatFeed) get(path string, signature string, payload []byte) ([]byte, error) <span class="cov0" title="0">{
-        res, err := f.request("GET", path, signature, payload)
-        return res, err
-}</span>
-
-// post request helper
-func (f *FlatFeed) post(path string, signature string, payload []byte) ([]byte, error) <span class="cov0" title="0">{
-        res, err := f.request("POST", path, signature, payload)
-        return res, err
-}</span>
-
-// delete request helper
-func (f *FlatFeed) del(path string, signature string, payload []byte) error <span class="cov0" title="0">{
-        _, err := f.request("DELETE", path, signature, payload)
-        return err
-}</span>
-
-// request helper
-func (f *FlatFeed) request(method, path string, signature string, payload []byte) ([]byte, error) <span class="cov0" title="0">{
-
-        // create url.URL instance with query params
-        absURL, err := f.Client.absoluteURL(path)
-        if err != nil </span><span class="cov0" title="0">{
-                return nil, err
-        }</span>
-
-        // create a new http request
-        <span class="cov0" title="0">req, err := http.NewRequest(method, absURL.String(), bytes.NewBuffer(payload))
-        if err != nil </span><span class="cov0" title="0">{
-                return nil, err
-        }</span>
-
-        // set the Auth headers for the http request
-        <span class="cov0" title="0">req.Header.Set("Content-Type", "application/json")
-        if f.Token() != "" </span><span class="cov0" title="0">{
-                req.Header.Set("Authorization", signature)
-        }</span>
-
-        // perform the http request
-        <span class="cov0" title="0">resp, err := f.Client.http.Do(req)
-        if err != nil </span><span class="cov0" title="0">{
-                return nil, err
-        }</span>
-        <span class="cov0" title="0">defer resp.Body.Close()
-
-        // read the response
-        body, err := ioutil.ReadAll(resp.Body)
-        if err != nil </span><span class="cov0" title="0">{
-                return nil, err
-        }</span>
-
-        // handle the response
-        <span class="cov0" title="0">switch </span>{
-        <span class="cov0" title="0">case resp.StatusCode/100 == 2: // SUCCESS
-                if body != nil </span><span class="cov0" title="0">{
-                        return body, nil
-                }</span>
-                <span class="cov0" title="0">return nil, nil</span>
-        <span class="cov0" title="0">default:
-                var respErr Error
-                err = json.Unmarshal(body, &amp;respErr)
-                if err != nil </span><span class="cov0" title="0">{
-                        return nil, err
-                }</span>
-                <span class="cov0" title="0">return nil, &amp;respErr</span>
-        }
+// Feed is the interface bundling all Feed Types
+// It exposes methods needed for all Types
+type Feed interface {
+        Signature() string
+        FeedID() FeedID
+        Token() string
+        SignFeed(signer *Signer)
+        GenerateToken(signer *Signer) string
 }
+
+// GeneralFeed is a container for Feeds returned from request
+// The specific Type will be unknown so no Actions are associated with a GeneralFeed
+type GeneralFeed struct {
+        Client   *Client
+        FeedSlug string
+        UserID   string
+        token    string
+}
+
+// Signature is used to sign Requests : "FeedSlugUserID Token"
+func (f *GeneralFeed) Signature() string <span class="cov8" title="1">{
+        if f.Token() == "" </span><span class="cov8" title="1">{
+                return f.FeedSlug + f.UserID
+        }</span>
+        <span class="cov8" title="1">return f.FeedSlug + f.UserID + " " + f.Token()</span>
+}
+
+// FeedID is the combo if the FeedSlug and UserID : "FeedSlug:UserID"
+func (f *GeneralFeed) FeedID() FeedID <span class="cov8" title="1">{
+        return FeedID(f.FeedSlug + ":" + f.UserID)
+}</span>
+
+// SignFeed sets the token on a Feed
+func (f *GeneralFeed) SignFeed(signer *Signer) <span class="cov8" title="1">{
+        f.token = signer.generateToken(f.FeedSlug + f.UserID)
+}</span>
+
+// Token returns the token of a Feed
+func (f *GeneralFeed) Token() string <span class="cov8" title="1">{
+        return f.token
+}</span>
+
+// GenerateToken returns a new Token for a Feed without setting it to the Feed
+func (f *GeneralFeed) GenerateToken(signer *Signer) string <span class="cov8" title="1">{
+        return signer.generateToken(f.FeedSlug + f.UserID)
+}</span>
 </pre>
 		
 		<pre class="file" id="file3" style="display: none">package getstream
-
-import (
-        "encoding/json"
-        "errors"
-        "regexp"
-        "strings"
-        "time"
-)
-
-// FlatFeedActivity is a getstream Activity
-// Use it to post activities to FlatFeeds
-// It is also the response from FlatFeed Fetch and List Requests
-type FlatFeedActivity struct {
-        ID        string
-        Actor     FeedID
-        Verb      string
-        Object    FeedID
-        Target    FeedID
-        TimeStamp *time.Time
-
-        ForeignID string
-        Data      json.RawMessage
-
-        To []Feed
-}
-
-func (a FlatFeedActivity) input() (*postFlatFeedInputActivity, error) <span class="cov0" title="0">{
-
-        input := postFlatFeedInputActivity{
-                ID:     a.ID,
-                Actor:  string(a.Actor),
-                Verb:   a.Verb,
-                Object: string(a.Object),
-                Target: string(a.Target),
-                Data:   a.Data,
-        }
-
-        if a.ForeignID != "" </span><span class="cov0" title="0">{
-                r, err := regexp.Compile("^[a-z0-9]{8}-[a-z0-9]{4}-[1-5][a-z0-9]{3}-[a-z0-9]{4}-[a-z0-9]{12}$")
-                if err != nil </span><span class="cov0" title="0">{
-                        return nil, err
-                }</span>
-                <span class="cov0" title="0">if !r.MatchString(a.ForeignID) </span><span class="cov0" title="0">{
-                        return nil, errors.New("invalid ForeignID")
-                }</span>
-
-                <span class="cov0" title="0">input.ForeignID = a.ForeignID</span>
-        }
-
-        <span class="cov0" title="0">input.To = []string{}
-
-        if a.TimeStamp == nil </span><span class="cov0" title="0">{
-                input.RawTime = time.Now().Format("2006-01-02T15:04:05.999999")
-        }</span><span class="cov0" title="0"> else {
-                input.RawTime = a.TimeStamp.Format("2006-01-02T15:04:05.999999")
-        }</span>
-
-        <span class="cov0" title="0">for _, feed := range a.To </span><span class="cov0" title="0">{
-                to := string(feed.FeedID())
-                if feed.Token() != "" </span><span class="cov0" title="0">{
-                        to += " " + feed.Token()
-                }</span>
-                <span class="cov0" title="0">input.To = append(input.To, to)</span>
-        }
-
-        <span class="cov0" title="0">return &amp;input, nil</span>
-}
-
-type postFlatFeedInputActivity struct {
-        ID        string          `json:"id,omitempty"`
-        Actor     string          `json:"actor"`
-        Verb      string          `json:"verb"`
-        Object    string          `json:"object"`
-        Target    string          `json:"target,omitempty"`
-        RawTime   string          `json:"time,omitempty"`
-        ForeignID string          `json:"foreign_id,omitempty"`
-        Data      json.RawMessage `json:"data,omitempty"`
-        To        []string        `json:"to,omitempty"`
-}
-
-type postFlatFeedOutputActivity struct {
-        ID        string          `json:"id,omitempty"`
-        Actor     string          `json:"actor"`
-        Verb      string          `json:"verb"`
-        Object    string          `json:"object"`
-        Target    string          `json:"target,omitempty"`
-        RawTime   string          `json:"time,omitempty"`
-        ForeignID string          `json:"foreign_id,omitempty"`
-        Data      json.RawMessage `json:"data,omitempty"`
-        To        [][]string      `json:"to,omitempty"`
-}
-
-type postFlatFeedOutputActivities struct {
-        Activities []*postFlatFeedOutputActivity `json:"activities"`
-}
-
-func (a postFlatFeedOutputActivity) Activity() *FlatFeedActivity <span class="cov0" title="0">{
-
-        activity := FlatFeedActivity{
-                ID:        a.ID,
-                Actor:     FeedID(a.Actor),
-                Verb:      a.Verb,
-                Object:    FeedID(a.Object),
-                Target:    FeedID(a.Target),
-                ForeignID: a.ForeignID,
-                Data:      a.Data,
-        }
-
-        if a.RawTime != "" </span><span class="cov0" title="0">{
-                timeStamp, err := time.Parse("2006-01-02T15:04:05.999999", a.RawTime)
-                if err == nil </span><span class="cov0" title="0">{
-                        activity.TimeStamp = &amp;timeStamp
-                }</span>
-        }
-
-        <span class="cov0" title="0">for _, slice := range a.To </span><span class="cov0" title="0">{
-                parseFlatFeedToParams(slice, &amp;activity)
-        }</span>
-        <span class="cov0" title="0">return &amp;activity</span>
-}
-
-// GetFlatFeedInput is used to Get a list of Activities from a FlatFeed
-type GetFlatFeedInput struct {
-        Limit  int `json:"limit,omitempty"`
-        Offset int `json:"offset,omitempty"`
-
-        IDGTE int `json:"id_gte,omitempty"`
-        IDGT  int `json:"id_gt,omitempty"`
-        IDLTE int `json:"id_lte,omitempty"`
-        IDLT  int `json:"id_lt,omitempty"`
-
-        Ranking string `json:"ranking,omitempty"`
-}
-
-// GetFlatFeedOutput is the response from a FlatFeed Activities Get Request
-type GetFlatFeedOutput struct {
-        Duration   string
-        Next       string
-        Activities []*FlatFeedActivity
-}
-
-type getFlatFeedOutput struct {
-        Duration   string                       `json:"duration"`
-        Next       string                       `json:"next"`
-        Activities []*getFlatFeedOutputActivity `json:"results"`
-}
-
-func (a getFlatFeedOutput) Output() *GetFlatFeedOutput <span class="cov0" title="0">{
-
-        output := GetFlatFeedOutput{
-                Duration: a.Duration,
-                Next:     a.Next,
-        }
-
-        for _, activity := range a.Activities </span><span class="cov0" title="0">{
-                output.Activities = append(output.Activities, activity.Activity())
-        }</span>
-
-        <span class="cov0" title="0">return &amp;output</span>
-}
-
-type getFlatFeedOutputActivity struct {
-        ID        string          `json:"id,omitempty"`
-        Actor     string          `json:"actor"`
-        Verb      string          `json:"verb"`
-        Object    string          `json:"object"`
-        Target    string          `json:"target,omitempty"`
-        RawTime   string          `json:"time,omitempty"`
-        To        []string        `json:"to,omitempty"`
-        ForeignID string          `json:"foreign_id,omitempty"`
-        Data      json.RawMessage `json:"data,omitempty"`
-}
-
-func (a getFlatFeedOutputActivity) Activity() *FlatFeedActivity <span class="cov0" title="0">{
-
-        activity := FlatFeedActivity{
-                ID:        a.ID,
-                Actor:     FeedID(a.Actor),
-                Verb:      a.Verb,
-                Object:    FeedID(a.Object),
-                Target:    FeedID(a.Target),
-                ForeignID: a.ForeignID,
-                Data:      a.Data,
-        }
-
-        if a.RawTime != "" </span><span class="cov0" title="0">{
-                timeStamp, err := time.Parse("2006-01-02T15:04:05.999999", a.RawTime)
-                if err == nil </span><span class="cov0" title="0">{
-                        activity.TimeStamp = &amp;timeStamp
-                }</span>
-        }
-
-        <span class="cov0" title="0">parseFlatFeedToParams(a.To, &amp;activity)
-
-        return &amp;activity</span>
-}
-
-func parseFlatFeedToParams(to []string, activity *FlatFeedActivity) <span class="cov0" title="0">{
-
-        for _, to := range to </span><span class="cov0" title="0">{
-
-                feed := GeneralFeed{}
-
-                match, err := regexp.MatchString(`^.*?:.*? .*?$`, to)
-                if err != nil </span><span class="cov0" title="0">{
-                        continue</span>
-                }
-
-                <span class="cov0" title="0">if match </span><span class="cov0" title="0">{
-                        firstSplit := strings.Split(to, ":")
-                        secondSplit := strings.Split(firstSplit[1], " ")
-
-                        feed.FeedSlug = firstSplit[0]
-                        feed.UserID = secondSplit[0]
-                        feed.token = secondSplit[1]
-                }</span>
-
-                <span class="cov0" title="0">activity.To = append(activity.To, &amp;feed)</span>
-        }
-
-}
-
-type getFlatFeedFollowersInput struct {
-        Limit int `json:"limit"`
-        Skip  int `json:"offset"`
-}
-
-type getFlatFeedFollowersOutput struct {
-        Duration string                              `json:"duration"`
-        Results  []*getFlatFeedFollowersOutputResult `json:"results"`
-}
-
-type getFlatFeedFollowersOutputResult struct {
-        CreatedAt string `json:"created_at"`
-        UpdatedAt string `json:"updated_at"`
-        FeedID    string `json:"feed_id"`
-        TargetID  string `json:"target_id"`
-}
-
-type postFlatFeedFollowingInput struct {
-        Target            string `json:"target"`
-        ActivityCopyLimit int    `json:"activity_copy_limit"`
-}
-</pre>
-		
-		<pre class="file" id="file4" style="display: none">package getstream
 
 import (
         "encoding/json"
@@ -618,12 +346,15 @@ type FlatFeed struct {
 }
 
 // Signature is used to sign Requests : "FeedSlugUserID Token"
-func (f *FlatFeed) Signature() string <span class="cov0" title="0">{
-        return f.FeedSlug + f.UserID + " " + f.Token()
-}</span>
+func (f *FlatFeed) Signature() string <span class="cov8" title="1">{
+        if f.Token() == "" </span><span class="cov8" title="1">{
+                return f.FeedSlug + f.UserID
+        }</span>
+        <span class="cov8" title="1">return f.FeedSlug + f.UserID + " " + f.Token()</span>
+}
 
 // FeedID is the combo if the FeedSlug and UserID : "FeedSlug:UserID"
-func (f *FlatFeed) FeedID() FeedID <span class="cov0" title="0">{
+func (f *FlatFeed) FeedID() FeedID <span class="cov8" title="1">{
         return FeedID(f.FeedSlug + ":" + f.UserID)
 }</span>
 
@@ -633,12 +364,12 @@ func (f *FlatFeed) SignFeed(signer *Signer) <span class="cov8" title="1">{
 }</span>
 
 // Token returns the token of a Feed
-func (f *FlatFeed) Token() string <span class="cov0" title="0">{
+func (f *FlatFeed) Token() string <span class="cov8" title="1">{
         return f.token
 }</span>
 
 // GenerateToken returns a new Token for a Feed without setting it to the Feed
-func (f *FlatFeed) GenerateToken(signer *Signer) string <span class="cov0" title="0">{
+func (f *FlatFeed) GenerateToken(signer *Signer) string <span class="cov8" title="1">{
         return signer.generateToken(f.FeedSlug + f.UserID)
 }</span>
 
@@ -909,36 +640,35 @@ func (f *FlatFeed) FollowingWithLimitAndSkip(limit int, skip int) ([]*GeneralFee
 }
 </pre>
 		
-		<pre class="file" id="file5" style="display: none">package getstream
+		<pre class="file" id="file4" style="display: none">package getstream
 
 import (
         "bytes"
         "encoding/json"
-        "fmt"
         "io/ioutil"
         "net/http"
 )
 
 // get request helper
-func (f *NotificationFeed) get(path string, signature string, payload []byte) ([]byte, error) <span class="cov0" title="0">{
+func (f *FlatFeed) get(path string, signature string, payload []byte) ([]byte, error) <span class="cov0" title="0">{
         res, err := f.request("GET", path, signature, payload)
         return res, err
 }</span>
 
 // post request helper
-func (f *NotificationFeed) post(path string, signature string, payload []byte) ([]byte, error) <span class="cov0" title="0">{
+func (f *FlatFeed) post(path string, signature string, payload []byte) ([]byte, error) <span class="cov0" title="0">{
         res, err := f.request("POST", path, signature, payload)
         return res, err
 }</span>
 
 // delete request helper
-func (f *NotificationFeed) del(path string, signature string, payload []byte) error <span class="cov0" title="0">{
+func (f *FlatFeed) del(path string, signature string, payload []byte) error <span class="cov0" title="0">{
         _, err := f.request("DELETE", path, signature, payload)
         return err
 }</span>
 
 // request helper
-func (f *NotificationFeed) request(method, path string, signature string, payload []byte) ([]byte, error) <span class="cov0" title="0">{
+func (f *FlatFeed) request(method, path string, signature string, payload []byte) ([]byte, error) <span class="cov0" title="0">{
 
         // create url.URL instance with query params
         absURL, err := f.Client.absoluteURL(path)
@@ -971,10 +701,8 @@ func (f *NotificationFeed) request(method, path string, signature string, payloa
                 return nil, err
         }</span>
 
-        <span class="cov0" title="0">fmt.Println(string(body))
-
         // handle the response
-        switch </span>{
+        <span class="cov0" title="0">switch </span>{
         <span class="cov0" title="0">case resp.StatusCode/100 == 2: // SUCCESS
                 if body != nil </span><span class="cov0" title="0">{
                         return body, nil
@@ -991,7 +719,7 @@ func (f *NotificationFeed) request(method, path string, signature string, payloa
 }
 </pre>
 		
-		<pre class="file" id="file6" style="display: none">package getstream
+		<pre class="file" id="file5" style="display: none">package getstream
 
 import (
         "encoding/json"
@@ -1001,10 +729,10 @@ import (
         "time"
 )
 
-// NotificationFeedActivity is a getstream Activity
-// Use it to post activities to NotificationFeeds
-// It is also the response from NotificationFeed Fetch and List Requests
-type NotificationFeedActivity struct {
+// FlatFeedActivity is a getstream Activity
+// Use it to post activities to FlatFeeds
+// It is also the response from FlatFeed Fetch and List Requests
+type FlatFeedActivity struct {
         ID        string
         Actor     FeedID
         Verb      string
@@ -1018,9 +746,9 @@ type NotificationFeedActivity struct {
         To []Feed
 }
 
-func (a NotificationFeedActivity) input() (*postNotificationFeedInputActivity, error) <span class="cov0" title="0">{
+func (a FlatFeedActivity) input() (*postFlatFeedInputActivity, error) <span class="cov0" title="0">{
 
-        input := postNotificationFeedInputActivity{
+        input := postFlatFeedInputActivity{
                 ID:     a.ID,
                 Actor:  string(a.Actor),
                 Verb:   a.Verb,
@@ -1060,7 +788,7 @@ func (a NotificationFeedActivity) input() (*postNotificationFeedInputActivity, e
         <span class="cov0" title="0">return &amp;input, nil</span>
 }
 
-type postNotificationFeedInputActivity struct {
+type postFlatFeedInputActivity struct {
         ID        string          `json:"id,omitempty"`
         Actor     string          `json:"actor"`
         Verb      string          `json:"verb"`
@@ -1072,7 +800,7 @@ type postNotificationFeedInputActivity struct {
         To        []string        `json:"to,omitempty"`
 }
 
-type postNotificationFeedOutputActivity struct {
+type postFlatFeedOutputActivity struct {
         ID        string          `json:"id,omitempty"`
         Actor     string          `json:"actor"`
         Verb      string          `json:"verb"`
@@ -1084,13 +812,13 @@ type postNotificationFeedOutputActivity struct {
         To        [][]string      `json:"to,omitempty"`
 }
 
-type postNotificationFeedOutputActivities struct {
-        Activities []*postNotificationFeedOutputActivity `json:"activities"`
+type postFlatFeedOutputActivities struct {
+        Activities []*postFlatFeedOutputActivity `json:"activities"`
 }
 
-func (a postNotificationFeedOutputActivity) Activity() *NotificationFeedActivity <span class="cov0" title="0">{
+func (a postFlatFeedOutputActivity) Activity() *FlatFeedActivity <span class="cov0" title="0">{
 
-        activity := NotificationFeedActivity{
+        activity := FlatFeedActivity{
                 ID:        a.ID,
                 Actor:     FeedID(a.Actor),
                 Verb:      a.Verb,
@@ -1108,13 +836,13 @@ func (a postNotificationFeedOutputActivity) Activity() *NotificationFeedActivity
         }
 
         <span class="cov0" title="0">for _, slice := range a.To </span><span class="cov0" title="0">{
-                parseNotificationFeedToParams(slice, &amp;activity)
+                parseFlatFeedToParams(slice, &amp;activity)
         }</span>
         <span class="cov0" title="0">return &amp;activity</span>
 }
 
-// GetNotificationFeedInput is used to Get a list of Activities from a NotificationFeed
-type GetNotificationFeedInput struct {
+// GetFlatFeedInput is used to Get a list of Activities from a FlatFeed
+type GetFlatFeedInput struct {
         Limit  int `json:"limit,omitempty"`
         Offset int `json:"offset,omitempty"`
 
@@ -1126,22 +854,22 @@ type GetNotificationFeedInput struct {
         Ranking string `json:"ranking,omitempty"`
 }
 
-// GetNotificationFeedOutput is the response from a NotificationFeed Activities Get Request
-type GetNotificationFeedOutput struct {
+// GetFlatFeedOutput is the response from a FlatFeed Activities Get Request
+type GetFlatFeedOutput struct {
         Duration   string
         Next       string
-        Activities []*NotificationFeedActivity
+        Activities []*FlatFeedActivity
 }
 
-type getNotificationFeedOutput struct {
-        Duration   string                               `json:"duration"`
-        Next       string                               `json:"next"`
-        Activities []*getNotificationFeedOutputActivity `json:"results"`
+type getFlatFeedOutput struct {
+        Duration   string                       `json:"duration"`
+        Next       string                       `json:"next"`
+        Activities []*getFlatFeedOutputActivity `json:"results"`
 }
 
-func (a getNotificationFeedOutput) Output() *GetNotificationFeedOutput <span class="cov0" title="0">{
+func (a getFlatFeedOutput) Output() *GetFlatFeedOutput <span class="cov0" title="0">{
 
-        output := GetNotificationFeedOutput{
+        output := GetFlatFeedOutput{
                 Duration: a.Duration,
                 Next:     a.Next,
         }
@@ -1153,7 +881,7 @@ func (a getNotificationFeedOutput) Output() *GetNotificationFeedOutput <span cla
         <span class="cov0" title="0">return &amp;output</span>
 }
 
-type getNotificationFeedOutputActivity struct {
+type getFlatFeedOutputActivity struct {
         ID        string          `json:"id,omitempty"`
         Actor     string          `json:"actor"`
         Verb      string          `json:"verb"`
@@ -1165,9 +893,9 @@ type getNotificationFeedOutputActivity struct {
         Data      json.RawMessage `json:"data,omitempty"`
 }
 
-func (a getNotificationFeedOutputActivity) Activity() *NotificationFeedActivity <span class="cov0" title="0">{
+func (a getFlatFeedOutputActivity) Activity() *FlatFeedActivity <span class="cov0" title="0">{
 
-        activity := NotificationFeedActivity{
+        activity := FlatFeedActivity{
                 ID:        a.ID,
                 Actor:     FeedID(a.Actor),
                 Verb:      a.Verb,
@@ -1184,12 +912,12 @@ func (a getNotificationFeedOutputActivity) Activity() *NotificationFeedActivity 
                 }</span>
         }
 
-        <span class="cov0" title="0">parseNotificationFeedToParams(a.To, &amp;activity)
+        <span class="cov0" title="0">parseFlatFeedToParams(a.To, &amp;activity)
 
         return &amp;activity</span>
 }
 
-func parseNotificationFeedToParams(to []string, activity *NotificationFeedActivity) <span class="cov0" title="0">{
+func parseFlatFeedToParams(to []string, activity *FlatFeedActivity) <span class="cov0" title="0">{
 
         for _, to := range to </span><span class="cov0" title="0">{
 
@@ -1214,30 +942,30 @@ func parseNotificationFeedToParams(to []string, activity *NotificationFeedActivi
 
 }
 
-type getNotificationFeedFollowersInput struct {
+type getFlatFeedFollowersInput struct {
         Limit int `json:"limit"`
         Skip  int `json:"offset"`
 }
 
-type getNotificationFeedFollowersOutput struct {
-        Duration string                                      `json:"duration"`
-        Results  []*getNotificationFeedFollowersOutputResult `json:"results"`
+type getFlatFeedFollowersOutput struct {
+        Duration string                              `json:"duration"`
+        Results  []*getFlatFeedFollowersOutputResult `json:"results"`
 }
 
-type getNotificationFeedFollowersOutputResult struct {
+type getFlatFeedFollowersOutputResult struct {
         CreatedAt string `json:"created_at"`
         UpdatedAt string `json:"updated_at"`
         FeedID    string `json:"feed_id"`
         TargetID  string `json:"target_id"`
 }
 
-type postNotificationFeedFollowingInput struct {
+type postFlatFeedFollowingInput struct {
         Target            string `json:"target"`
         ActivityCopyLimit int    `json:"activity_copy_limit"`
 }
 </pre>
 		
-		<pre class="file" id="file7" style="display: none">package getstream
+		<pre class="file" id="file6" style="display: none">package getstream
 
 import (
         "encoding/json"
@@ -1256,12 +984,15 @@ type NotificationFeed struct {
 }
 
 // Signature is used to sign Requests : "FeedSlugUserID Token"
-func (f *NotificationFeed) Signature() string <span class="cov0" title="0">{
-        return f.FeedSlug + f.UserID + " " + f.Token()
-}</span>
+func (f *NotificationFeed) Signature() string <span class="cov8" title="1">{
+        if f.Token() == "" </span><span class="cov8" title="1">{
+                return f.FeedSlug + f.UserID
+        }</span>
+        <span class="cov8" title="1">return f.FeedSlug + f.UserID + " " + f.Token()</span>
+}
 
 // FeedID is the combo if the FeedSlug and UserID : "FeedSlug:UserID"
-func (f *NotificationFeed) FeedID() FeedID <span class="cov0" title="0">{
+func (f *NotificationFeed) FeedID() FeedID <span class="cov8" title="1">{
         return FeedID(f.FeedSlug + ":" + f.UserID)
 }</span>
 
@@ -1271,12 +1002,12 @@ func (f *NotificationFeed) SignFeed(signer *Signer) <span class="cov8" title="1"
 }</span>
 
 // Token returns the token of a Feed
-func (f *NotificationFeed) Token() string <span class="cov0" title="0">{
+func (f *NotificationFeed) Token() string <span class="cov8" title="1">{
         return f.token
 }</span>
 
 // GenerateToken returns a new Token for a Feed without setting it to the Feed
-func (f *NotificationFeed) GenerateToken(signer *Signer) string <span class="cov0" title="0">{
+func (f *NotificationFeed) GenerateToken(signer *Signer) string <span class="cov8" title="1">{
         return signer.generateToken(f.FeedSlug + f.UserID)
 }</span>
 
@@ -1502,54 +1233,408 @@ func (f *NotificationFeed) FollowersWithLimitAndSkip(limit int, skip int) ([]*Ge
 }
 </pre>
 		
+		<pre class="file" id="file7" style="display: none">package getstream
+
+import (
+        "bytes"
+        "encoding/json"
+        "fmt"
+        "io/ioutil"
+        "net/http"
+)
+
+// get request helper
+func (f *NotificationFeed) get(path string, signature string, payload []byte) ([]byte, error) <span class="cov0" title="0">{
+        res, err := f.request("GET", path, signature, payload)
+        return res, err
+}</span>
+
+// post request helper
+func (f *NotificationFeed) post(path string, signature string, payload []byte) ([]byte, error) <span class="cov0" title="0">{
+        res, err := f.request("POST", path, signature, payload)
+        return res, err
+}</span>
+
+// delete request helper
+func (f *NotificationFeed) del(path string, signature string, payload []byte) error <span class="cov0" title="0">{
+        _, err := f.request("DELETE", path, signature, payload)
+        return err
+}</span>
+
+// request helper
+func (f *NotificationFeed) request(method, path string, signature string, payload []byte) ([]byte, error) <span class="cov0" title="0">{
+
+        // create url.URL instance with query params
+        absURL, err := f.Client.absoluteURL(path)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        // create a new http request
+        <span class="cov0" title="0">req, err := http.NewRequest(method, absURL.String(), bytes.NewBuffer(payload))
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        // set the Auth headers for the http request
+        <span class="cov0" title="0">req.Header.Set("Content-Type", "application/json")
+        if f.Token() != "" </span><span class="cov0" title="0">{
+                req.Header.Set("Authorization", signature)
+        }</span>
+
+        // perform the http request
+        <span class="cov0" title="0">resp, err := f.Client.http.Do(req)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+        <span class="cov0" title="0">defer resp.Body.Close()
+
+        // read the response
+        body, err := ioutil.ReadAll(resp.Body)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        <span class="cov0" title="0">fmt.Println(string(body))
+
+        // handle the response
+        switch </span>{
+        <span class="cov0" title="0">case resp.StatusCode/100 == 2: // SUCCESS
+                if body != nil </span><span class="cov0" title="0">{
+                        return body, nil
+                }</span>
+                <span class="cov0" title="0">return nil, nil</span>
+        <span class="cov0" title="0">default:
+                var respErr Error
+                err = json.Unmarshal(body, &amp;respErr)
+                if err != nil </span><span class="cov0" title="0">{
+                        return nil, err
+                }</span>
+                <span class="cov0" title="0">return nil, &amp;respErr</span>
+        }
+}
+</pre>
+		
 		<pre class="file" id="file8" style="display: none">package getstream
 
-// FeedID is a typealias of string to create some value safety
-type FeedID string
+import (
+        "encoding/json"
+        "errors"
+        "regexp"
+        "strings"
+        "time"
+)
 
-// Feed is the interface bundling all Feed Types
-// It exposes methods needed for all Types
-type Feed interface {
-        Signature() string
-        FeedID() FeedID
-        Token() string
-        SignFeed(signer *Signer)
-        GenerateToken(signer *Signer) string
+// NotificationFeedActivity is a getstream Activity
+// Use it to post activities to NotificationFeeds
+// It is also the response from NotificationFeed Fetch and List Requests
+type NotificationFeedActivity struct {
+        ID        string
+        Actor     FeedID
+        Verb      string
+        Object    FeedID
+        Target    FeedID
+        Origin    FeedID
+        TimeStamp *time.Time
+
+        ForeignID string
+        Data      json.RawMessage
+
+        To []Feed
 }
 
-// GeneralFeed is a container for Feeds returned from request
-// The specific Type will be unknown so no Actions are associated with a GeneralFeed
-type GeneralFeed struct {
-        Client   *Client
-        FeedSlug string
-        UserID   string
-        token    string
+func (a NotificationFeedActivity) input() (*postNotificationFeedInputActivity, error) <span class="cov0" title="0">{
+
+        input := postNotificationFeedInputActivity{
+                ID:     a.ID,
+                Actor:  string(a.Actor),
+                Verb:   a.Verb,
+                Object: string(a.Object),
+                Target: string(a.Target),
+                Data:   a.Data,
+        }
+
+        if a.ForeignID != "" </span><span class="cov0" title="0">{
+                r, err := regexp.Compile("^[a-z0-9]{8}-[a-z0-9]{4}-[1-5][a-z0-9]{3}-[a-z0-9]{4}-[a-z0-9]{12}$")
+                if err != nil </span><span class="cov0" title="0">{
+                        return nil, err
+                }</span>
+                <span class="cov0" title="0">if !r.MatchString(a.ForeignID) </span><span class="cov0" title="0">{
+                        return nil, errors.New("invalid ForeignID")
+                }</span>
+
+                <span class="cov0" title="0">input.ForeignID = a.ForeignID</span>
+        }
+
+        <span class="cov0" title="0">input.To = []string{}
+
+        if a.TimeStamp == nil </span><span class="cov0" title="0">{
+                input.RawTime = time.Now().Format("2006-01-02T15:04:05.999999")
+        }</span><span class="cov0" title="0"> else {
+                input.RawTime = a.TimeStamp.Format("2006-01-02T15:04:05.999999")
+        }</span>
+
+        <span class="cov0" title="0">for _, feed := range a.To </span><span class="cov0" title="0">{
+                to := string(feed.FeedID())
+                if feed.Token() != "" </span><span class="cov0" title="0">{
+                        to += " " + feed.Token()
+                }</span>
+                <span class="cov0" title="0">input.To = append(input.To, to)</span>
+        }
+
+        <span class="cov0" title="0">return &amp;input, nil</span>
 }
 
-// Signature is used to sign Requests : "FeedSlugUserID Token"
-func (f *GeneralFeed) Signature() string <span class="cov0" title="0">{
-        return f.FeedSlug + f.UserID + " " + f.Token()
-}</span>
+type postNotificationFeedInputActivity struct {
+        ID        string          `json:"id,omitempty"`
+        Actor     string          `json:"actor"`
+        Verb      string          `json:"verb"`
+        Object    string          `json:"object"`
+        Target    string          `json:"target,omitempty"`
+        RawTime   string          `json:"time,omitempty"`
+        ForeignID string          `json:"foreign_id,omitempty"`
+        Data      json.RawMessage `json:"data,omitempty"`
+        To        []string        `json:"to,omitempty"`
+}
 
-// FeedID is the combo if the FeedSlug and UserID : "FeedSlug:UserID"
-func (f *GeneralFeed) FeedID() FeedID <span class="cov0" title="0">{
-        return FeedID(f.FeedSlug + ":" + f.UserID)
-}</span>
+type postNotificationFeedOutputActivity struct {
+        ID        string          `json:"id,omitempty"`
+        Actor     string          `json:"actor"`
+        Verb      string          `json:"verb"`
+        Object    string          `json:"object"`
+        Target    string          `json:"target,omitempty"`
+        RawTime   string          `json:"time,omitempty"`
+        ForeignID string          `json:"foreign_id,omitempty"`
+        Data      json.RawMessage `json:"data,omitempty"`
+        To        [][]string      `json:"to,omitempty"`
+}
 
-// SignFeed sets the token on a Feed
-func (f *GeneralFeed) SignFeed(signer *Signer) <span class="cov0" title="0">{
-        f.token = signer.generateToken(f.FeedSlug + f.UserID)
-}</span>
+type postNotificationFeedOutputActivities struct {
+        Activities []*postNotificationFeedOutputActivity `json:"activities"`
+}
 
-// Token returns the token of a Feed
-func (f *GeneralFeed) Token() string <span class="cov0" title="0">{
-        return f.token
-}</span>
+func (a postNotificationFeedOutputActivity) Activity() *NotificationFeedActivity <span class="cov0" title="0">{
 
-// GenerateToken returns a new Token for a Feed without setting it to the Feed
-func (f *GeneralFeed) GenerateToken(signer *Signer) string <span class="cov0" title="0">{
-        return signer.generateToken(f.FeedSlug + f.UserID)
-}</span>
+        activity := NotificationFeedActivity{
+                ID:        a.ID,
+                Actor:     FeedID(a.Actor),
+                Verb:      a.Verb,
+                Object:    FeedID(a.Object),
+                Target:    FeedID(a.Target),
+                ForeignID: a.ForeignID,
+                Data:      a.Data,
+        }
+
+        if a.RawTime != "" </span><span class="cov0" title="0">{
+                timeStamp, err := time.Parse("2006-01-02T15:04:05.999999", a.RawTime)
+                if err == nil </span><span class="cov0" title="0">{
+                        activity.TimeStamp = &amp;timeStamp
+                }</span>
+        }
+
+        <span class="cov0" title="0">for _, slice := range a.To </span><span class="cov0" title="0">{
+                parseNotificationFeedToParams(slice, &amp;activity)
+        }</span>
+        <span class="cov0" title="0">return &amp;activity</span>
+}
+
+// GetNotificationFeedInput is used to Get a list of Activities from a NotificationFeed
+type GetNotificationFeedInput struct {
+        Limit  int `json:"limit,omitempty"`
+        Offset int `json:"offset,omitempty"`
+
+        IDGTE int `json:"id_gte,omitempty"`
+        IDGT  int `json:"id_gt,omitempty"`
+        IDLTE int `json:"id_lte,omitempty"`
+        IDLT  int `json:"id_lt,omitempty"`
+
+        Ranking string `json:"ranking,omitempty"`
+}
+
+// GetNotificationFeedOutput is the response from a NotificationFeed Activities Get Request
+type GetNotificationFeedOutput struct {
+        Duration string
+        Next     string
+        Results  []*struct {
+                Activities    []*NotificationFeedActivity
+                ActivityCount int
+                ActorCount    int
+                CreatedAt     string
+                Group         string
+                ID            string
+                IsRead        bool
+                IsSeen        bool
+                UpdatedAt     string
+                Verb          string
+        }
+        Unread int
+        Unseen int
+}
+
+type getNotificationFeedOutput struct {
+        Duration string                             `json:"duration"`
+        Next     string                             `json:"next"`
+        Results  []*getNotificationFeedOutputResult `json:"results"`
+        Unread   int                                `json:"unread"`
+        Unseen   int                                `json:"unseen"`
+}
+
+func (a getNotificationFeedOutput) Output() *GetNotificationFeedOutput <span class="cov0" title="0">{
+
+        output := GetNotificationFeedOutput{
+                Duration: a.Duration,
+                Next:     a.Next,
+                Unread:   a.Unread,
+                Unseen:   a.Unseen,
+        }
+
+        var results []*struct {
+                Activities    []*NotificationFeedActivity
+                ActivityCount int
+                ActorCount    int
+                CreatedAt     string
+                Group         string
+                ID            string
+                IsRead        bool
+                IsSeen        bool
+                UpdatedAt     string
+                Verb          string
+        }
+
+        for _, result := range a.Results </span><span class="cov0" title="0">{
+
+                outputResult := struct {
+                        Activities    []*NotificationFeedActivity
+                        ActivityCount int
+                        ActorCount    int
+                        CreatedAt     string
+                        Group         string
+                        ID            string
+                        IsRead        bool
+                        IsSeen        bool
+                        UpdatedAt     string
+                        Verb          string
+                }{
+                        ActivityCount: result.ActivityCount,
+                        ActorCount:    result.ActorCount,
+                        CreatedAt:     result.CreatedAt,
+                        Group:         result.Group,
+                        ID:            result.ID,
+                        IsRead:        result.IsRead,
+                        IsSeen:        result.IsSeen,
+                        UpdatedAt:     result.UpdatedAt,
+                        Verb:          result.Verb,
+                }
+
+                for _, activity := range result.Activities </span><span class="cov0" title="0">{
+                        outputResult.Activities = append(outputResult.Activities, activity.Activity())
+                }</span>
+
+                <span class="cov0" title="0">results = append(results, &amp;outputResult)</span>
+        }
+
+        <span class="cov0" title="0">output.Results = results
+
+        return &amp;output</span>
+}
+
+type getNotificationFeedOutputResult struct {
+        Activities    []*getNotificationFeedOutputActivity `json:"activities"`
+        ActivityCount int                                  `json:"activity_count"`
+        ActorCount    int                                  `json:"actor_count"`
+        CreatedAt     string                               `json:"created_at"`
+        Group         string                               `json:"group"`
+        ID            string                               `json:"id"`
+        IsRead        bool                                 `json:"is_read"`
+        IsSeen        bool                                 `json:"is_seen"`
+        UpdatedAt     string                               `json:"updated_at"`
+        Verb          string                               `json:"verb"`
+}
+
+type getNotificationFeedOutputActivity struct {
+        ID        string          `json:"id,omitempty"`
+        Actor     string          `json:"actor"`
+        Verb      string          `json:"verb"`
+        Object    string          `json:"object"`
+        Target    string          `json:"target,omitempty"`
+        RawTime   string          `json:"time,omitempty"`
+        To        []string        `json:"to,omitempty"`
+        Origin    string          `json:"origin"`
+        ForeignID string          `json:"foreign_id,omitempty"`
+        Data      json.RawMessage `json:"data,omitempty"`
+}
+
+func (a getNotificationFeedOutputActivity) Activity() *NotificationFeedActivity <span class="cov0" title="0">{
+
+        activity := NotificationFeedActivity{
+                ID:        a.ID,
+                Actor:     FeedID(a.Actor),
+                Verb:      a.Verb,
+                Object:    FeedID(a.Object),
+                Target:    FeedID(a.Target),
+                Origin:    FeedID(a.Origin),
+                ForeignID: a.ForeignID,
+                Data:      a.Data,
+        }
+
+        if a.RawTime != "" </span><span class="cov0" title="0">{
+                timeStamp, err := time.Parse("2006-01-02T15:04:05.999999", a.RawTime)
+                if err == nil </span><span class="cov0" title="0">{
+                        activity.TimeStamp = &amp;timeStamp
+                }</span>
+        }
+
+        <span class="cov0" title="0">parseNotificationFeedToParams(a.To, &amp;activity)
+
+        return &amp;activity</span>
+}
+
+func parseNotificationFeedToParams(to []string, activity *NotificationFeedActivity) <span class="cov0" title="0">{
+
+        for _, to := range to </span><span class="cov0" title="0">{
+
+                feed := GeneralFeed{}
+
+                match, err := regexp.MatchString(`^.*?:.*? .*?$`, to)
+                if err != nil </span><span class="cov0" title="0">{
+                        continue</span>
+                }
+
+                <span class="cov0" title="0">if match </span><span class="cov0" title="0">{
+                        firstSplit := strings.Split(to, ":")
+                        secondSplit := strings.Split(firstSplit[1], " ")
+
+                        feed.FeedSlug = firstSplit[0]
+                        feed.UserID = secondSplit[0]
+                        feed.token = secondSplit[1]
+                }</span>
+
+                <span class="cov0" title="0">activity.To = append(activity.To, &amp;feed)</span>
+        }
+
+}
+
+type getNotificationFeedFollowersInput struct {
+        Limit int `json:"limit"`
+        Skip  int `json:"offset"`
+}
+
+type getNotificationFeedFollowersOutput struct {
+        Duration string                                      `json:"duration"`
+        Results  []*getNotificationFeedFollowersOutputResult `json:"results"`
+}
+
+type getNotificationFeedFollowersOutputResult struct {
+        CreatedAt string `json:"created_at"`
+        UpdatedAt string `json:"updated_at"`
+        FeedID    string `json:"feed_id"`
+        TargetID  string `json:"target_id"`
+}
+
+type postNotificationFeedFollowingInput struct {
+        Target            string `json:"target"`
+        ActivityCopyLimit int    `json:"activity_copy_limit"`
+}
 </pre>
 		
 		<pre class="file" id="file9" style="display: none">package getstream

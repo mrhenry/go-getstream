@@ -17,6 +17,7 @@ type NotificationFeedActivity struct {
 	Verb      string
 	Object    FeedID
 	Target    FeedID
+	Origin    FeedID
 	TimeStamp *time.Time
 
 	ForeignID string
@@ -254,6 +255,7 @@ func (a getNotificationFeedOutputActivity) Activity() *NotificationFeedActivity 
 		Verb:      a.Verb,
 		Object:    FeedID(a.Object),
 		Target:    FeedID(a.Target),
+		Origin:    FeedID(a.Origin),
 		ForeignID: a.ForeignID,
 		Data:      a.Data,
 	}

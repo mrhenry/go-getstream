@@ -18,6 +18,9 @@ type FlatFeed struct {
 
 // Signature is used to sign Requests : "FeedSlugUserID Token"
 func (f *FlatFeed) Signature() string {
+	if f.Token() == "" {
+		return f.FeedSlug + f.UserID
+	}
 	return f.FeedSlug + f.UserID + " " + f.Token()
 }
 
