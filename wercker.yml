@@ -13,6 +13,7 @@ build:
       code: |
         go test
   after-steps:
+  - script:
       name: codecov
       code: |
         bash <(curl -s https://codecov.io/bash)
