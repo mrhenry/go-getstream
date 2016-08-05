@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/url"
 	"regexp"
+	"strings"
 	"time"
 )
 
@@ -65,8 +66,12 @@ func (c *Client) FlatFeed(feedSlug string, userID string) (*FlatFeed, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	feedSlug = strings.Replace(feedSlug, "-", "_", -1)
+	userID = strings.Replace(userID, "-", "_", -1)
+
 	if !r.MatchString(feedSlug) || !r.MatchString(userID) {
-		return nil, errors.New("invalid ForeignID")
+		return nil, errors.New("invalid feedSlug or userID")
 	}
 
 	feed := &FlatFeed{
@@ -89,8 +94,12 @@ func (c *Client) NotificationFeed(feedSlug string, userID string) (*Notification
 	if err != nil {
 		return nil, err
 	}
+
+	feedSlug = strings.Replace(feedSlug, "-", "_", -1)
+	userID = strings.Replace(userID, "-", "_", -1)
+
 	if !r.MatchString(feedSlug) || !r.MatchString(userID) {
-		return nil, errors.New("invalid ForeignID")
+		return nil, errors.New("invalid feedSlug or userID")
 	}
 
 	feed := &NotificationFeed{
@@ -104,7 +113,9 @@ func (c *Client) NotificationFeed(feedSlug string, userID string) (*Notification
 }
 
 // BaseURL returns the getstream URL for your location
-func (c *Client) BaseURL() *url.URL { return c.baseURL }
+func (c *Client) BaseURL() *url.URL {
+	return c.baseURL
+}
 
 // absoluteUrl create a url.URL instance and sets query params (bad!!!)
 func (c *Client) absoluteURL(path string) (*url.URL, error) {
