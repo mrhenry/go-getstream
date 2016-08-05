@@ -47,6 +47,16 @@ func TestClientInit(t *testing.T) {
 		t.Fail()
 	}
 
+	_, err = New("my_key", "my_secret", "111111", "")
+	if err != nil {
+		t.Fail()
+	}
+
+	_, err = New("my_key", "my_secret", "111111", "us-east")
+	if err != nil {
+		t.Fail()
+	}
+
 }
 
 func TestClientBaseURL(t *testing.T) {
@@ -74,6 +84,30 @@ func TestClientAbsoluteURL(t *testing.T) {
 	}
 
 	if "https://us-east-api.getstream.io/api/v1.0/user?api_key=my_key&location=us-east" != url.String() {
+		t.Fail()
+	}
+
+	client, err = New("my_key", "my_secret", "111111", "")
+	if err != nil {
+		t.Fail()
+	}
+
+	url, err = client.absoluteURL("flat")
+	if err != nil {
+		t.Fail()
+	}
+
+	if "https://api.getstream.io/api/v1.0/flat?api_key=my_key&location=unspecified" != url.String() {
+		t.Fail()
+	}
+
+	client, err = New("my_key", "my_secret", "111111", "")
+	if err != nil {
+		t.Fail()
+	}
+
+	url, err = client.absoluteURL("!#@#$%ˆ&*((*=/*-+[]',.><")
+	if err == nil {
 		t.Fail()
 	}
 
