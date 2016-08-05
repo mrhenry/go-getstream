@@ -9,7 +9,14 @@ build:
       code: |
         CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build
   - script:
-      name: go test
-      code: |
-        go test
+      name: Test
+      code: |-
+        go get github.com/axw/gocov/gocov
+        gocov test ./... > coverage.json
+  - script:
+    name: Coverage
+    code: |-
+        go get github.com/matm/gocov-html
+        gocov report coverage.json
+        gocov-html coverage.json > $WERCKER_REPORT_ARTIFACTS_DIR/coverage.html
   after-steps:
