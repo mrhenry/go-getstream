@@ -49,3 +49,15 @@ func (f *GeneralFeed) Token() string {
 func (f *GeneralFeed) GenerateToken(signer *Signer) string {
 	return signer.generateToken(f.FeedSlug + f.UserID)
 }
+
+// Unfollow is used to Unfollow a target Feed
+func (f *GeneralFeed) Unfollow(client *Client, target *FlatFeed) error {
+
+	f.Client = client
+	f.SignFeed(f.Client.signer)
+
+	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/" + string(target.FeedID()) + "/"
+
+	return f.del(endpoint, f.Signature(), nil)
+
+}

@@ -44,7 +44,7 @@ func (f *NotificationFeed) GenerateToken(signer *Signer) string {
 	return signer.generateToken(f.FeedSlug + f.UserID)
 }
 
-// AddActivity is Used to post an Activity to a NotificationFeed
+// AddActivity is used to add an Activity to a NotificationFeed
 func (f *NotificationFeed) AddActivity(activity *NotificationFeedActivity) (*NotificationFeedActivity, error) {
 
 	input, err := activity.input()
@@ -73,7 +73,7 @@ func (f *NotificationFeed) AddActivity(activity *NotificationFeedActivity) (*Not
 	return output.activity(), err
 }
 
-// AddActivities is Used to post multiple Activities to a NotificationFeed
+// AddActivities is used to add multiple Activities to a NotificationFeed
 func (f *NotificationFeed) AddActivities(activities []*NotificationFeedActivity) ([]*NotificationFeedActivity, error) {
 
 	var inputs []*postNotificationFeedInputActivity
@@ -220,10 +220,10 @@ func (f *NotificationFeed) UnfollowKeepingHistory(target *FlatFeed) error {
 
 }
 
-// FollowersWithLimitAndSkip returns a list of GeneralFeed following the current NotificationFeed
-func (f *NotificationFeed) FollowersWithLimitAndSkip(limit int, skip int) ([]*GeneralFeed, error) {
+// FollowingWithLimitAndSkip returns a list of GeneralFeed followed by the current FlatFeed
+func (f *NotificationFeed) FollowingWithLimitAndSkip(limit int, skip int) ([]*GeneralFeed, error) {
 
-	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "followers" + "/"
+	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/"
 
 	payload, err := json.Marshal(&getNotificationFeedFollowersInput{
 		Limit: limit,
@@ -235,7 +235,7 @@ func (f *NotificationFeed) FollowersWithLimitAndSkip(limit int, skip int) ([]*Ge
 
 	resultBytes, err := f.get(endpoint, f.Signature(), payload)
 
-	output := &getNotificationFeedFollowersOutput{}
+	output := &getFlatFeedFollowersOutput{}
 	err = json.Unmarshal(resultBytes, output)
 	if err != nil {
 		return nil, err
@@ -252,7 +252,7 @@ func (f *NotificationFeed) FollowersWithLimitAndSkip(limit int, skip int) ([]*Ge
 		}
 
 		if match {
-			firstSplit := strings.Split(result.FeedID, ":")
+			firstSplit := strings.Split(result.TargetID, ":")
 
 			feed.FeedSlug = firstSplit[0]
 			feed.UserID = firstSplit[1]

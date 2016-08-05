@@ -11,7 +11,7 @@ import (
 
 // Client is used to connect to getstream.io
 type Client struct {
-	http    *http.Client
+	HTTP    *http.Client
 	baseURL *url.URL // https://api.getstream.io/api/
 
 	Key      string
@@ -28,6 +28,7 @@ type Client struct {
 // - api secret
 // - appID
 // - region
+// An http.Client with custom settings can be assigned after construction
 func New(key, secret, appID, location string) (*Client, error) {
 	baseURLStr := "https://api.getstream.io/api/v1.0/"
 	if location != "" {
@@ -40,7 +41,7 @@ func New(key, secret, appID, location string) (*Client, error) {
 	}
 
 	return &Client{
-		http: &http.Client{
+		HTTP: &http.Client{
 			Timeout: 3 * time.Second,
 		},
 		baseURL: baseURL,
