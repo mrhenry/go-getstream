@@ -136,7 +136,7 @@ func (f *NotificationFeed) Activities(input *GetNotificationFeedInput) (*GetNoti
 		return nil, err
 	}
 
-	return output.Output(), err
+	return output.output(), err
 }
 
 // RemoveActivity removes an Activity from a NotificationFeedGroup

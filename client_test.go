@@ -89,7 +89,7 @@ func TestClientBaseURL(t *testing.T) {
 		return
 	}
 
-	if "https://us-east-api.getstream.io/api/v1.0/" != client.BaseURL().String() {
+	if "https://us-east-api.getstream.io/api/v1.0/" != client.baseURL.String() {
 		fmt.Println(err)
 		t.Fail()
 		return

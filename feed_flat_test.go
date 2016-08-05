@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func ExampleAddActivity() {
+func ExampleFlatFeed_AddActivity() {
 
 	client, err := New("APIKey", "APISecret", "AppID", "Region")
 	if err != nil {

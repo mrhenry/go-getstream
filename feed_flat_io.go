@@ -154,7 +154,7 @@ func (a getFlatFeedOutput) Output() *GetFlatFeedOutput {
 	}
 
 	for _, activity := range a.Activities {
-		output.Activities = append(output.Activities, activity.Activity())
+		output.Activities = append(output.Activities, activity.activity())
 	}
 
 	return &output
@@ -172,7 +172,7 @@ type getFlatFeedOutputActivity struct {
 	Data      json.RawMessage `json:"data,omitempty"`
 }
 
-func (a getFlatFeedOutputActivity) Activity() *FlatFeedActivity {
+func (a getFlatFeedOutputActivity) activity() *FlatFeedActivity {
 
 	activity := FlatFeedActivity{
 		ID:        a.ID,

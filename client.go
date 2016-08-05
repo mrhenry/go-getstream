@@ -112,11 +112,6 @@ func (c *Client) NotificationFeed(feedSlug string, userID string) (*Notification
 	return feed, nil
 }
 
-// BaseURL returns the getstream URL for your location
-func (c *Client) BaseURL() *url.URL {
-	return c.baseURL
-}
-
 // absoluteUrl create a url.URL instance and sets query params (bad!!!)
 func (c *Client) absoluteURL(path string) (*url.URL, error) {
 
