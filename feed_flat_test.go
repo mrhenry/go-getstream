@@ -23,7 +23,7 @@ func TestFlatFeedAddActivity(t *testing.T) {
 
 	activity, err := feed.AddActivity(&FlatFeedActivity{
 		Verb:      "post",
-		ForeignID: "099978b6-3b72-4f5c-bc43-247ba6ae2dd9",
+		ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
 		Object:    FeedID("flat:eric"),
 		Actor:     FeedID("flat:john"),
 	})
@@ -33,7 +33,7 @@ func TestFlatFeedAddActivity(t *testing.T) {
 		return
 	}
 
-	if activity.Verb != "post" && activity.ForeignID != "099978b6-3b72-4f5c-bc43-247ba6ae2dd9" {
+	if activity.Verb != "post" && activity.ForeignID != "48d024fe-3752-467a-8489-23febd1dec4e" {
 		t.Fail()
 		return
 	}
@@ -64,7 +64,7 @@ func TestFlatFeedRemoveActivity(t *testing.T) {
 
 	activity, err := feed.AddActivity(&FlatFeedActivity{
 		Verb:      "post",
-		ForeignID: "099978b6-3b72-4f5c-bc43-247ba6ae2dd9",
+		ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
 		Object:    FeedID("flat:eric"),
 		Actor:     FeedID("flat:john"),
 	})
@@ -74,7 +74,7 @@ func TestFlatFeedRemoveActivity(t *testing.T) {
 		return
 	}
 
-	if activity.Verb != "post" && activity.ForeignID != "099978b6-3b72-4f5c-bc43-247ba6ae2dd9" {
+	if activity.Verb != "post" && activity.ForeignID != "48d024fe-3752-467a-8489-23febd1dec4e" {
 		t.Fail()
 		return
 	}
@@ -109,7 +109,7 @@ func TestFlatFeedRemoveByForeignIDActivity(t *testing.T) {
 
 	activity, err := feed.AddActivity(&FlatFeedActivity{
 		Verb:      "post",
-		ForeignID: "099978b6-3b72-4f5c-bc43-247ba6ae2dd9",
+		ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
 		Object:    FeedID("flat:eric"),
 		Actor:     FeedID("flat:john"),
 	})
@@ -119,7 +119,7 @@ func TestFlatFeedRemoveByForeignIDActivity(t *testing.T) {
 		return
 	}
 
-	if activity.Verb != "post" && activity.ForeignID != "099978b6-3b72-4f5c-bc43-247ba6ae2dd9" {
+	if activity.Verb != "post" && activity.ForeignID != "48d024fe-3752-467a-8489-23febd1dec4e" {
 		t.Fail()
 		return
 	}
@@ -154,7 +154,7 @@ func TestFlatFeedListActivities(t *testing.T) {
 
 	_, err = feed.AddActivity(&FlatFeedActivity{
 		Verb:      "post",
-		ForeignID: "099978b6-3b72-4f5c-bc43-247ba6ae2dd9",
+		ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
 		Object:    FeedID("flat:eric"),
 		Actor:     FeedID("flat:john"),
 	})
@@ -209,7 +209,7 @@ func TestFlatFeedAddActivities(t *testing.T) {
 
 	activityB, err := feed.AddActivity(&FlatFeedActivity{
 		Verb:      "walk",
-		ForeignID: "088878b6-3b72-4f5c-bc43-247ba6ae2dd9",
+		ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
 		Object:    FeedID("flat:john"),
 		Actor:     FeedID("flat:eric"),
 	})
@@ -224,7 +224,7 @@ func TestFlatFeedAddActivities(t *testing.T) {
 		return
 	}
 
-	if activityB.Verb != "walk" && activityB.ForeignID != "088878b6-3b72-4f5c-bc43-247ba6ae2dd9" {
+	if activityB.Verb != "walk" && activityB.ForeignID != "48d024fe-3752-467a-8489-23febd1dec4e" {
 		t.Fail()
 		return
 	}
