@@ -16,7 +16,3 @@ func TestWerckerConfig(t *testing.T) {
 		t.Fail()
 	}
 }
-
-func TestFail(t *testing.T) {
-	t.Fail()
-}
