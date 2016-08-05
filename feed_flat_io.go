@@ -45,8 +45,7 @@ func (a FlatFeedActivity) input() (*postFlatFeedInputActivity, error) {
 			return nil, errors.New("invalid ForeignID")
 		}
 
-		input.ForeignID = strings.Replace(a.ForeignID, "-", "_", -1)
-
+		input.ForeignID = a.ForeignID
 	}
 
 	input.To = []string{}
@@ -107,8 +106,6 @@ func (a postFlatFeedOutputActivity) activity() *FlatFeedActivity {
 		ForeignID: a.ForeignID,
 		Data:      a.Data,
 	}
-
-	activity.ForeignID = strings.Replace(a.ForeignID, "_", "-", -1)
 
 	if a.RawTime != "" {
 		timeStamp, err := time.Parse("2006-01-02T15:04:05.999999", a.RawTime)

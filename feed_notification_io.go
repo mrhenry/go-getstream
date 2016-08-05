@@ -46,7 +46,7 @@ func (a NotificationFeedActivity) input() (*postNotificationFeedInputActivity, e
 			return nil, errors.New("invalid ForeignID")
 		}
 
-		input.ForeignID = strings.Replace(a.ForeignID, "-", "_", -1)
+		input.ForeignID = a.ForeignID
 	}
 
 	input.To = []string{}
@@ -266,8 +266,6 @@ func (a getNotificationFeedOutputActivity) Activity() *NotificationFeedActivity 
 			activity.TimeStamp = &timeStamp
 		}
 	}
-
-	activity.ForeignID = strings.Replace(a.ForeignID, "_", "-", -1)
 
 	parseNotificationFeedToParams(a.To, &activity)
 
