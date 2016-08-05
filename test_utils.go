@@ -60,7 +60,7 @@ func testCleanUpFollows(client *Client, flats []*FlatFeed) error {
 		followers, _ := flat.FollowersWithLimitAndSkip(300, 0)
 
 		for _, follower := range followers {
-			follower.Unfollow(flat)
+			follower.Unfollow(client, flat)
 		}
 	}
 	return nil

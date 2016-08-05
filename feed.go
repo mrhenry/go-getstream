@@ -51,7 +51,10 @@ func (f *GeneralFeed) GenerateToken(signer *Signer) string {
 }
 
 // Unfollow is used to Unfollow a target Feed
-func (f *GeneralFeed) Unfollow(target *FlatFeed) error {
+func (f *GeneralFeed) Unfollow(client *Client, target *FlatFeed) error {
+
+	f.Client = client
+	f.SignFeed(f.Client.signer)
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/" + string(target.FeedID()) + "/"
 
