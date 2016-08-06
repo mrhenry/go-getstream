@@ -41,19 +41,6 @@ func prepareForGetstream(activity *FlatFeedActivity) ([]byte, error) {
 	return b, nil
 }
 
-func raw(input interface{}) json.RawMessage {
-
-	if input == nil {
-		return nil
-	}
-
-	b, err := json.Marshal(input)
-	if err != nil {
-		return nil
-	}
-	return json.RawMessage(b)
-}
-
 func extractFromGetStream(payload []byte) *postFlatFeedOutputActivity {
 
 	activity := postFlatFeedOutputActivity{}

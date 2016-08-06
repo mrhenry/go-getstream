@@ -26,15 +26,27 @@ type FlatFeedActivity struct {
 	To []Feed
 }
 
-func (a FlatFeedActivity) input() (*postFlatFeedInputActivity, error) {
+func (a *FlatFeedActivity) MarshalJSON() ([]byte, error) {
 
-	input := postFlatFeedInputActivity{
-		ID:     a.ID,
-		Actor:  string(a.Actor),
-		Verb:   a.Verb,
-		Object: string(a.Object),
-		Target: string(a.Target),
-		Data:   a.Data,
+	payload := make(map[string]interface{})
+
+	for key, value := range a.MetaData {
+		payload[key] = value
+	}
+
+	payload["actor"] = string(a.Actor)
+	payload["verb"] = string(a.Verb)
+	payload["object"] = string(a.Object)
+
+	if a.ID != "" {
+		payload["id"] = a.ID
+	}
+	if a.Target != "" {
+		payload["target"] = a.Target
+	}
+
+	if a.Data != nil {
+		payload["data"] = a.Data
 	}
 
 	if a.ForeignID != "" {
@@ -45,27 +57,30 @@ func (a FlatFeedActivity) input() (*postFlatFeedInputActivity, error) {
 		if !r.MatchString(a.ForeignID) {
 			return nil, errors.New("invalid ForeignID")
 		}
-
-		input.ForeignID = a.ForeignID
+		payload["foreign_id"] = a.ForeignID
 	}
-
-	input.To = []string{}
 
 	if a.TimeStamp == nil {
-		input.RawTime = time.Now().Format("2006-01-02T15:04:05.999999")
+		payload["time"] = time.Now().Format("2006-01-02T15:04:05.999999")
 	} else {
-		input.RawTime = a.TimeStamp.Format("2006-01-02T15:04:05.999999")
+		payload["time"] = a.TimeStamp.Format("2006-01-02T15:04:05.999999")
 	}
 
+	var tos []string
 	for _, feed := range a.To {
 		to := string(feed.FeedID())
 		if feed.Token() != "" {
 			to += " " + feed.Token()
 		}
-		input.To = append(input.To, to)
+		tos = append(tos, to)
 	}
 
-	return &input, nil
+	if len(tos) > 0 {
+		payload["to"] = a.To
+	}
+
+	return json.Marshal(payload)
+
 }
 
 type postFlatFeedInputActivity struct {
@@ -173,6 +188,7 @@ type getFlatFeedOutputActivity struct {
 	To        []string        `json:"to,omitempty"`
 	ForeignID string          `json:"foreign_id,omitempty"`
 	Data      json.RawMessage `json:"data,omitempty"`
+	MetaData  map[string]string
 }
 
 func (a getFlatFeedOutputActivity) activity() *FlatFeedActivity {
@@ -185,6 +201,7 @@ func (a getFlatFeedOutputActivity) activity() *FlatFeedActivity {
 		Target:    FeedID(a.Target),
 		ForeignID: a.ForeignID,
 		Data:      a.Data,
+		MetaData:  a.MetaData,
 	}
 
 	if a.RawTime != "" {

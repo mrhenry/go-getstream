@@ -47,13 +47,9 @@ func (f *FlatFeed) GenerateToken(signer *Signer) string {
 // AddActivity is used to add an Activity to a FlatFeed
 func (f *FlatFeed) AddActivity(activity *FlatFeedActivity) (*FlatFeedActivity, error) {
 
-	input, err := activity.input()
-	if err != nil {
-		return nil, err
-	}
-	input.ID = ""
+	activity.ID = ""
 
-	payload, err := json.Marshal(input)
+	payload, err := json.Marshal(activity)
 	if err != nil {
 		return nil, err
 	}
@@ -77,19 +73,12 @@ func (f *FlatFeed) AddActivity(activity *FlatFeedActivity) (*FlatFeedActivity, e
 // AddActivities is used to add multiple Activities to a FlatFeed
 func (f *FlatFeed) AddActivities(activities []*FlatFeedActivity) ([]*FlatFeedActivity, error) {
 
-	var inputs []*postFlatFeedInputActivity
-
 	for _, activity := range activities {
-		activity, err := activity.input()
-		if err != nil {
-			return nil, err
-		}
 		activity.ID = ""
-		inputs = append(inputs, activity)
 	}
 
-	payload, err := json.Marshal(map[string][]*postFlatFeedInputActivity{
-		"activities": inputs,
+	payload, err := json.Marshal(map[string][]*FlatFeedActivity{
+		"activities": activities,
 	})
 	if err != nil {
 		return nil, err
