@@ -107,6 +107,7 @@ func (a postFlatFeedOutputActivity) activity() *FlatFeedActivity {
 		Target:    FeedID(a.Target),
 		ForeignID: a.ForeignID,
 		Data:      a.Data,
+		MetaData: a.MetaData,
 	}
 
 	if a.RawTime != "" {
