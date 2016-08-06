@@ -1,0 +1,13 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "xN14ZoFcgefABp24aowYtQVMDsc=",
+			"path": "github.com/pborman/uuid",
+			"revision": "c55201b036063326c5b1b89ccfe45a184973d073",
+			"revisionTime": "2016-02-16T16:37:10Z"
+		}
+	],
+	"rootPath": "github.com/mrhenry/go-getstream"
+}

@@ -3,6 +3,8 @@ package getstream
 import (
 	"fmt"
 	"testing"
+
+	"github.com/pborman/uuid"
 )
 
 func ExampleFlatFeed_AddActivity() {
@@ -69,6 +71,53 @@ func TestFlatFeedAddActivity(t *testing.T) {
 		fmt.Println(err)
 		t.Fail()
 		return
+	}
+}
+
+func TestFlatFeedUUID(t *testing.T) {
+
+	client, err := testSetup()
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	feed, err := client.FlatFeed("flat", "bob")
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	var activities []*FlatFeedActivity
+
+	for i := 0; i < 10; i++ {
+
+		foreignID := uuid.New()
+
+		activity, err := feed.AddActivity(&FlatFeedActivity{
+			Verb:      "post",
+			ForeignID: foreignID,
+			Object:    FeedID("flat:eric"),
+			Actor:     FeedID("flat:john"),
+		})
+		if err != nil {
+			t.Log(err)
+			continue
+		}
+
+		err = feed.RemoveActivityByForeignID(activity)
+		if err != nil {
+			t.Log(err)
+		}
+
+		activities = append(activities, activity)
+	}
+
+	err = testCleanUp(client, activities, nil)
+	if err != nil {
+		fmt.Println(err)
 	}
 }
 
