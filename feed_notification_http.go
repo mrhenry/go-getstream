@@ -60,8 +60,6 @@ func (f *NotificationFeed) request(method, path string, signature string, payloa
 		return nil, err
 	}
 
-	fmt.Println(string(body))
-
 	// handle the response
 	switch {
 	case resp.StatusCode/100 == 2: // SUCCESS

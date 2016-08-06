@@ -7,7 +7,7 @@ import "encoding/json"
 
 func TestActivityMetaData(t *testing.T) {
 
-	t.Log("Meta Data : ")
+	fmt.Println("Meta Data : ")
 
 	now := time.Now()
 
@@ -21,7 +21,7 @@ func TestActivityMetaData(t *testing.T) {
 
 	dataB, err := json.Marshal(data)
 	if err != nil {
-		t.Log(err)
+		fmt.Println(err)
 		t.Fail()
 		return
 	}
@@ -40,16 +40,16 @@ func TestActivityMetaData(t *testing.T) {
 
 	b, err := prepareForGetstream(&activity)
 	if err != nil {
-		t.Log(err)
+		fmt.Println(err)
 		t.Fail()
 		return
 	}
 
-	t.Log(string(b))
+	fmt.Println(string(b))
 
 	output := extractFromGetStream(b)
 	resultActivity := output.activity()
 
-	t.Log(resultActivity)
+	fmt.Println(resultActivity)
 
 }
