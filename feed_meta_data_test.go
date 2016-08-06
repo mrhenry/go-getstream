@@ -43,6 +43,8 @@ func TestActivityMetaData(t *testing.T) {
 		return
 	}
 
+	t.Log(string(b))
+
 	output := extractFromGetStream(b)
 	resultActivity := output.activity()
 
