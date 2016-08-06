@@ -4,6 +4,7 @@ import "github.com/pborman/uuid"
 import "time"
 import "testing"
 import "encoding/json"
+import "fmt"
 
 func TestActivityMetaData(t *testing.T) {
 
