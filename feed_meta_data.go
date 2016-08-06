@@ -4,33 +4,33 @@ import "encoding/json"
 
 func prepareForGetstream(activity *FlatFeedActivity) ([]byte, error) {
 
-	payload := make(map[string]json.RawMessage)
+	payload := make(map[string]interface{})
 
 	for key, value := range activity.MetaData {
-		payload[key] = raw(value)
+		payload[key] = value
 	}
 
-	payload["actor"] = raw(activity.Actor)
-	payload["verb"] = raw(activity.Verb)
-	payload["object"] = raw(activity.Object)
+	payload["actor"] = activity.Actor
+	payload["verb"] = activity.Verb
+	payload["object"] = activity.Object
 
 	if activity.ID != "" {
-		payload["id"] = raw(activity.ID)
+		payload["id"] = activity.ID
 	}
 	if activity.Target != "" {
-		payload["target"] = raw(activity.Target)
+		payload["target"] = activity.Target
 	}
 	if activity.TimeStamp != nil {
-		payload["time"] = raw(activity.TimeStamp)
+		payload["time"] = activity.TimeStamp
 	}
 	if activity.ForeignID != "" {
-		payload["foreign_id"] = raw(activity.ForeignID)
+		payload["foreign_id"] = activity.ForeignID
 	}
 	if activity.Data != nil {
-		payload["data"] = raw(activity.Data)
+		payload["data"] = activity.Data
 	}
 	if len(activity.To) > 0 {
-		payload["to"] = raw(activity.To)
+		payload["to"] = activity.To
 	}
 
 	b, err := json.Marshal(payload)
