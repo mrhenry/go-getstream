@@ -21,6 +21,7 @@ type FlatFeedActivity struct {
 
 	ForeignID string
 	Data      json.RawMessage
+	MetaData  map[string]string
 
 	To []Feed
 }
@@ -89,6 +90,7 @@ type postFlatFeedOutputActivity struct {
 	ForeignID string          `json:"foreign_id,omitempty"`
 	Data      json.RawMessage `json:"data,omitempty"`
 	To        [][]string      `json:"to,omitempty"`
+	MetaData  map[string]string
 }
 
 type postFlatFeedOutputActivities struct {

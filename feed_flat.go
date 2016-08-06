@@ -51,6 +51,7 @@ func (f *FlatFeed) AddActivity(activity *FlatFeedActivity) (*FlatFeedActivity, e
 	if err != nil {
 		return nil, err
 	}
+	input.ID = ""
 
 	payload, err := json.Marshal(input)
 	if err != nil {
@@ -83,6 +84,7 @@ func (f *FlatFeed) AddActivities(activities []*FlatFeedActivity) ([]*FlatFeedAct
 		if err != nil {
 			return nil, err
 		}
+		activity.ID = ""
 		inputs = append(inputs, activity)
 	}
 
