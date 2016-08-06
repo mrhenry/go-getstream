@@ -220,37 +220,25 @@ func TestNotificationFeedAddActivities(t *testing.T) {
 		return
 	}
 
-	activityA, err := feed.AddActivity(&NotificationFeedActivity{
-		Verb:      "post",
-		ForeignID: "099978b6-3b72-4f5c-bc43-247ba6ae2dd9",
-		Object:    FeedID("flat:eric"),
-		Actor:     FeedID("flat:john"),
+	activities, err := feed.AddActivities([]*NotificationFeedActivity{
+		&NotificationFeedActivity{
+			Verb:      "post",
+			ForeignID: "099978b6-3b72-4f5c-bc43-247ba6ae2dd9",
+			Object:    FeedID("flat:eric"),
+			Actor:     FeedID("flat:john"),
+		}, &NotificationFeedActivity{
+			Verb:      "walk",
+			ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
+			Object:    FeedID("flat:john"),
+			Actor:     FeedID("flat:eric"),
+		},
 	})
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
 	}
 
-	activityB, err := feed.AddActivity(&NotificationFeedActivity{
-		Verb:      "walk",
-		ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
-		Object:    FeedID("flat:john"),
-		Actor:     FeedID("flat:eric"),
-	})
-	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-	}
-
-	if activityA.Verb != "post" && activityA.ForeignID != "099978b6-3b72-4f5c-bc43-247ba6ae2dd9" {
-		t.Fail()
-	}
-
-	if activityB.Verb != "walk" && activityB.ForeignID != "48d024fe-3752-467a-8489-23febd1dec4e" {
-		t.Fail()
-	}
-
-	err = testCleanUp(client, nil, []*NotificationFeedActivity{activityA, activityB})
+	err = testCleanUp(client, nil, activities)
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()

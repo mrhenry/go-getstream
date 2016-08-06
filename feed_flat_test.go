@@ -3,6 +3,8 @@ package getstream
 import (
 	"fmt"
 	"testing"
+
+	"github.com/pborman/uuid"
 )
 
 func ExampleFlatFeed_AddActivity() {
@@ -69,6 +71,53 @@ func TestFlatFeedAddActivity(t *testing.T) {
 		fmt.Println(err)
 		t.Fail()
 		return
+	}
+}
+
+func TestFlatFeedUUID(t *testing.T) {
+
+	client, err := testSetup()
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	feed, err := client.FlatFeed("flat", "bob")
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	var activities []*FlatFeedActivity
+
+	for i := 0; i < 10; i++ {
+
+		foreignID := uuid.New()
+
+		activity, err := feed.AddActivity(&FlatFeedActivity{
+			Verb:      "post",
+			ForeignID: foreignID,
+			Object:    FeedID("flat:eric"),
+			Actor:     FeedID("flat:john"),
+		})
+		if err != nil {
+			t.Log(err)
+			continue
+		}
+
+		err = feed.RemoveActivityByForeignID(activity)
+		if err != nil {
+			t.Log(err)
+		}
+
+		activities = append(activities, activity)
+	}
+
+	err = testCleanUp(client, activities, nil)
+	if err != nil {
+		fmt.Println(err)
 	}
 }
 
@@ -218,37 +267,25 @@ func TestFlatFeedAddActivities(t *testing.T) {
 		return
 	}
 
-	activityA, err := feed.AddActivity(&FlatFeedActivity{
-		Verb:      "post",
-		ForeignID: "099978b6-3b72-4f5c-bc43-247ba6ae2dd9",
-		Object:    FeedID("flat:eric"),
-		Actor:     FeedID("flat:john"),
+	activities, err := feed.AddActivities([]*FlatFeedActivity{
+		&FlatFeedActivity{
+			Verb:      "post",
+			ForeignID: "099978b6-3b72-4f5c-bc43-247ba6ae2dd9",
+			Object:    FeedID("flat:eric"),
+			Actor:     FeedID("flat:john"),
+		}, &FlatFeedActivity{
+			Verb:      "walk",
+			ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
+			Object:    FeedID("flat:john"),
+			Actor:     FeedID("flat:eric"),
+		},
 	})
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
 	}
 
-	activityB, err := feed.AddActivity(&FlatFeedActivity{
-		Verb:      "walk",
-		ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
-		Object:    FeedID("flat:john"),
-		Actor:     FeedID("flat:eric"),
-	})
-	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-	}
-
-	if activityA.Verb != "post" && activityA.ForeignID != "099978b6-3b72-4f5c-bc43-247ba6ae2dd9" {
-		t.Fail()
-	}
-
-	if activityB.Verb != "walk" && activityB.ForeignID != "48d024fe-3752-467a-8489-23febd1dec4e" {
-		t.Fail()
-	}
-
-	err = testCleanUp(client, []*FlatFeedActivity{activityA, activityB}, nil)
+	err = testCleanUp(client, activities, nil)
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
