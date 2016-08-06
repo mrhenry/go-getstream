@@ -7,6 +7,8 @@ import "encoding/json"
 
 func TestActivityMetaData(t *testing.T) {
 
+	t.Log("Meta Data : ")
+
 	now := time.Now()
 
 	data := struct {
