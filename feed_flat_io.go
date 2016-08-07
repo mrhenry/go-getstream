@@ -91,8 +91,8 @@ func (a *FlatFeedActivity) UnmarshalJSON(b []byte) (err error) {
 	json.Unmarshal(b, &rawPayload)
 
 	for key, value := range rawPayload {
-
-		if key != "id" && key != "actor" && key != "verb" && key != "object" && key != "target" && key != "time" && key != "foreign_id" && key != "data" && key != "to" {
+		lowerKey := strings.ToLower(key)
+		if lowerKey != "id" && lowerKey != "actor" && lowerKey != "verb" && lowerKey != "object" && lowerKey != "target" && lowerKey != "time" && lowerKey != "foreign_id" && lowerKey != "data" && lowerKey != "to" {
 			var strValue string
 			json.Unmarshal(value, strValue)
 			metadata[key] = strValue

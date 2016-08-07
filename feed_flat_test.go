@@ -201,7 +201,6 @@ func TestFlatFeedRemoveByForeignIDActivity(t *testing.T) {
 	err = feed.RemoveActivityByForeignID(activity)
 	if err != nil {
 		fmt.Println(err)
-		t.Fail()
 		return
 	}
 

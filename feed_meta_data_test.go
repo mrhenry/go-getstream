@@ -56,5 +56,9 @@ func TestActivityMetaData(t *testing.T) {
 	}
 
 	fmt.Println(resultActivity)
+	fmt.Println(resultActivity.ID)
+	fmt.Println(resultActivity.ForeignID)
+	fmt.Println(resultActivity.Data)
+	fmt.Println(resultActivity.MetaData)
 
 }
