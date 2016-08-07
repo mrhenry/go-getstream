@@ -76,7 +76,7 @@ func (a FlatFeedActivity) MarshalJSON() ([]byte, error) {
 	}
 
 	if len(tos) > 0 {
-		payload["to"] = a.To
+		payload["to"] = tos
 	}
 
 	return json.Marshal(payload)
