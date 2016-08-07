@@ -88,7 +88,10 @@ func (a *FlatFeedActivity) UnmarshalJSON(b []byte) (err error) {
 	rawPayload := make(map[string]*json.RawMessage)
 	metadata := make(map[string]string)
 
-	json.Unmarshal(b, &rawPayload)
+	err = json.Unmarshal(b, &rawPayload)
+	if err != nil {
+		return err
+	}
 
 	for key, value := range rawPayload {
 		lowerKey := strings.ToLower(key)

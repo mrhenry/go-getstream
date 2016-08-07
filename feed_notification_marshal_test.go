@@ -6,7 +6,7 @@ import "testing"
 import "encoding/json"
 import "fmt"
 
-func TestFlatActivityMetaData(t *testing.T) {
+func TestNotificationActivityMetaData(t *testing.T) {
 
 	now := time.Now()
 
@@ -27,11 +27,12 @@ func TestFlatActivityMetaData(t *testing.T) {
 
 	raw := json.RawMessage(dataB)
 
-	activity := FlatFeedActivity{
+	activity := NotificationFeedActivity{
 		ForeignID: uuid.New(),
 		Actor:     FeedID("user:eric"),
 		Object:    FeedID("user:bob"),
 		Target:    FeedID("user:john"),
+		Origin:    FeedID("user:barry"),
 		Verb:      "post",
 		TimeStamp: &now,
 		Data:      &raw,
@@ -54,14 +55,14 @@ func TestFlatActivityMetaData(t *testing.T) {
 		return
 	}
 
-	resultActivity := FlatFeedActivity{}
+	resultActivity := NotificationFeedActivity{}
 	err = json.Unmarshal(b, &resultActivity)
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
 	}
 
-	resultActivity2 := FlatFeedActivity{}
+	resultActivity2 := NotificationFeedActivity{}
 	err = json.Unmarshal(b2, &resultActivity2)
 	if err != nil {
 		fmt.Println(err)
@@ -76,6 +77,11 @@ func TestFlatActivityMetaData(t *testing.T) {
 	if resultActivity.Actor != activity.Actor {
 		fmt.Println(activity.Actor)
 		fmt.Println(resultActivity.Actor)
+		t.Fail()
+	}
+	if resultActivity.Origin != activity.Origin {
+		fmt.Println(activity.Origin)
+		fmt.Println(resultActivity.Origin)
 		t.Fail()
 	}
 	if resultActivity.Verb != activity.Verb {

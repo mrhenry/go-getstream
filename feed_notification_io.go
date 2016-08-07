@@ -90,7 +90,10 @@ func (a *NotificationFeedActivity) UnmarshalJSON(b []byte) (err error) {
 	rawPayload := make(map[string]*json.RawMessage)
 	metadata := make(map[string]string)
 
-	json.Unmarshal(b, &rawPayload)
+	err = json.Unmarshal(b, &rawPayload)
+	if err != nil {
+		return err
+	}
 
 	for key, value := range rawPayload {
 		lowerKey := strings.ToLower(key)
@@ -178,8 +181,6 @@ func (a *NotificationFeedActivity) UnmarshalJSON(b []byte) (err error) {
 
 				a.To = append(a.To, &feed)
 			}
-
-			// if lowerKey != "id" && lowerKey != "actor" && lowerKey != "verb" && lowerKey != "object" && lowerKey != "target" && lowerKey != "time" && lowerKey != "foreign_id" && lowerKey != "data" && lowerKey != "to"
 		} else {
 			var strValue string
 			json.Unmarshal(*value, &strValue)
