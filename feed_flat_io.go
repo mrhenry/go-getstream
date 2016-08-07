@@ -93,6 +93,10 @@ func (a *FlatFeedActivity) UnmarshalJSON(b []byte) (err error) {
 	for key, value := range rawPayload {
 		lowerKey := strings.ToLower(key)
 
+		if value == nil {
+			continue
+		}
+
 		if lowerKey == "id" {
 			var strValue string
 			json.Unmarshal(*value, &strValue)
