@@ -20,7 +20,7 @@ type FlatFeedActivity struct {
 	TimeStamp *time.Time
 
 	ForeignID string
-	Data      json.RawMessage
+	Data      *json.RawMessage
 	MetaData  map[string]string
 
 	To []Feed
@@ -129,9 +129,7 @@ func (a *FlatFeedActivity) UnmarshalJSON(b []byte) (err error) {
 			}
 			a.TimeStamp = &timeStamp
 		} else if lowerKey == "data" {
-			var dataB json.RawMessage
-			json.Unmarshal(value, dataB)
-			a.Data = dataB
+			a.Data = &value
 		} else if lowerKey == "to" {
 
 			var to1D []string
