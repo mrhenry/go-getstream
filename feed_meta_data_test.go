@@ -48,8 +48,12 @@ func TestActivityMetaData(t *testing.T) {
 
 	fmt.Println(string(b))
 
-	output := extractFromGetStream(b)
-	resultActivity := output.activity()
+	resultActivity := FlatFeedActivity{}
+	err = json.Unmarshal(b, &resultActivity)
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
 
 	fmt.Println(resultActivity)
 

@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 	"regexp"
-	"time"
 	"strings"
+	"time"
 )
 
 // FlatFeedActivity is a getstream Activity
@@ -175,7 +175,6 @@ func (a *FlatFeedActivity) UnmarshalJSON(b []byte) (err error) {
 
 }
 
-
 type postFlatFeedOutputActivities struct {
 	Activities []*FlatFeedActivity `json:"activities"`
 }
@@ -194,8 +193,8 @@ type GetFlatFeedInput struct {
 }
 
 type GetFlatFeedOutput struct {
-	Duration   string                       `json:"duration"`
-	Next       string                       `json:"next"`
+	Duration   string              `json:"duration"`
+	Next       string              `json:"next"`
 	Activities []*FlatFeedActivity `json:"results"`
 }
 
