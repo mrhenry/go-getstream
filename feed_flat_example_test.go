@@ -1,10 +1,11 @@
-package getstream
+package getstream_test
 
 import "fmt"
+import "github.com/mrhenry/go-getstream"
 
 func ExampleFlatFeed_AddActivity() {
 
-	client, err := New("APIKey", "APISecret", "AppID", "Region")
+	client, err := getstream.New("APIKey", "APISecret", "AppID", "Region")
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -16,11 +17,11 @@ func ExampleFlatFeed_AddActivity() {
 		return
 	}
 
-	activity, err := feed.AddActivity(&FlatFeedActivity{
+	activity, err := feed.AddActivity(&getstream.FlatFeedActivity{
 		Verb:      "post",
 		ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
-		Object:    FeedID("flat:eric"),
-		Actor:     FeedID("flat:john"),
+		Object:    getstream.FeedID("flat:eric"),
+		Actor:     getstream.FeedID("flat:john"),
 	})
 	if err != nil {
 		fmt.Println(err)
