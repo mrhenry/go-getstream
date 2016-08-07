@@ -71,27 +71,43 @@ func TestActivityMetaData(t *testing.T) {
 	}
 
 	if resultActivity.ForeignID != activity.ForeignID {
+		fmt.Println(resultActivity.ForeignID)
+		fmt.Println(activity.ForeignID)
 		t.Fail()
 	}
 	if resultActivity.Actor != activity.Actor {
+		fmt.Println(resultActivity.Actor)
+		fmt.Println(activity.Actor)
 		t.Fail()
 	}
 	if resultActivity.Verb != activity.Verb {
+		fmt.Println(resultActivity.Verb)
+		fmt.Println(activity.Verb)
 		t.Fail()
 	}
 	if resultActivity.Object != activity.Object {
+		fmt.Println(resultActivity.Object)
+		fmt.Println(activity.Object)
 		t.Fail()
 	}
 	if resultActivity.Target != activity.Target {
+		fmt.Println(resultActivity.Target)
+		fmt.Println(activity.Target)
 		t.Fail()
 	}
 	if resultActivity.TimeStamp != activity.TimeStamp {
+		fmt.Println(resultActivity.TimeStamp)
+		fmt.Println(activity.TimeStamp)
 		t.Fail()
 	}
 	if resultActivity.MetaData["meta"] != activity.MetaData["meta"] {
+		fmt.Println(resultActivity.MetaData)
+		fmt.Println(activity.MetaData)
 		t.Fail()
 	}
 	if string(resultActivity.Data) != string(activity.Data) {
+		fmt.Println(string(resultActivity.Data))
+		fmt.Println(string(activity.Data))
 		t.Fail()
 	}
 
