@@ -85,7 +85,7 @@ func (a FlatFeedActivity) MarshalJSON() ([]byte, error) {
 
 func (a *FlatFeedActivity) UnmarshalJSON(b []byte) (err error) {
 
-	rawPayload := make(map[string]json.RawMessage)
+	rawPayload := make(map[string]*json.RawMessage)
 	metadata := make(map[string]string)
 
 	json.Unmarshal(b, &rawPayload)
@@ -95,31 +95,31 @@ func (a *FlatFeedActivity) UnmarshalJSON(b []byte) (err error) {
 
 		if lowerKey == "id" {
 			var strValue string
-			json.Unmarshal(value, &strValue)
+			json.Unmarshal(*value, &strValue)
 			a.ID = strValue
 		} else if lowerKey == "actor" {
 			var strValue string
-			json.Unmarshal(value, &strValue)
+			json.Unmarshal(*value, &strValue)
 			a.Actor = FeedID(strValue)
 		} else if lowerKey == "verb" {
 			var strValue string
-			json.Unmarshal(value, &strValue)
+			json.Unmarshal(*value, &strValue)
 			a.Verb = strValue
 		} else if lowerKey == "foreign_id" {
 			var strValue string
-			json.Unmarshal(value, &strValue)
+			json.Unmarshal(*value, &strValue)
 			a.ForeignID = strValue
 		} else if lowerKey == "object" {
 			var strValue string
-			json.Unmarshal(value, &strValue)
+			json.Unmarshal(*value, &strValue)
 			a.Object = FeedID(strValue)
 		} else if lowerKey == "target" {
 			var strValue string
-			json.Unmarshal(value, &strValue)
+			json.Unmarshal(*value, &strValue)
 			a.Target = FeedID(strValue)
 		} else if lowerKey == "time" {
 			var strValue string
-			err := json.Unmarshal(value, &strValue)
+			err := json.Unmarshal(*value, &strValue)
 			if err != nil {
 				continue
 			}
@@ -129,16 +129,16 @@ func (a *FlatFeedActivity) UnmarshalJSON(b []byte) (err error) {
 			}
 			a.TimeStamp = &timeStamp
 		} else if lowerKey == "data" {
-			a.Data = &value
+			a.Data = value
 		} else if lowerKey == "to" {
 
 			var to1D []string
 			var to2D [][]string
 
-			err := json.Unmarshal(value, &to1D)
+			err := json.Unmarshal(*value, &to1D)
 			if err != nil {
 				err = nil
-				err = json.Unmarshal(value, &to2D)
+				err = json.Unmarshal(*value, &to2D)
 				if err != nil {
 					continue
 				}
@@ -172,7 +172,7 @@ func (a *FlatFeedActivity) UnmarshalJSON(b []byte) (err error) {
 			// if lowerKey != "id" && lowerKey != "actor" && lowerKey != "verb" && lowerKey != "object" && lowerKey != "target" && lowerKey != "time" && lowerKey != "foreign_id" && lowerKey != "data" && lowerKey != "to"
 		} else {
 			var strValue string
-			json.Unmarshal(value, &strValue)
+			json.Unmarshal(*value, &strValue)
 			metadata[key] = strValue
 		}
 	}
