@@ -92,31 +92,28 @@ func (a *FlatFeedActivity) UnmarshalJSON(b []byte) (err error) {
 
 	for key, value := range rawPayload {
 		lowerKey := strings.ToLower(key)
-		if lowerKey != "id" && lowerKey != "actor" && lowerKey != "verb" && lowerKey != "object" && lowerKey != "target" && lowerKey != "time" && lowerKey != "foreign_id" && lowerKey != "data" && lowerKey != "to" {
-			var strValue string
-			json.Unmarshal(value, strValue)
-			metadata[key] = strValue
-		} else if key == "id" {
+
+		if lowerKey == "id" {
 			var strValue string
 			json.Unmarshal(value, &strValue)
 			a.ID = strValue
-		} else if key == "actor" {
+		} else if lowerKey == "actor" {
 			var strValue string
 			json.Unmarshal(value, &strValue)
 			a.Actor = FeedID(strValue)
-		} else if key == "verb" {
+		} else if lowerKey == "verb" {
 			var strValue string
 			json.Unmarshal(value, &strValue)
 			a.Verb = strValue
-		} else if key == "object" {
+		} else if lowerKey == "object" {
 			var strValue string
 			json.Unmarshal(value, &strValue)
 			a.Object = FeedID(strValue)
-		} else if key == "target" {
+		} else if lowerKey == "target" {
 			var strValue string
 			json.Unmarshal(value, &strValue)
 			a.Target = FeedID(strValue)
-		} else if key == "time" {
+		} else if lowerKey == "time" {
 			var strValue string
 			err := json.Unmarshal(value, &strValue)
 			if err != nil {
@@ -127,9 +124,9 @@ func (a *FlatFeedActivity) UnmarshalJSON(b []byte) (err error) {
 				continue
 			}
 			a.TimeStamp = &timeStamp
-		} else if key == "data" {
+		} else if lowerKey == "data" {
 			a.Data = value
-		} else if key == "to" {
+		} else if lowerKey == "to" {
 
 			var to1D []string
 			var to2D [][]string
@@ -167,6 +164,12 @@ func (a *FlatFeedActivity) UnmarshalJSON(b []byte) (err error) {
 
 				a.To = append(a.To, &feed)
 			}
+
+			// if lowerKey != "id" && lowerKey != "actor" && lowerKey != "verb" && lowerKey != "object" && lowerKey != "target" && lowerKey != "time" && lowerKey != "foreign_id" && lowerKey != "data" && lowerKey != "to"
+		} else {
+			var strValue string
+			json.Unmarshal(value, strValue)
+			metadata[key] = strValue
 		}
 	}
 
