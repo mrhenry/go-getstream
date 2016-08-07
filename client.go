@@ -58,8 +58,8 @@ func New(key, secret, appID, location string) (*Client, error) {
 }
 
 // FlatFeed returns a getstream feed
-// Slug is the FlatFeedGroup name
-// id is the Specific FlatFeed inside a FlatFeedGroup
+// Slug is the FlatFeed Group name
+// id is the Specific FlatFeed inside a FlatFeed Group
 // to get the feed for Bob you would pass something like "user" as slug and "bob" as the id
 func (c *Client) FlatFeed(feedSlug string, userID string) (*FlatFeed, error) {
 
@@ -86,8 +86,8 @@ func (c *Client) FlatFeed(feedSlug string, userID string) (*FlatFeed, error) {
 }
 
 // NotificationFeed returns a getstream feed
-// Slug is the NotificationFeedGroup name
-// id is the Specific NotificationFeed inside a NotificationFeedGroup
+// Slug is the NotificationFeed Group name
+// id is the Specific NotificationFeed inside a NotificationFeed Group
 // to get the feed for Bob you would pass something like "user" as slug and "bob" as the id
 func (c *Client) NotificationFeed(feedSlug string, userID string) (*NotificationFeed, error) {
 
@@ -104,6 +104,34 @@ func (c *Client) NotificationFeed(feedSlug string, userID string) (*Notification
 	}
 
 	feed := &NotificationFeed{
+		Client:   c,
+		FeedSlug: feedSlug,
+		UserID:   userID,
+	}
+
+	feed.SignFeed(c.signer)
+	return feed, nil
+}
+
+// AggregatedFeed returns a getstream feed
+// Slug is the AggregatedFeed Group name
+// id is the Specific AggregatedFeed inside a AggregatedFeed Group
+// to get the feed for Bob you would pass something like "user" as slug and "bob" as the id
+func (c *Client) AggregatedFeed(feedSlug string, userID string) (*AggregatedFeed, error) {
+
+	r, err := regexp.Compile(`^\w+$`)
+	if err != nil {
+		return nil, err
+	}
+
+	feedSlug = strings.Replace(feedSlug, "-", "_", -1)
+	userID = strings.Replace(userID, "-", "_", -1)
+
+	if !r.MatchString(feedSlug) || !r.MatchString(userID) {
+		return nil, errors.New("invalid feedSlug or userID")
+	}
+
+	feed := &AggregatedFeed{
 		Client:   c,
 		FeedSlug: feedSlug,
 		UserID:   userID,
