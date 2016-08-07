@@ -46,7 +46,7 @@ func TestActivityMetaData(t *testing.T) {
 		return
 	}
 
-	b2, err = json.Marshal(activity)
+	b2, err := json.Marshal(activity)
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
