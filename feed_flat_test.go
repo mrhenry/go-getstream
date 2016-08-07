@@ -338,6 +338,48 @@ func TestFlatFeedFollow(t *testing.T) {
 		t.Fail()
 	}
 
+	err = feedA.Unfollow(feedB)
+	if err != nil {
+		t.Fail()
+	}
+
+	testCleanUpFollows(client, []*FlatFeed{feedA, feedB})
+
+}
+
+func TestFlatFeedFollowKeepingHistory(t *testing.T) {
+
+	client, err := testSetup()
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	feedA, err := client.FlatFeed("flat", "bob")
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	feedB, err := client.FlatFeed("flat", "eric")
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	err = feedA.FollowFeedWithCopyLimit(feedB, 20)
+	if err != nil {
+		t.Fail()
+	}
+
+	err = feedA.UnfollowKeepingHistory(feedB)
+	if err != nil {
+		t.Fail()
+	}
+
 	testCleanUpFollows(client, []*FlatFeed{feedA, feedB})
 
 }

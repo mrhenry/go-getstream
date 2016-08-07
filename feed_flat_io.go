@@ -171,9 +171,8 @@ func (a *FlatFeedActivity) UnmarshalJSON(b []byte) (err error) {
 					feed.FeedSlug = firstSplit[0]
 					feed.UserID = secondSplit[0]
 					feed.token = secondSplit[1]
+					a.To = append(a.To, &feed)
 				}
-
-				a.To = append(a.To, &feed)
 			}
 
 			// if lowerKey != "id" && lowerKey != "actor" && lowerKey != "verb" && lowerKey != "object" && lowerKey != "target" && lowerKey != "time" && lowerKey != "foreign_id" && lowerKey != "data" && lowerKey != "to"
