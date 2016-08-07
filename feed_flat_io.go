@@ -6,7 +6,6 @@ import (
 	"regexp"
 	"strings"
 	"time"
-	"fmt"
 )
 
 // FlatFeedActivity is a getstream Activity
