@@ -177,9 +177,8 @@ func (a *NotificationFeedActivity) UnmarshalJSON(b []byte) (err error) {
 					feed.FeedSlug = firstSplit[0]
 					feed.UserID = secondSplit[0]
 					feed.token = secondSplit[1]
+					a.To = append(a.To, &feed)
 				}
-
-				a.To = append(a.To, &feed)
 			}
 		} else {
 			var strValue string
