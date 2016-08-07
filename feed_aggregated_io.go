@@ -8,15 +8,16 @@ import (
 	"time"
 )
 
-// FlatFeedActivity is a getstream Activity
-// Use it to post activities to FlatFeeds
-// It is also the response from FlatFeed Fetch and List Requests
-type FlatFeedActivity struct {
+// NotificationFeedActivity is a getstream Activity
+// Use it to post activities to NotificationFeeds
+// It is also the response from NotificationFeed Fetch and List Requests
+type AggregatedFeedActivity struct {
 	ID        string
 	Actor     FeedID
 	Verb      string
 	Object    FeedID
 	Target    FeedID
+	Origin    FeedID
 	TimeStamp *time.Time
 
 	ForeignID string
@@ -26,7 +27,7 @@ type FlatFeedActivity struct {
 	To []Feed
 }
 
-func (a FlatFeedActivity) MarshalJSON() ([]byte, error) {
+func (a AggregatedFeedActivity) MarshalJSON() ([]byte, error) {
 
 	payload := make(map[string]interface{})
 
@@ -37,6 +38,7 @@ func (a FlatFeedActivity) MarshalJSON() ([]byte, error) {
 	payload["actor"] = string(a.Actor)
 	payload["verb"] = string(a.Verb)
 	payload["object"] = string(a.Object)
+	payload["origin"] = string(a.Origin)
 
 	if a.ID != "" {
 		payload["id"] = a.ID
@@ -83,7 +85,7 @@ func (a FlatFeedActivity) MarshalJSON() ([]byte, error) {
 
 }
 
-func (a *FlatFeedActivity) UnmarshalJSON(b []byte) (err error) {
+func (a *AggregatedFeedActivity) UnmarshalJSON(b []byte) (err error) {
 
 	rawPayload := make(map[string]*json.RawMessage)
 	metadata := make(map[string]string)
@@ -120,6 +122,10 @@ func (a *FlatFeedActivity) UnmarshalJSON(b []byte) (err error) {
 			var strValue string
 			json.Unmarshal(*value, &strValue)
 			a.Object = FeedID(strValue)
+		} else if lowerKey == "origin" {
+			var strValue string
+			json.Unmarshal(*value, &strValue)
+			a.Origin = FeedID(strValue)
 		} else if lowerKey == "target" {
 			var strValue string
 			json.Unmarshal(*value, &strValue)
@@ -175,8 +181,6 @@ func (a *FlatFeedActivity) UnmarshalJSON(b []byte) (err error) {
 
 				a.To = append(a.To, &feed)
 			}
-
-			// if lowerKey != "id" && lowerKey != "actor" && lowerKey != "verb" && lowerKey != "object" && lowerKey != "target" && lowerKey != "time" && lowerKey != "foreign_id" && lowerKey != "data" && lowerKey != "to"
 		} else {
 			var strValue string
 			json.Unmarshal(*value, &strValue)
@@ -189,12 +193,12 @@ func (a *FlatFeedActivity) UnmarshalJSON(b []byte) (err error) {
 
 }
 
-type postFlatFeedOutputActivities struct {
-	Activities []*FlatFeedActivity `json:"activities"`
+type postAggregatedFeedOutputActivities struct {
+	Activities []*AggregatedFeedActivity `json:"activities"`
 }
 
-// GetFlatFeedInput is used to Get a list of Activities from a FlatFeed
-type GetFlatFeedInput struct {
+// GetNotificationFeedInput is used to Get a list of Activities from a NotificationFeed
+type GetAggregatedFeedInput struct {
 	Limit  int `json:"limit,omitempty"`
 	Offset int `json:"offset,omitempty"`
 
@@ -206,30 +210,124 @@ type GetFlatFeedInput struct {
 	Ranking string `json:"ranking,omitempty"`
 }
 
-type GetFlatFeedOutput struct {
-	Duration   string              `json:"duration"`
-	Next       string              `json:"next"`
-	Activities []*FlatFeedActivity `json:"results"`
+// GetNotificationFeedOutput is the response from a NotificationFeed Activities Get Request
+type GetAggregatedFeedOutput struct {
+	Duration string
+	Next     string
+	Results  []*struct {
+		Activities    []*AggregatedFeedActivity
+		ActivityCount int
+		ActorCount    int
+		CreatedAt     string
+		Group         string
+		ID            string
+		IsRead        bool
+		IsSeen        bool
+		UpdatedAt     string
+		Verb          string
+	}
+	Unread int
+	Unseen int
 }
 
-type getFlatFeedFollowersInput struct {
+type getAggregatedFeedOutput struct {
+	Duration string                             `json:"duration"`
+	Next     string                             `json:"next"`
+	Results  []*getAggregatedFeedOutputResult `json:"results"`
+	Unread   int                                `json:"unread"`
+	Unseen   int                                `json:"unseen"`
+}
+
+func (a getAggregatedFeedOutput) output() *GetAggregatedFeedOutput {
+
+	output := GetAggregatedFeedOutput{
+		Duration: a.Duration,
+		Next:     a.Next,
+		Unread:   a.Unread,
+		Unseen:   a.Unseen,
+	}
+
+	var results []*struct {
+		Activities    []*AggregatedFeedActivity
+		ActivityCount int
+		ActorCount    int
+		CreatedAt     string
+		Group         string
+		ID            string
+		IsRead        bool
+		IsSeen        bool
+		UpdatedAt     string
+		Verb          string
+	}
+
+	for _, result := range a.Results {
+
+		outputResult := struct {
+			Activities    []*AggregatedFeedActivity
+			ActivityCount int
+			ActorCount    int
+			CreatedAt     string
+			Group         string
+			ID            string
+			IsRead        bool
+			IsSeen        bool
+			UpdatedAt     string
+			Verb          string
+		}{
+			ActivityCount: result.ActivityCount,
+			ActorCount:    result.ActorCount,
+			CreatedAt:     result.CreatedAt,
+			Group:         result.Group,
+			ID:            result.ID,
+			IsRead:        result.IsRead,
+			IsSeen:        result.IsSeen,
+			UpdatedAt:     result.UpdatedAt,
+			Verb:          result.Verb,
+		}
+
+		for _, activity := range result.Activities {
+			outputResult.Activities = append(outputResult.Activities, activity)
+		}
+
+		results = append(results, &outputResult)
+	}
+
+	output.Results = results
+
+	return &output
+}
+
+type getAggregatedFeedOutputResult struct {
+	Activities    []*AggregatedFeedActivity `json:"activities"`
+	ActivityCount int                         `json:"activity_count"`
+	ActorCount    int                         `json:"actor_count"`
+	CreatedAt     string                      `json:"created_at"`
+	Group         string                      `json:"group"`
+	ID            string                      `json:"id"`
+	IsRead        bool                        `json:"is_read"`
+	IsSeen        bool                        `json:"is_seen"`
+	UpdatedAt     string                      `json:"updated_at"`
+	Verb          string                      `json:"verb"`
+}
+
+type getAggregatedFeedFollowersInput struct {
 	Limit int `json:"limit"`
 	Skip  int `json:"offset"`
 }
 
-type getFlatFeedFollowersOutput struct {
-	Duration string                              `json:"duration"`
-	Results  []*getFlatFeedFollowersOutputResult `json:"results"`
+type getAggregatedFeedFollowersOutput struct {
+	Duration string                                      `json:"duration"`
+	Results  []*getAggregatedFeedFollowersOutputResult `json:"results"`
 }
 
-type getFlatFeedFollowersOutputResult struct {
+type getAggregatedFeedFollowersOutputResult struct {
 	CreatedAt string `json:"created_at"`
 	UpdatedAt string `json:"updated_at"`
 	FeedID    string `json:"feed_id"`
 	TargetID  string `json:"target_id"`
 }
 
-type postFlatFeedFollowingInput struct {
+type postAggregatedFeedFollowingInput struct {
 	Target            string `json:"target"`
 	ActivityCopyLimit int    `json:"activity_copy_limit"`
 }

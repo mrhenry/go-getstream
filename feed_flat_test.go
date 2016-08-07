@@ -7,34 +7,6 @@ import (
 	"github.com/pborman/uuid"
 )
 
-func ExampleFlatFeed_AddActivity() {
-
-	client, err := New("APIKey", "APISecret", "AppID", "Region")
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	feed, err := client.FlatFeed("FeedSlug", "UserID")
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	activity, err := feed.AddActivity(&FlatFeedActivity{
-		Verb:      "post",
-		ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
-		Object:    FeedID("flat:eric"),
-		Actor:     FeedID("flat:john"),
-	})
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	_ = activity
-}
-
 func TestFlatFeedAddActivity(t *testing.T) {
 
 	client, err := testSetup()
@@ -66,7 +38,54 @@ func TestFlatFeedAddActivity(t *testing.T) {
 		t.Fail()
 	}
 
-	err = testCleanUp(client, []*FlatFeedActivity{activity}, nil)
+	err = testCleanUp(client, []*FlatFeedActivity{activity}, nil, nil)
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+}
+
+func TestFlatFeedAddActivityWithTo(t *testing.T) {
+
+	client, err := testSetup()
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	feed, err := client.FlatFeed("flat", "bob")
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	feedTo, err := client.FlatFeed("flat", "barry")
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	activity, err := feed.AddActivity(&FlatFeedActivity{
+		Verb:      "post",
+		ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
+		Object:    FeedID("flat:eric"),
+		Actor:     FeedID("flat:john"),
+		To :       []Feed{feedTo},
+	})
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+
+	if activity.Verb != "post" && activity.ForeignID != "48d024fe-3752-467a-8489-23febd1dec4e" {
+		t.Fail()
+	}
+
+	err = testCleanUp(client, []*FlatFeedActivity{activity}, nil, nil)
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -117,7 +136,7 @@ func TestFlatFeedUUID(t *testing.T) {
 		activities = append(activities, activity)
 	}
 
-	testCleanUp(client, activities, nil)
+	testCleanUp(client, activities, nil, nil)
 }
 
 func TestFlatFeedRemoveActivity(t *testing.T) {
@@ -204,7 +223,7 @@ func TestFlatFeedRemoveByForeignIDActivity(t *testing.T) {
 		return
 	}
 
-	testCleanUp(client, []*FlatFeedActivity{activity}, nil)
+	testCleanUp(client, []*FlatFeedActivity{activity}, nil, nil)
 
 }
 
@@ -241,7 +260,7 @@ func TestFlatFeedActivities(t *testing.T) {
 		t.Fail()
 	}
 
-	err = testCleanUp(client, activities.Activities, nil)
+	err = testCleanUp(client, activities.Activities, nil, nil)
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -283,7 +302,7 @@ func TestFlatFeedAddActivities(t *testing.T) {
 		t.Fail()
 	}
 
-	err = testCleanUp(client, activities, nil)
+	err = testCleanUp(client, activities, nil, nil)
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()

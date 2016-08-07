@@ -7,9 +7,9 @@ import (
 	"strings"
 )
 
-// NotificationFeed is a getstream NotificationFeed
-// Use it to for CRUD on NotificationFeed Groups
-type NotificationFeed struct {
+// NotificationFeed is a getstream AggregatedFeed
+// Use it to for CRUD on AggregatedFeed Groups
+type AggregatedFeed struct {
 	Client   *Client
 	FeedSlug string
 	UserID   string
@@ -17,7 +17,7 @@ type NotificationFeed struct {
 }
 
 // Signature is used to sign Requests : "FeedSlugUserID Token"
-func (f *NotificationFeed) Signature() string {
+func (f *AggregatedFeed) Signature() string {
 	if f.Token() == "" {
 		return f.FeedSlug + f.UserID
 	}
@@ -25,27 +25,27 @@ func (f *NotificationFeed) Signature() string {
 }
 
 // FeedID is the combo if the FeedSlug and UserID : "FeedSlug:UserID"
-func (f *NotificationFeed) FeedID() FeedID {
+func (f *AggregatedFeed) FeedID() FeedID {
 	return FeedID(f.FeedSlug + ":" + f.UserID)
 }
 
 // SignFeed sets the token on a Feed
-func (f *NotificationFeed) SignFeed(signer *Signer) {
+func (f *AggregatedFeed) SignFeed(signer *Signer) {
 	f.token = signer.generateToken(f.FeedSlug + f.UserID)
 }
 
 // Token returns the token of a Feed
-func (f *NotificationFeed) Token() string {
+func (f *AggregatedFeed) Token() string {
 	return f.token
 }
 
 // GenerateToken returns a new Token for a Feed without setting it to the Feed
-func (f *NotificationFeed) GenerateToken(signer *Signer) string {
+func (f *AggregatedFeed) GenerateToken(signer *Signer) string {
 	return signer.generateToken(f.FeedSlug + f.UserID)
 }
 
-// AddActivity is used to add an Activity to a NotificationFeed
-func (f *NotificationFeed) AddActivity(activity *NotificationFeedActivity) (*NotificationFeedActivity, error) {
+// AddActivity is used to add an Activity to a AggregatedFeed
+func (f *AggregatedFeed) AddActivity(activity *AggregatedFeedActivity) (*AggregatedFeedActivity, error) {
 
 	payload, err := json.Marshal(activity)
 	if err != nil {
@@ -59,7 +59,7 @@ func (f *NotificationFeed) AddActivity(activity *NotificationFeedActivity) (*Not
 		return nil, err
 	}
 
-	output := &NotificationFeedActivity{}
+	output := &AggregatedFeedActivity{}
 	err = json.Unmarshal(resultBytes, output)
 	if err != nil {
 		return nil, err
@@ -69,9 +69,9 @@ func (f *NotificationFeed) AddActivity(activity *NotificationFeedActivity) (*Not
 }
 
 // AddActivities is used to add multiple Activities to a NotificationFeed
-func (f *NotificationFeed) AddActivities(activities []*NotificationFeedActivity) ([]*NotificationFeedActivity, error) {
+func (f *AggregatedFeed) AddActivities(activities []*AggregatedFeedActivity) ([]*AggregatedFeedActivity, error) {
 
-	payload, err := json.Marshal(map[string][]*NotificationFeedActivity{
+	payload, err := json.Marshal(map[string][]*AggregatedFeedActivity{
 		"activities": activities,
 	})
 	if err != nil {
@@ -85,7 +85,7 @@ func (f *NotificationFeed) AddActivities(activities []*NotificationFeedActivity)
 		return nil, err
 	}
 
-	output := &postNotificationFeedOutputActivities{}
+	output := &postAggregatedFeedOutputActivities{}
 	err = json.Unmarshal(resultBytes, output)
 	if err != nil {
 		return nil, err
@@ -95,7 +95,7 @@ func (f *NotificationFeed) AddActivities(activities []*NotificationFeedActivity)
 }
 
 // Activities returns a list of Activities for a NotificationFeedGroup
-func (f *NotificationFeed) Activities(input *GetNotificationFeedInput) (*GetNotificationFeedOutput, error) {
+func (f *AggregatedFeed) Activities(input *GetAggregatedFeedInput) (*GetAggregatedFeedOutput, error) {
 
 	payload, err := json.Marshal(input)
 	if err != nil {
@@ -109,7 +109,7 @@ func (f *NotificationFeed) Activities(input *GetNotificationFeedInput) (*GetNoti
 		return nil, err
 	}
 
-	output := &getNotificationFeedOutput{}
+	output := &getAggregatedFeedOutput{}
 	err = json.Unmarshal(result, output)
 	if err != nil {
 		return nil, err
@@ -119,7 +119,7 @@ func (f *NotificationFeed) Activities(input *GetNotificationFeedInput) (*GetNoti
 }
 
 // RemoveActivity removes an Activity from a NotificationFeedGroup
-func (f *NotificationFeed) RemoveActivity(input *NotificationFeedActivity) error {
+func (f *AggregatedFeed) RemoveActivity(input *AggregatedFeedActivity) error {
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + input.ID + "/"
 
@@ -127,7 +127,7 @@ func (f *NotificationFeed) RemoveActivity(input *NotificationFeedActivity) error
 }
 
 // RemoveActivityByForeignID removes an Activity from a NotificationFeedGroup by ForeignID
-func (f *NotificationFeed) RemoveActivityByForeignID(input *NotificationFeedActivity) error {
+func (f *AggregatedFeed) RemoveActivityByForeignID(input *AggregatedFeedActivity) error {
 
 	r, err := regexp.Compile("^[a-z0-9]{8}-[a-z0-9]{4}-[1-5][a-z0-9]{3}-[a-z0-9]{4}-[a-z0-9]{12}$")
 	if err != nil {
@@ -155,10 +155,10 @@ func (f *NotificationFeed) RemoveActivityByForeignID(input *NotificationFeedActi
 
 // FollowFeedWithCopyLimit sets a Feed to follow another target Feed
 // CopyLimit is the maximum number of Activities to Copy from History
-func (f *NotificationFeed) FollowFeedWithCopyLimit(target *FlatFeed, copyLimit int) error {
+func (f *AggregatedFeed) FollowFeedWithCopyLimit(target *FlatFeed, copyLimit int) error {
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/"
 
-	input := postNotificationFeedFollowingInput{
+	input := postAggregatedFeedFollowingInput{
 		Target:            string(target.FeedID()),
 		ActivityCopyLimit: copyLimit,
 	}
@@ -174,7 +174,7 @@ func (f *NotificationFeed) FollowFeedWithCopyLimit(target *FlatFeed, copyLimit i
 }
 
 // Unfollow is used to Unfollow a target Feed
-func (f *NotificationFeed) Unfollow(target *FlatFeed) error {
+func (f *AggregatedFeed) Unfollow(target *FlatFeed) error {
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/" + string(target.FeedID()) + "/"
 
@@ -184,7 +184,7 @@ func (f *NotificationFeed) Unfollow(target *FlatFeed) error {
 
 // UnfollowKeepingHistory is used to Unfollow a target Feed while keeping the History
 // this means that Activities already visibile will remain
-func (f *NotificationFeed) UnfollowKeepingHistory(target *FlatFeed) error {
+func (f *AggregatedFeed) UnfollowKeepingHistory(target *FlatFeed) error {
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/" + string(target.FeedID()) + "/"
 
@@ -200,11 +200,11 @@ func (f *NotificationFeed) UnfollowKeepingHistory(target *FlatFeed) error {
 }
 
 // FollowingWithLimitAndSkip returns a list of GeneralFeed followed by the current FlatFeed
-func (f *NotificationFeed) FollowingWithLimitAndSkip(limit int, skip int) ([]*GeneralFeed, error) {
+func (f *AggregatedFeed) FollowingWithLimitAndSkip(limit int, skip int) ([]*GeneralFeed, error) {
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/"
 
-	payload, err := json.Marshal(&getNotificationFeedFollowersInput{
+	payload, err := json.Marshal(&getAggregatedFeedFollowersInput{
 		Limit: limit,
 		Skip:  skip,
 	})
@@ -214,7 +214,7 @@ func (f *NotificationFeed) FollowingWithLimitAndSkip(limit int, skip int) ([]*Ge
 
 	resultBytes, err := f.get(endpoint, f.Signature(), payload)
 
-	output := &getNotificationFeedFollowersOutput{}
+	output := &getAggregatedFeedFollowersOutput{}
 	err = json.Unmarshal(resultBytes, output)
 	if err != nil {
 		return nil, err

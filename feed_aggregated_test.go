@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func ExampleNotificationFeed_AddActivity() {
+func ExampleAggregatedFeed_AddActivity() {
 
 	client, err := New("APIKey", "APISecret", "AppID", "Region")
 	if err != nil {
@@ -13,13 +13,13 @@ func ExampleNotificationFeed_AddActivity() {
 		return
 	}
 
-	feed, err := client.NotificationFeed("FeedSlug", "UserID")
+	feed, err := client.AggregatedFeed("FeedSlug", "UserID")
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	activity, err := feed.AddActivity(&NotificationFeedActivity{
+	activity, err := feed.AddActivity(&AggregatedFeedActivity{
 		Verb:      "post",
 		ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
 		Object:    FeedID("flat:eric"),
@@ -33,7 +33,7 @@ func ExampleNotificationFeed_AddActivity() {
 	_ = activity
 }
 
-func TestNotificationFeedAddActivity(t *testing.T) {
+func TestAggregatedFeedAddActivity(t *testing.T) {
 
 	client, err := testSetup()
 	if err != nil {
@@ -42,14 +42,14 @@ func TestNotificationFeedAddActivity(t *testing.T) {
 		return
 	}
 
-	feed, err := client.NotificationFeed("notification", "bob")
+	feed, err := client.AggregatedFeed("aggregated", "bob")
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
 		return
 	}
 
-	activity, err := feed.AddActivity(&NotificationFeedActivity{
+	activity, err := feed.AddActivity(&AggregatedFeedActivity{
 		Verb:      "post",
 		ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
 		Object:    FeedID("flat:eric"),
@@ -64,7 +64,7 @@ func TestNotificationFeedAddActivity(t *testing.T) {
 		t.Fail()
 	}
 
-	err = testCleanUp(client, nil, []*NotificationFeedActivity{activity}, nil)
+	err = testCleanUp(client, nil, nil, []*AggregatedFeedActivity{activity})
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -72,7 +72,7 @@ func TestNotificationFeedAddActivity(t *testing.T) {
 	}
 }
 
-func TestNotificationFeedAddActivityWithTo(t *testing.T) {
+func TestAggregatedFeedAddActivityWithTo(t *testing.T) {
 
 	client, err := testSetup()
 	if err != nil {
@@ -81,26 +81,26 @@ func TestNotificationFeedAddActivityWithTo(t *testing.T) {
 		return
 	}
 
-	feed, err := client.NotificationFeed("notification", "bob")
+	feed, err := client.AggregatedFeed("aggregated", "bob")
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
 		return
 	}
 
-	feedTo, err := client.NotificationFeed("notification", "barry")
+	toFeed, err := client.AggregatedFeed("aggregated", "barry")
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
 		return
 	}
 
-	activity, err := feed.AddActivity(&NotificationFeedActivity{
+	activity, err := feed.AddActivity(&AggregatedFeedActivity{
 		Verb:      "post",
 		ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
 		Object:    FeedID("flat:eric"),
 		Actor:     FeedID("flat:john"),
-		To:        []Feed{feedTo},
+		To:        []Feed{toFeed},
 	})
 	if err != nil {
 		fmt.Println(err)
@@ -111,7 +111,7 @@ func TestNotificationFeedAddActivityWithTo(t *testing.T) {
 		t.Fail()
 	}
 
-	err = testCleanUp(client, nil, []*NotificationFeedActivity{activity}, nil)
+	err = testCleanUp(client, nil, nil, []*AggregatedFeedActivity{activity})
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -119,7 +119,7 @@ func TestNotificationFeedAddActivityWithTo(t *testing.T) {
 	}
 }
 
-func TestNotificationFeedRemoveActivity(t *testing.T) {
+func TestAggregatedFeedRemoveActivity(t *testing.T) {
 
 	client, err := testSetup()
 	if err != nil {
@@ -128,14 +128,14 @@ func TestNotificationFeedRemoveActivity(t *testing.T) {
 		return
 	}
 
-	feed, err := client.NotificationFeed("notification", "bob")
+	feed, err := client.AggregatedFeed("aggregated", "bob")
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
 		return
 	}
 
-	activity, err := feed.AddActivity(&NotificationFeedActivity{
+	activity, err := feed.AddActivity(&AggregatedFeedActivity{
 		Verb:   "post",
 		Object: FeedID("flat:eric"),
 		Actor:  FeedID("flat:john"),
@@ -149,7 +149,7 @@ func TestNotificationFeedRemoveActivity(t *testing.T) {
 		t.Fail()
 	}
 
-	rmActivity := NotificationFeedActivity{
+	rmActivity := AggregatedFeedActivity{
 		ID: activity.ID,
 	}
 
@@ -161,7 +161,7 @@ func TestNotificationFeedRemoveActivity(t *testing.T) {
 	}
 }
 
-func TestNotificationFeedRemoveByForeignIDActivity(t *testing.T) {
+func TestAggregatedFeedRemoveByForeignIDActivity(t *testing.T) {
 
 	client, err := testSetup()
 	if err != nil {
@@ -170,14 +170,14 @@ func TestNotificationFeedRemoveByForeignIDActivity(t *testing.T) {
 		return
 	}
 
-	feed, err := client.NotificationFeed("notification", "bob")
+	feed, err := client.AggregatedFeed("aggregated", "bob")
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
 		return
 	}
 
-	activity, err := feed.AddActivity(&NotificationFeedActivity{
+	activity, err := feed.AddActivity(&AggregatedFeedActivity{
 		Verb:      "post",
 		ForeignID: "08f01c47-014f-11e4-aa8f-0cc47a024be0",
 		Object:    FeedID("flat:eric"),
@@ -192,7 +192,7 @@ func TestNotificationFeedRemoveByForeignIDActivity(t *testing.T) {
 		t.Fail()
 	}
 
-	rmActivity := NotificationFeedActivity{
+	rmActivity := AggregatedFeedActivity{
 		ForeignID: activity.ForeignID,
 	}
 	_ = rmActivity
@@ -204,11 +204,11 @@ func TestNotificationFeedRemoveByForeignIDActivity(t *testing.T) {
 		return
 	}
 
-	testCleanUp(client, nil, []*NotificationFeedActivity{activity}, nil)
+	testCleanUp(client, nil, nil, []*AggregatedFeedActivity{activity})
 
 }
 
-func TestNotificationFeedActivities(t *testing.T) {
+func TestAggregatedFeedActivities(t *testing.T) {
 
 	client, err := testSetup()
 	if err != nil {
@@ -217,14 +217,14 @@ func TestNotificationFeedActivities(t *testing.T) {
 		return
 	}
 
-	feed, err := client.NotificationFeed("notification", "bob")
+	feed, err := client.AggregatedFeed("aggregated", "bob")
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
 		return
 	}
 
-	_, err = feed.AddActivity(&NotificationFeedActivity{
+	_, err = feed.AddActivity(&AggregatedFeedActivity{
 		Verb:      "post",
 		ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
 		Object:    FeedID("flat:eric"),
@@ -235,14 +235,14 @@ func TestNotificationFeedActivities(t *testing.T) {
 		t.Fail()
 	}
 
-	activities, err := feed.Activities(&GetNotificationFeedInput{})
+	activities, err := feed.Activities(&GetAggregatedFeedInput{})
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
 	}
 
 	for _, result := range activities.Results {
-		err = testCleanUp(client, nil, result.Activities, nil)
+		err = testCleanUp(client, nil, nil, result.Activities)
 		if err != nil {
 			fmt.Println(err)
 			t.Fail()
@@ -251,7 +251,7 @@ func TestNotificationFeedActivities(t *testing.T) {
 	}
 }
 
-func TestNotificationFeedAddActivities(t *testing.T) {
+func TestAggregatedFeedAddActivities(t *testing.T) {
 
 	client, err := testSetup()
 	if err != nil {
@@ -260,20 +260,20 @@ func TestNotificationFeedAddActivities(t *testing.T) {
 		return
 	}
 
-	feed, err := client.NotificationFeed("notification", "bob")
+	feed, err := client.AggregatedFeed("aggregated", "bob")
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
 		return
 	}
 
-	activities, err := feed.AddActivities([]*NotificationFeedActivity{
-		&NotificationFeedActivity{
+	activities, err := feed.AddActivities([]*AggregatedFeedActivity{
+		&AggregatedFeedActivity{
 			Verb:      "post",
 			ForeignID: "099978b6-3b72-4f5c-bc43-247ba6ae2dd9",
 			Object:    FeedID("flat:eric"),
 			Actor:     FeedID("flat:john"),
-		}, &NotificationFeedActivity{
+		}, &AggregatedFeedActivity{
 			Verb:      "walk",
 			ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
 			Object:    FeedID("flat:john"),
@@ -285,7 +285,7 @@ func TestNotificationFeedAddActivities(t *testing.T) {
 		t.Fail()
 	}
 
-	err = testCleanUp(client, nil, activities, nil)
+	err = testCleanUp(client, nil, nil, activities)
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -293,7 +293,7 @@ func TestNotificationFeedAddActivities(t *testing.T) {
 	}
 }
 
-func TestNotificationFeedFollow(t *testing.T) {
+func TestAggregatedFeedFollow(t *testing.T) {
 
 	client, err := testSetup()
 	if err != nil {
@@ -302,7 +302,7 @@ func TestNotificationFeedFollow(t *testing.T) {
 		return
 	}
 
-	feedA, err := client.NotificationFeed("notification", "bob")
+	feedA, err := client.AggregatedFeed("aggregated", "bob")
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()

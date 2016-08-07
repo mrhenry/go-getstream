@@ -18,7 +18,7 @@ func testSetup() (*Client, error) {
 
 }
 
-func testCleanUp(client *Client, flats []*FlatFeedActivity, notifications []*NotificationFeedActivity) error {
+func testCleanUp(client *Client, flats []*FlatFeedActivity, notifications []*NotificationFeedActivity, aggregations []*AggregatedFeedActivity) error {
 
 	if len(flats) > 0 {
 
@@ -43,6 +43,21 @@ func testCleanUp(client *Client, flats []*FlatFeedActivity, notifications []*Not
 		}
 
 		for _, activity := range notifications {
+			err := feed.RemoveActivity(activity)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	if len(aggregations) > 0 {
+
+		feed, err := client.AggregatedFeed("aggregated", "bob")
+		if err != nil {
+			return err
+		}
+
+		for _, activity := range aggregations {
 			err := feed.RemoveActivity(activity)
 			if err != nil {
 				return err
