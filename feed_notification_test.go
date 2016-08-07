@@ -72,6 +72,53 @@ func TestNotificationFeedAddActivity(t *testing.T) {
 	}
 }
 
+func TestNotificationFeedAddActivityWithTo(t *testing.T) {
+
+	client, err := testSetup()
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	feed, err := client.NotificationFeed("notification", "bob")
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	feedTo, err := client.NotificationFeed("notification", "barry")
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	activity, err := feed.AddActivity(&NotificationFeedActivity{
+		Verb:      "post",
+		ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
+		Object:    FeedID("flat:eric"),
+		Actor:     FeedID("flat:john"),
+		To:        []Feed{feedTo},
+	})
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+
+	if activity.Verb != "post" && activity.ForeignID != "48d024fe-3752-467a-8489-23febd1dec4e" {
+		t.Fail()
+	}
+
+	err = testCleanUp(client, nil, []*NotificationFeedActivity{activity}, nil)
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+}
+
 func TestNotificationFeedRemoveActivity(t *testing.T) {
 
 	client, err := testSetup()

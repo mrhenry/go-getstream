@@ -46,6 +46,53 @@ func TestFlatFeedAddActivity(t *testing.T) {
 	}
 }
 
+func TestFlatFeedAddActivityWithTo(t *testing.T) {
+
+	client, err := testSetup()
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	feed, err := client.FlatFeed("flat", "bob")
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	feedTo, err := client.FlatFeed("flat", "barry")
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	activity, err := feed.AddActivity(&FlatFeedActivity{
+		Verb:      "post",
+		ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
+		Object:    FeedID("flat:eric"),
+		Actor:     FeedID("flat:john"),
+		To :       []Feed{feedTo},
+	})
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+
+	if activity.Verb != "post" && activity.ForeignID != "48d024fe-3752-467a-8489-23febd1dec4e" {
+		t.Fail()
+	}
+
+	err = testCleanUp(client, []*FlatFeedActivity{activity}, nil, nil)
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+}
+
 func TestFlatFeedUUID(t *testing.T) {
 
 	client, err := testSetup()

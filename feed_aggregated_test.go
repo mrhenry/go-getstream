@@ -72,6 +72,53 @@ func TestAggregatedFeedAddActivity(t *testing.T) {
 	}
 }
 
+func TestAggregatedFeedAddActivityWithTo(t *testing.T) {
+
+	client, err := testSetup()
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	feed, err := client.AggregatedFeed("aggregated", "bob")
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	toFeed, err := client.AggregatedFeed("aggregated", "barry")
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	activity, err := feed.AddActivity(&AggregatedFeedActivity{
+		Verb:      "post",
+		ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
+		Object:    FeedID("flat:eric"),
+		Actor:     FeedID("flat:john"),
+		To:        []Feed{toFeed},
+	})
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+
+	if activity.Verb != "post" && activity.ForeignID != "48d024fe-3752-467a-8489-23febd1dec4e" {
+		t.Fail()
+	}
+
+	err = testCleanUp(client, nil, nil, []*AggregatedFeedActivity{activity})
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+}
+
 func TestAggregatedFeedRemoveActivity(t *testing.T) {
 
 	client, err := testSetup()
