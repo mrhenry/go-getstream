@@ -39,7 +39,7 @@ func TestActivityMetaData(t *testing.T) {
 		},
 	}
 
-	b, err := prepareForGetstream(&activity)
+	b, err := json.Marshal(activity)
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
