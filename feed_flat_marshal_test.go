@@ -34,7 +34,7 @@ func TestActivityMetaData(t *testing.T) {
 		Target:    FeedID("user:john"),
 		Verb:      "post",
 		TimeStamp: &now,
-		Data:      dataB,
+		Data:      json.RawMessage(dataB),
 		MetaData: map[string]string{
 			"meta": "data",
 		},
@@ -71,33 +71,33 @@ func TestActivityMetaData(t *testing.T) {
 	}
 
 	if resultActivity.ForeignID != activity.ForeignID {
-		fmt.Println(resultActivity.ForeignID)
 		fmt.Println(activity.ForeignID)
+		fmt.Println(resultActivity.ForeignID)
 		t.Fail()
 	}
 	if resultActivity.Actor != activity.Actor {
-		fmt.Println(resultActivity.Actor)
 		fmt.Println(activity.Actor)
+		fmt.Println(resultActivity.Actor)
 		t.Fail()
 	}
 	if resultActivity.Verb != activity.Verb {
-		fmt.Println(resultActivity.Verb)
 		fmt.Println(activity.Verb)
+		fmt.Println(resultActivity.Verb)
 		t.Fail()
 	}
 	if resultActivity.Object != activity.Object {
-		fmt.Println(resultActivity.Object)
 		fmt.Println(activity.Object)
+		fmt.Println(resultActivity.Object)
 		t.Fail()
 	}
 	if resultActivity.Target != activity.Target {
-		fmt.Println(resultActivity.Target)
 		fmt.Println(activity.Target)
+		fmt.Println(resultActivity.Target)
 		t.Fail()
 	}
-	if resultActivity.TimeStamp != activity.TimeStamp {
-		fmt.Println(resultActivity.TimeStamp)
+	if resultActivity.TimeStamp.Format("2006-01-02T15:04:05.999999") != activity.TimeStamp.Format("2006-01-02T15:04:05.999999") {
 		fmt.Println(activity.TimeStamp)
+		fmt.Println(resultActivity.TimeStamp)
 		t.Fail()
 	}
 	if resultActivity.MetaData["meta"] != activity.MetaData["meta"] {

@@ -172,7 +172,7 @@ func (a *FlatFeedActivity) UnmarshalJSON(b []byte) (err error) {
 			// if lowerKey != "id" && lowerKey != "actor" && lowerKey != "verb" && lowerKey != "object" && lowerKey != "target" && lowerKey != "time" && lowerKey != "foreign_id" && lowerKey != "data" && lowerKey != "to"
 		} else {
 			var strValue string
-			json.Unmarshal(value, strValue)
+			json.Unmarshal(value, &strValue)
 			metadata[key] = strValue
 		}
 	}
