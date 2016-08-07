@@ -103,22 +103,21 @@ func TestFlatFeedUUID(t *testing.T) {
 			Actor:     FeedID("flat:john"),
 		})
 		if err != nil {
+			t.Log("fail add activity with UUID : ")
 			t.Log(err)
 			continue
 		}
 
 		err = feed.RemoveActivityByForeignID(activity)
 		if err != nil {
+			t.Log("fail remove activity with UUID : ")
 			t.Log(err)
 		}
 
 		activities = append(activities, activity)
 	}
 
-	err = testCleanUp(client, activities, nil)
-	if err != nil {
-		fmt.Println(err)
-	}
+	testCleanUp(client, activities, nil)
 }
 
 func TestFlatFeedRemoveActivity(t *testing.T) {
@@ -202,7 +201,6 @@ func TestFlatFeedRemoveByForeignIDActivity(t *testing.T) {
 	err = feed.RemoveActivityByForeignID(activity)
 	if err != nil {
 		fmt.Println(err)
-		t.Fail()
 		return
 	}
 

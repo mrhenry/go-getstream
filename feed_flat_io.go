@@ -20,20 +20,33 @@ type FlatFeedActivity struct {
 	TimeStamp *time.Time
 
 	ForeignID string
-	Data      json.RawMessage
+	Data      *json.RawMessage
+	MetaData  map[string]string
 
 	To []Feed
 }
 
-func (a FlatFeedActivity) input() (*postFlatFeedInputActivity, error) {
+func (a FlatFeedActivity) MarshalJSON() ([]byte, error) {
 
-	input := postFlatFeedInputActivity{
-		ID:     a.ID,
-		Actor:  string(a.Actor),
-		Verb:   a.Verb,
-		Object: string(a.Object),
-		Target: string(a.Target),
-		Data:   a.Data,
+	payload := make(map[string]interface{})
+
+	for key, value := range a.MetaData {
+		payload[key] = value
+	}
+
+	payload["actor"] = string(a.Actor)
+	payload["verb"] = string(a.Verb)
+	payload["object"] = string(a.Object)
+
+	if a.ID != "" {
+		payload["id"] = a.ID
+	}
+	if a.Target != "" {
+		payload["target"] = a.Target
+	}
+
+	if a.Data != nil {
+		payload["data"] = a.Data
 	}
 
 	if a.ForeignID != "" {
@@ -44,80 +57,140 @@ func (a FlatFeedActivity) input() (*postFlatFeedInputActivity, error) {
 		if !r.MatchString(a.ForeignID) {
 			return nil, errors.New("invalid ForeignID")
 		}
-
-		input.ForeignID = a.ForeignID
+		payload["foreign_id"] = a.ForeignID
 	}
-
-	input.To = []string{}
 
 	if a.TimeStamp == nil {
-		input.RawTime = time.Now().Format("2006-01-02T15:04:05.999999")
+		payload["time"] = time.Now().Format("2006-01-02T15:04:05.999999")
 	} else {
-		input.RawTime = a.TimeStamp.Format("2006-01-02T15:04:05.999999")
+		payload["time"] = a.TimeStamp.Format("2006-01-02T15:04:05.999999")
 	}
 
+	var tos []string
 	for _, feed := range a.To {
 		to := string(feed.FeedID())
 		if feed.Token() != "" {
 			to += " " + feed.Token()
 		}
-		input.To = append(input.To, to)
+		tos = append(tos, to)
 	}
 
-	return &input, nil
-}
-
-type postFlatFeedInputActivity struct {
-	ID        string          `json:"id,omitempty"`
-	Actor     string          `json:"actor"`
-	Verb      string          `json:"verb"`
-	Object    string          `json:"object"`
-	Target    string          `json:"target,omitempty"`
-	RawTime   string          `json:"time,omitempty"`
-	ForeignID string          `json:"foreign_id,omitempty"`
-	Data      json.RawMessage `json:"data,omitempty"`
-	To        []string        `json:"to,omitempty"`
-}
-
-type postFlatFeedOutputActivity struct {
-	ID        string          `json:"id,omitempty"`
-	Actor     string          `json:"actor"`
-	Verb      string          `json:"verb"`
-	Object    string          `json:"object"`
-	Target    string          `json:"target,omitempty"`
-	RawTime   string          `json:"time,omitempty"`
-	ForeignID string          `json:"foreign_id,omitempty"`
-	Data      json.RawMessage `json:"data,omitempty"`
-	To        [][]string      `json:"to,omitempty"`
-}
-
-type postFlatFeedOutputActivities struct {
-	Activities []*postFlatFeedOutputActivity `json:"activities"`
-}
-
-func (a postFlatFeedOutputActivity) activity() *FlatFeedActivity {
-
-	activity := FlatFeedActivity{
-		ID:        a.ID,
-		Actor:     FeedID(a.Actor),
-		Verb:      a.Verb,
-		Object:    FeedID(a.Object),
-		Target:    FeedID(a.Target),
-		ForeignID: a.ForeignID,
-		Data:      a.Data,
+	if len(tos) > 0 {
+		payload["to"] = a.To
 	}
 
-	if a.RawTime != "" {
-		timeStamp, err := time.Parse("2006-01-02T15:04:05.999999", a.RawTime)
-		if err == nil {
-			activity.TimeStamp = &timeStamp
+	return json.Marshal(payload)
+
+}
+
+func (a *FlatFeedActivity) UnmarshalJSON(b []byte) (err error) {
+
+	rawPayload := make(map[string]*json.RawMessage)
+	metadata := make(map[string]string)
+
+	err = json.Unmarshal(b, &rawPayload)
+	if err != nil {
+		return err
+	}
+
+	for key, value := range rawPayload {
+		lowerKey := strings.ToLower(key)
+
+		if value == nil {
+			continue
+		}
+
+		if lowerKey == "id" {
+			var strValue string
+			json.Unmarshal(*value, &strValue)
+			a.ID = strValue
+		} else if lowerKey == "actor" {
+			var strValue string
+			json.Unmarshal(*value, &strValue)
+			a.Actor = FeedID(strValue)
+		} else if lowerKey == "verb" {
+			var strValue string
+			json.Unmarshal(*value, &strValue)
+			a.Verb = strValue
+		} else if lowerKey == "foreign_id" {
+			var strValue string
+			json.Unmarshal(*value, &strValue)
+			a.ForeignID = strValue
+		} else if lowerKey == "object" {
+			var strValue string
+			json.Unmarshal(*value, &strValue)
+			a.Object = FeedID(strValue)
+		} else if lowerKey == "target" {
+			var strValue string
+			json.Unmarshal(*value, &strValue)
+			a.Target = FeedID(strValue)
+		} else if lowerKey == "time" {
+			var strValue string
+			err := json.Unmarshal(*value, &strValue)
+			if err != nil {
+				continue
+			}
+			timeStamp, err := time.Parse("2006-01-02T15:04:05.999999", strValue)
+			if err != nil {
+				continue
+			}
+			a.TimeStamp = &timeStamp
+		} else if lowerKey == "data" {
+			a.Data = value
+		} else if lowerKey == "to" {
+
+			var to1D []string
+			var to2D [][]string
+
+			err := json.Unmarshal(*value, &to1D)
+			if err != nil {
+				err = nil
+				err = json.Unmarshal(*value, &to2D)
+				if err != nil {
+					continue
+				}
+
+				for _, to := range to2D {
+					to1D = append(to1D, to...)
+				}
+			}
+
+			for _, to := range to1D {
+
+				feed := GeneralFeed{}
+
+				match, err := regexp.MatchString(`^.*?:.*? .*?$`, to)
+				if err != nil {
+					continue
+				}
+
+				if match {
+					firstSplit := strings.Split(to, ":")
+					secondSplit := strings.Split(firstSplit[1], " ")
+
+					feed.FeedSlug = firstSplit[0]
+					feed.UserID = secondSplit[0]
+					feed.token = secondSplit[1]
+				}
+
+				a.To = append(a.To, &feed)
+			}
+
+			// if lowerKey != "id" && lowerKey != "actor" && lowerKey != "verb" && lowerKey != "object" && lowerKey != "target" && lowerKey != "time" && lowerKey != "foreign_id" && lowerKey != "data" && lowerKey != "to"
+		} else {
+			var strValue string
+			json.Unmarshal(*value, &strValue)
+			metadata[key] = strValue
 		}
 	}
 
-	for _, slice := range a.To {
-		parseFlatFeedToParams(slice, &activity)
-	}
-	return &activity
+	a.MetaData = metadata
+	return nil
+
+}
+
+type postFlatFeedOutputActivities struct {
+	Activities []*FlatFeedActivity `json:"activities"`
 }
 
 // GetFlatFeedInput is used to Get a list of Activities from a FlatFeed
@@ -133,92 +206,10 @@ type GetFlatFeedInput struct {
 	Ranking string `json:"ranking,omitempty"`
 }
 
-// GetFlatFeedOutput is the response from a FlatFeed Activities Get Request
 type GetFlatFeedOutput struct {
-	Duration   string
-	Next       string
-	Activities []*FlatFeedActivity
-}
-
-type getFlatFeedOutput struct {
-	Duration   string                       `json:"duration"`
-	Next       string                       `json:"next"`
-	Activities []*getFlatFeedOutputActivity `json:"results"`
-}
-
-func (a getFlatFeedOutput) Output() *GetFlatFeedOutput {
-
-	output := GetFlatFeedOutput{
-		Duration: a.Duration,
-		Next:     a.Next,
-	}
-
-	for _, activity := range a.Activities {
-		output.Activities = append(output.Activities, activity.activity())
-	}
-
-	return &output
-}
-
-type getFlatFeedOutputActivity struct {
-	ID        string          `json:"id,omitempty"`
-	Actor     string          `json:"actor"`
-	Verb      string          `json:"verb"`
-	Object    string          `json:"object"`
-	Target    string          `json:"target,omitempty"`
-	RawTime   string          `json:"time,omitempty"`
-	To        []string        `json:"to,omitempty"`
-	ForeignID string          `json:"foreign_id,omitempty"`
-	Data      json.RawMessage `json:"data,omitempty"`
-}
-
-func (a getFlatFeedOutputActivity) activity() *FlatFeedActivity {
-
-	activity := FlatFeedActivity{
-		ID:        a.ID,
-		Actor:     FeedID(a.Actor),
-		Verb:      a.Verb,
-		Object:    FeedID(a.Object),
-		Target:    FeedID(a.Target),
-		ForeignID: a.ForeignID,
-		Data:      a.Data,
-	}
-
-	if a.RawTime != "" {
-		timeStamp, err := time.Parse("2006-01-02T15:04:05.999999", a.RawTime)
-		if err == nil {
-			activity.TimeStamp = &timeStamp
-		}
-	}
-
-	parseFlatFeedToParams(a.To, &activity)
-
-	return &activity
-}
-
-func parseFlatFeedToParams(to []string, activity *FlatFeedActivity) {
-
-	for _, to := range to {
-
-		feed := GeneralFeed{}
-
-		match, err := regexp.MatchString(`^.*?:.*? .*?$`, to)
-		if err != nil {
-			continue
-		}
-
-		if match {
-			firstSplit := strings.Split(to, ":")
-			secondSplit := strings.Split(firstSplit[1], " ")
-
-			feed.FeedSlug = firstSplit[0]
-			feed.UserID = secondSplit[0]
-			feed.token = secondSplit[1]
-		}
-
-		activity.To = append(activity.To, &feed)
-	}
-
+	Duration   string              `json:"duration"`
+	Next       string              `json:"next"`
+	Activities []*FlatFeedActivity `json:"results"`
 }
 
 type getFlatFeedFollowersInput struct {
