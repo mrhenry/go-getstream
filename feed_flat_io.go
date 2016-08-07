@@ -129,7 +129,9 @@ func (a *FlatFeedActivity) UnmarshalJSON(b []byte) (err error) {
 			}
 			a.TimeStamp = &timeStamp
 		} else if lowerKey == "data" {
-			a.Data = value
+			var dataB json.RawMessage
+			json.Unmarshal(value, dataB)
+			a.Data = dataB
 		} else if lowerKey == "to" {
 
 			var to1D []string

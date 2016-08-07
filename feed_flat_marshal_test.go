@@ -101,13 +101,13 @@ func TestActivityMetaData(t *testing.T) {
 		t.Fail()
 	}
 	if resultActivity.MetaData["meta"] != activity.MetaData["meta"] {
-		fmt.Println(resultActivity.MetaData)
 		fmt.Println(activity.MetaData)
+		fmt.Println(resultActivity.MetaData)
 		t.Fail()
 	}
 	if string(resultActivity.Data) != string(activity.Data) {
-		fmt.Println(string(resultActivity.Data))
 		fmt.Println(string(activity.Data))
+		fmt.Println(string(resultActivity.Data))
 		t.Fail()
 	}
 
