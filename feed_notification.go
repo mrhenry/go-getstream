@@ -47,12 +47,7 @@ func (f *NotificationFeed) GenerateToken(signer *Signer) string {
 // AddActivity is used to add an Activity to a NotificationFeed
 func (f *NotificationFeed) AddActivity(activity *NotificationFeedActivity) (*NotificationFeedActivity, error) {
 
-	input, err := activity.input()
-	if err != nil {
-		return nil, err
-	}
-
-	payload, err := json.Marshal(input)
+	payload, err := json.Marshal(activity)
 	if err != nil {
 		return nil, err
 	}
@@ -64,30 +59,20 @@ func (f *NotificationFeed) AddActivity(activity *NotificationFeedActivity) (*Not
 		return nil, err
 	}
 
-	output := &postNotificationFeedOutputActivity{}
+	output := &NotificationFeedActivity{}
 	err = json.Unmarshal(resultBytes, output)
 	if err != nil {
 		return nil, err
 	}
 
-	return output.activity(), err
+	return output, err
 }
 
 // AddActivities is used to add multiple Activities to a NotificationFeed
 func (f *NotificationFeed) AddActivities(activities []*NotificationFeedActivity) ([]*NotificationFeedActivity, error) {
 
-	var inputs []*postNotificationFeedInputActivity
-
-	for _, activity := range activities {
-		activity, err := activity.input()
-		if err != nil {
-			return nil, err
-		}
-		inputs = append(inputs, activity)
-	}
-
-	payload, err := json.Marshal(map[string][]*postNotificationFeedInputActivity{
-		"activities": inputs,
+	payload, err := json.Marshal(map[string][]*NotificationFeedActivity{
+		"activities": activities,
 	})
 	if err != nil {
 		return nil, err
@@ -106,13 +91,7 @@ func (f *NotificationFeed) AddActivities(activities []*NotificationFeedActivity)
 		return nil, err
 	}
 
-	var outputActivities []*NotificationFeedActivity
-	for _, outputActivity := range output.Activities {
-		activity := outputActivity.activity()
-		outputActivities = append(outputActivities, activity)
-	}
-
-	return outputActivities, err
+	return output.Activities, err
 }
 
 // Activities returns a list of Activities for a NotificationFeedGroup

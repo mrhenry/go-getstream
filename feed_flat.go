@@ -47,12 +47,9 @@ func (f *FlatFeed) GenerateToken(signer *Signer) string {
 // AddActivity is used to add an Activity to a FlatFeed
 func (f *FlatFeed) AddActivity(activity *FlatFeedActivity) (*FlatFeedActivity, error) {
 
-	input, err := activity.input()
-	if err != nil {
-		return nil, err
-	}
+	activity.ID = ""
 
-	payload, err := json.Marshal(input)
+	payload, err := json.Marshal(activity)
 	if err != nil {
 		return nil, err
 	}
@@ -64,30 +61,24 @@ func (f *FlatFeed) AddActivity(activity *FlatFeedActivity) (*FlatFeedActivity, e
 		return nil, err
 	}
 
-	output := &postFlatFeedOutputActivity{}
+	output := &FlatFeedActivity{}
 	err = json.Unmarshal(resultBytes, output)
 	if err != nil {
 		return nil, err
 	}
 
-	return output.activity(), err
+	return output, err
 }
 
 // AddActivities is used to add multiple Activities to a FlatFeed
 func (f *FlatFeed) AddActivities(activities []*FlatFeedActivity) ([]*FlatFeedActivity, error) {
 
-	var inputs []*postFlatFeedInputActivity
-
 	for _, activity := range activities {
-		activity, err := activity.input()
-		if err != nil {
-			return nil, err
-		}
-		inputs = append(inputs, activity)
+		activity.ID = ""
 	}
 
-	payload, err := json.Marshal(map[string][]*postFlatFeedInputActivity{
-		"activities": inputs,
+	payload, err := json.Marshal(map[string][]*FlatFeedActivity{
+		"activities": activities,
 	})
 	if err != nil {
 		return nil, err
@@ -106,13 +97,7 @@ func (f *FlatFeed) AddActivities(activities []*FlatFeedActivity) ([]*FlatFeedAct
 		return nil, err
 	}
 
-	var outputActivities []*FlatFeedActivity
-	for _, outputActivity := range output.Activities {
-		activity := outputActivity.activity()
-		outputActivities = append(outputActivities, activity)
-	}
-
-	return outputActivities, err
+	return output.Activities, err
 }
 
 // Activities returns a list of Activities for a FlatFeedGroup
@@ -130,13 +115,13 @@ func (f *FlatFeed) Activities(input *GetFlatFeedInput) (*GetFlatFeedOutput, erro
 		return nil, err
 	}
 
-	output := &getFlatFeedOutput{}
+	output := &GetFlatFeedOutput{}
 	err = json.Unmarshal(result, output)
 	if err != nil {
 		return nil, err
 	}
 
-	return output.Output(), err
+	return output, err
 }
 
 // RemoveActivity removes an Activity from a FlatFeedGroup
