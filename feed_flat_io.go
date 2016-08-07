@@ -143,9 +143,6 @@ func (a *FlatFeedActivity) UnmarshalJSON(b []byte) (err error) {
 			var to1D []string
 			var to2D [][]string
 
-			fmt.Println(json.Unmarshal(*value, &to1D))
-			fmt.Println(json.Unmarshal(*value, &to2D))
-
 			err := json.Unmarshal(*value, &to1D)
 			if err != nil {
 				err = nil
