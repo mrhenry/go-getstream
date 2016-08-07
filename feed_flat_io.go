@@ -26,7 +26,7 @@ type FlatFeedActivity struct {
 	To []Feed
 }
 
-func (a *FlatFeedActivity) MarshalJSON() ([]byte, error) {
+func (a FlatFeedActivity) MarshalJSON() ([]byte, error) {
 
 	payload := make(map[string]interface{})
 
@@ -105,6 +105,10 @@ func (a *FlatFeedActivity) UnmarshalJSON(b []byte) (err error) {
 			var strValue string
 			json.Unmarshal(value, &strValue)
 			a.Verb = strValue
+		} else if lowerKey == "foreign_id" {
+			var strValue string
+			json.Unmarshal(value, &strValue)
+			a.ForeignID = strValue
 		} else if lowerKey == "object" {
 			var strValue string
 			json.Unmarshal(value, &strValue)

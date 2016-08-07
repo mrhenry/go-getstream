@@ -46,6 +46,13 @@ func TestActivityMetaData(t *testing.T) {
 		return
 	}
 
+	b2, err = json.Marshal(activity)
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
 	fmt.Println(string(b))
 
 	resultActivity := FlatFeedActivity{}
@@ -55,10 +62,21 @@ func TestActivityMetaData(t *testing.T) {
 		t.Fail()
 	}
 
+	resultActivity2 := FlatFeedActivity{}
+	err = json.Unmarshal(b2, &resultActivity2)
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+
 	fmt.Println(resultActivity)
-	fmt.Println(resultActivity.ID)
 	fmt.Println(resultActivity.ForeignID)
 	fmt.Println(string(resultActivity.Data))
 	fmt.Println(resultActivity.MetaData)
+
+	fmt.Println(resultActivity2)
+	fmt.Println(resultActivity2.ForeignID)
+	fmt.Println(string(resultActivity2.Data))
+	fmt.Println(resultActivity2.MetaData)
 
 }
