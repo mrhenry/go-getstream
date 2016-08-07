@@ -39,7 +39,7 @@ func TestActivityMetaData(t *testing.T) {
 		},
 	}
 
-	b, err := json.Marshal(activity)
+	b, err := json.Marshal(&activity)
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -58,7 +58,7 @@ func TestActivityMetaData(t *testing.T) {
 	fmt.Println(resultActivity)
 	fmt.Println(resultActivity.ID)
 	fmt.Println(resultActivity.ForeignID)
-	fmt.Println(resultActivity.Data)
+	fmt.Println(string(resultActivity.Data))
 	fmt.Println(resultActivity.MetaData)
 
 }
