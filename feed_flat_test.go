@@ -74,7 +74,7 @@ func TestFlatFeedAddActivityWithTo(t *testing.T) {
 		ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
 		Object:    FeedID("flat:eric"),
 		Actor:     FeedID("flat:john"),
-		To :       []Feed{feedTo},
+		To:        []Feed{feedTo},
 	})
 	if err != nil {
 		fmt.Println(err)
@@ -338,6 +338,38 @@ func TestFlatFeedFollow(t *testing.T) {
 		t.Fail()
 	}
 
+	testCleanUpFollows(client, []*FlatFeed{feedA, feedB})
+
+}
+
+func TestFlatFeedUnFollow(t *testing.T) {
+
+	client, err := testSetup()
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	feedA, err := client.FlatFeed("flat", "bob")
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	feedB, err := client.FlatFeed("flat", "eric")
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	err = feedA.FollowFeedWithCopyLimit(feedB, 20)
+	if err != nil {
+		t.Fail()
+	}
+
 	err = feedA.Unfollow(feedB)
 	if err != nil {
 		t.Fail()
@@ -347,7 +379,7 @@ func TestFlatFeedFollow(t *testing.T) {
 
 }
 
-func TestFlatFeedFollowKeepingHistory(t *testing.T) {
+func TestFlatFeedUnFollowKeepingHistory(t *testing.T) {
 
 	client, err := testSetup()
 	if err != nil {
