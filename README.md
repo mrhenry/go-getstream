@@ -7,35 +7,35 @@
 
 ### Supported :
 - Flat Feed
- - Add
- - Add Multiple
- - Remove
- - Remove By ForeignID
- - List
- - Follow
- - UnFollow
- - Followers
- - Following
+  - Add
+  - Add Multiple
+  - Remove
+  - Remove By ForeignID
+  - List
+  - Follow
+  - UnFollow
+  - Followers
+  - Following
 
 - Aggregated Feed
- - Add
- - Add Multiple
- - Remove
- - Remove By ForeignID
- - List
- - Follow
- - UnFollow
- - Following
+  - Add
+  - Add Multiple
+  - Remove
+  - Remove By ForeignID
+  - List
+  - Follow
+  - UnFollow
+  - Following
 
 - Notification Feed
- - Add
- - Add Multiple
- - Remove
- - Remove By ForeignID
- - List
- - Follow
- - UnFollow
- - Following
+  - Add
+  - Add Multiple
+  - Remove
+  - Remove By ForeignID
+  - List
+  - Follow
+  - UnFollow
+  - Following
 
 ### Structure :
 - Follows getstream API standards for all request payloads
