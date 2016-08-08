@@ -7,17 +7,17 @@ import (
 	"net/http"
 )
 
-// get request helper
-func (f *GeneralFeed) get(path string, signature string, payload []byte) ([]byte, error) {
-	res, err := f.request("GET", path, signature, payload)
-	return res, err
-}
-
-// post request helper
-func (f *GeneralFeed) post(path string, signature string, payload []byte) ([]byte, error) {
-	res, err := f.request("POST", path, signature, payload)
-	return res, err
-}
+// // get request helper
+// func (f *GeneralFeed) get(path string, signature string, payload []byte) ([]byte, error) {
+// 	res, err := f.request("GET", path, signature, payload)
+// 	return res, err
+// }
+//
+// // post request helper
+// func (f *GeneralFeed) post(path string, signature string, payload []byte) ([]byte, error) {
+// 	res, err := f.request("POST", path, signature, payload)
+// 	return res, err
+// }
 
 // delete request helper
 func (f *GeneralFeed) del(path string, signature string, payload []byte) error {

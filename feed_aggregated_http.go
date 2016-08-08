@@ -3,7 +3,6 @@ package getstream
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 )
@@ -59,8 +58,6 @@ func (f *AggregatedFeed) request(method, path string, signature string, payload 
 	if err != nil {
 		return nil, err
 	}
-
-	fmt.Println(string(body))
 
 	// handle the response
 	switch {
