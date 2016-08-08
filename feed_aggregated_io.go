@@ -220,21 +220,15 @@ type GetAggregatedFeedOutput struct {
 		CreatedAt     string
 		Group         string
 		ID            string
-		IsRead        bool
-		IsSeen        bool
 		UpdatedAt     string
 		Verb          string
 	}
-	Unread int
-	Unseen int
 }
 
 type getAggregatedFeedOutput struct {
-	Duration string                             `json:"duration"`
-	Next     string                             `json:"next"`
+	Duration string                           `json:"duration"`
+	Next     string                           `json:"next"`
 	Results  []*getAggregatedFeedOutputResult `json:"results"`
-	Unread   int                                `json:"unread"`
-	Unseen   int                                `json:"unseen"`
 }
 
 func (a getAggregatedFeedOutput) output() *GetAggregatedFeedOutput {
@@ -242,8 +236,6 @@ func (a getAggregatedFeedOutput) output() *GetAggregatedFeedOutput {
 	output := GetAggregatedFeedOutput{
 		Duration: a.Duration,
 		Next:     a.Next,
-		Unread:   a.Unread,
-		Unseen:   a.Unseen,
 	}
 
 	var results []*struct {
@@ -253,8 +245,6 @@ func (a getAggregatedFeedOutput) output() *GetAggregatedFeedOutput {
 		CreatedAt     string
 		Group         string
 		ID            string
-		IsRead        bool
-		IsSeen        bool
 		UpdatedAt     string
 		Verb          string
 	}
@@ -268,8 +258,6 @@ func (a getAggregatedFeedOutput) output() *GetAggregatedFeedOutput {
 			CreatedAt     string
 			Group         string
 			ID            string
-			IsRead        bool
-			IsSeen        bool
 			UpdatedAt     string
 			Verb          string
 		}{
@@ -278,8 +266,6 @@ func (a getAggregatedFeedOutput) output() *GetAggregatedFeedOutput {
 			CreatedAt:     result.CreatedAt,
 			Group:         result.Group,
 			ID:            result.ID,
-			IsRead:        result.IsRead,
-			IsSeen:        result.IsSeen,
 			UpdatedAt:     result.UpdatedAt,
 			Verb:          result.Verb,
 		}
@@ -298,15 +284,13 @@ func (a getAggregatedFeedOutput) output() *GetAggregatedFeedOutput {
 
 type getAggregatedFeedOutputResult struct {
 	Activities    []*AggregatedFeedActivity `json:"activities"`
-	ActivityCount int                         `json:"activity_count"`
-	ActorCount    int                         `json:"actor_count"`
-	CreatedAt     string                      `json:"created_at"`
-	Group         string                      `json:"group"`
-	ID            string                      `json:"id"`
-	IsRead        bool                        `json:"is_read"`
-	IsSeen        bool                        `json:"is_seen"`
-	UpdatedAt     string                      `json:"updated_at"`
-	Verb          string                      `json:"verb"`
+	ActivityCount int                       `json:"activity_count"`
+	ActorCount    int                       `json:"actor_count"`
+	CreatedAt     string                    `json:"created_at"`
+	Group         string                    `json:"group"`
+	ID            string                    `json:"id"`
+	UpdatedAt     string                    `json:"updated_at"`
+	Verb          string                    `json:"verb"`
 }
 
 type getAggregatedFeedFollowersInput struct {
@@ -315,7 +299,7 @@ type getAggregatedFeedFollowersInput struct {
 }
 
 type getAggregatedFeedFollowersOutput struct {
-	Duration string                                      `json:"duration"`
+	Duration string                                    `json:"duration"`
 	Results  []*getAggregatedFeedFollowersOutputResult `json:"results"`
 }
 
