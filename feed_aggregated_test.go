@@ -366,3 +366,52 @@ func TestAggregatedFeedFollowKeepingHistory(t *testing.T) {
 	testCleanUpFollows(client, []*FlatFeed{feedB})
 
 }
+
+func TestAggregatedFeedFollowingFollowers(t *testing.T) {
+
+	client, err := testSetup()
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	feedA, err := client.AggregatedFeed("aggregated", "bob")
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	feedB, err := client.FlatFeed("flat", "eric")
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	feedC, err := client.FlatFeed("flat", "barry")
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	err = feedA.FollowFeedWithCopyLimit(feedB, 20)
+	if err != nil {
+		t.Fail()
+	}
+
+	err = feedA.FollowFeedWithCopyLimit(feedC, 20)
+	if err != nil {
+		t.Fail()
+	}
+
+	_, err = feedA.FollowingWithLimitAndSkip(20, 0)
+	if err != nil {
+		t.Fail()
+	}
+
+	testCleanUpFollows(client, []*FlatFeed{feedB, feedC})
+
+}
