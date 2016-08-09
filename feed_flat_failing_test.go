@@ -40,8 +40,7 @@ func TestFlatFeedAddActivityFail(t *testing.T) {
 
 }
 
-//
-// func TestFlatFeedAddActivityWithTo(t *testing.T) {
+// func TestFlatFeedAddActivityWithToFail(t *testing.T) {
 //
 // 	client, err := testSetup()
 // 	if err != nil {
@@ -87,7 +86,7 @@ func TestFlatFeedAddActivityFail(t *testing.T) {
 // 		return
 // 	}
 // }
-//
+
 // func TestFlatFeedUUID(t *testing.T) {
 //
 // 	client, err := testSetup()
