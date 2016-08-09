@@ -154,7 +154,12 @@ func (a *FlatFeedActivity) UnmarshalJSON(b []byte) (err error) {
 				}
 
 				for _, to := range to2D {
-					to1D = append(to1D, to...)
+					if len(to) == 2 {
+						feedStr := to[0] + " " + to[1]
+						to1D = append(to1D, feedStr)
+					} else if len(to) == 1 {
+						to1D = append(to1D, to[0])
+					}
 				}
 			}
 
