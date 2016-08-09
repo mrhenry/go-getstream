@@ -11,6 +11,8 @@ build:
   - script:
       name: go test
       code: |
+        go get github.com/pborman/uuid
+        go get ./...
         go test -coverprofile=coverage.txt -covermode=atomic
   - script:
       name: codecov

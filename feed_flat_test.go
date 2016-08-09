@@ -69,12 +69,19 @@ func TestFlatFeedAddActivityWithTo(t *testing.T) {
 		return
 	}
 
+	feedToB, err := client.FlatFeed("flat", "larry")
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
 	activity, err := feed.AddActivity(&FlatFeedActivity{
 		Verb:      "post",
 		ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
 		Object:    FeedID("flat:eric"),
 		Actor:     FeedID("flat:john"),
-		To:        []Feed{feedTo},
+		To:        []Feed{feedTo, feedToB},
 	})
 	if err != nil {
 		fmt.Println(err)
