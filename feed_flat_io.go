@@ -164,7 +164,7 @@ func (a *FlatFeedActivity) UnmarshalJSON(b []byte) (err error) {
 
 				feed := GeneralFeed{}
 
-				match, err := regexp.MatchString(`^.*?:.*? .*?$`, to)
+				match, err := regexp.MatchString(`^\w+:\w+ .*?$`, to)
 				if err != nil {
 					continue
 				}
@@ -177,6 +177,24 @@ func (a *FlatFeedActivity) UnmarshalJSON(b []byte) (err error) {
 					feed.UserID = secondSplit[0]
 					feed.token = secondSplit[1]
 					a.To = append(a.To, &feed)
+					continue
+				}
+
+				match = false
+				err = nil
+
+				match, err = regexp.MatchString(`^\w+:\w+$`, to)
+				if err != nil {
+					continue
+				}
+
+				if match {
+					firstSplit := strings.Split(to, ":")
+
+					feed.FeedSlug = firstSplit[0]
+					feed.UserID = firstSplit[1]
+					a.To = append(a.To, &feed)
+					continue
 				}
 			}
 
