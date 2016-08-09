@@ -3,7 +3,6 @@ package getstream
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"regexp"
 	"strings"
 	"time"
@@ -140,8 +139,6 @@ func (a *FlatFeedActivity) UnmarshalJSON(b []byte) (err error) {
 			a.Data = value
 		} else if lowerKey == "to" {
 
-			fmt.Println(string([]byte(*value)))
-
 			var to1D []string
 			var to2D [][]string
 
@@ -164,8 +161,6 @@ func (a *FlatFeedActivity) UnmarshalJSON(b []byte) (err error) {
 			}
 
 			for _, to := range to1D {
-
-				fmt.Println(to)
 
 				feed := GeneralFeed{}
 
