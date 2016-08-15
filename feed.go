@@ -3,6 +3,10 @@ package getstream
 // FeedID is a typealias of string to create some value safety
 type FeedID string
 
+func (f FeedID) Value() string {
+	return string(f)
+}
+
 // Feed is the interface bundling all Feed Types
 // It exposes methods needed for all Types
 type Feed interface {
@@ -56,7 +60,7 @@ func (f *GeneralFeed) Unfollow(client *Client, target *FlatFeed) error {
 	f.Client = client
 	f.SignFeed(f.Client.signer)
 
-	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/" + string(target.FeedID()) + "/"
+	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/" + target.FeedID().Value() + "/"
 
 	return f.del(endpoint, f.Signature(), nil)
 
