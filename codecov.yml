@@ -1,0 +1,25 @@
+#
+# This codecov.yml is the default configuration for
+# all repositories on Codecov. You may adjust the settings
+# below in your own codecov.yml in your repository.
+#
+coverage:
+  precision: 2
+  round: down
+  range: 50...95
+
+  status:
+    # Learn more at https://codecov.io/docs#yaml_default_commit_status
+    project: true
+    patch: true
+    changes: false
+
+  ignore:          # files and folders that will be removed during processing
+    - "*_test.go"
+    - "feed_aggregated_http.go"
+    - "feed_flat_http.go"
+    - "feed_notification_http.go"
+
+comment:
+  layout: "header, diff"
+  behavior: default  # update if exists else create new
