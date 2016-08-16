@@ -166,7 +166,7 @@ func (f *FlatFeed) FollowFeedWithCopyLimit(target *FlatFeed, copyLimit int) erro
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/"
 
 	input := postFlatFeedFollowingInput{
-		Target:            string(target.FeedID()),
+		Target:            target.FeedID().Value(),
 		ActivityCopyLimit: copyLimit,
 	}
 
@@ -183,7 +183,7 @@ func (f *FlatFeed) FollowFeedWithCopyLimit(target *FlatFeed, copyLimit int) erro
 // Unfollow is used to Unfollow a target Feed
 func (f *FlatFeed) Unfollow(target *FlatFeed) error {
 
-	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/" + string(target.FeedID()) + "/"
+	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/" + target.FeedID().Value() + "/"
 
 	return f.del(endpoint, f.Signature(), nil)
 
@@ -193,7 +193,7 @@ func (f *FlatFeed) Unfollow(target *FlatFeed) error {
 // this means that Activities already visibile will remain
 func (f *FlatFeed) UnfollowKeepingHistory(target *FlatFeed) error {
 
-	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/" + string(target.FeedID()) + "/"
+	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/" + target.FeedID().Value() + "/"
 
 	payload, err := json.Marshal(map[string]string{
 		"keep_history": "1",
