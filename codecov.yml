@@ -16,9 +16,6 @@ coverage:
 
   ignore:          # files and folders that will be removed during processing
     - "*_test.go"
-    - "feed_aggregated_http.go"
-    - "feed_flat_http.go"
-    - "feed_notification_http.go"
 
 comment:
   layout: "header, diff"

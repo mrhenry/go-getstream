@@ -14,7 +14,7 @@ func TestGeneralFeedBasic(t *testing.T) {
 	}
 
 	general := GeneralFeed{
-		Client:   client,
+		client:   client,
 		FeedSlug: "feedGroup",
 		UserID:   "feedName",
 	}
@@ -29,13 +29,13 @@ func TestGeneralFeedBasic(t *testing.T) {
 		return
 	}
 
-	general.SignFeed(general.Client.signer)
+	general.SignFeed(general.Client().signer)
 	if "NWH8lcFHfHYEc2xdMs2kOhM-oII" != general.Token() {
 		t.Fail()
 		return
 	}
 
-	if "NWH8lcFHfHYEc2xdMs2kOhM-oII" != general.GenerateToken(general.Client.signer) {
+	if "NWH8lcFHfHYEc2xdMs2kOhM-oII" != general.GenerateToken(general.Client().signer) {
 		t.Fail()
 		return
 	}
@@ -55,7 +55,7 @@ func TestFlatFeedBasic(t *testing.T) {
 	}
 
 	flatFeed := FlatFeed{
-		Client:   client,
+		client:   client,
 		FeedSlug: "feedGroup",
 		UserID:   "feedName",
 	}
@@ -70,13 +70,13 @@ func TestFlatFeedBasic(t *testing.T) {
 		return
 	}
 
-	flatFeed.SignFeed(flatFeed.Client.signer)
+	flatFeed.SignFeed(flatFeed.Client().signer)
 	if "NWH8lcFHfHYEc2xdMs2kOhM-oII" != flatFeed.Token() {
 		t.Fail()
 		return
 	}
 
-	if "NWH8lcFHfHYEc2xdMs2kOhM-oII" != flatFeed.GenerateToken(flatFeed.Client.signer) {
+	if "NWH8lcFHfHYEc2xdMs2kOhM-oII" != flatFeed.GenerateToken(flatFeed.Client().signer) {
 		t.Fail()
 		return
 	}
@@ -96,7 +96,7 @@ func TestNotificationFeedBasic(t *testing.T) {
 	}
 
 	notificationFeed := NotificationFeed{
-		Client:   client,
+		client:   client,
 		FeedSlug: "feedGroup",
 		UserID:   "feedName",
 	}
@@ -111,13 +111,13 @@ func TestNotificationFeedBasic(t *testing.T) {
 		return
 	}
 
-	notificationFeed.SignFeed(notificationFeed.Client.signer)
+	notificationFeed.SignFeed(notificationFeed.Client().signer)
 	if "NWH8lcFHfHYEc2xdMs2kOhM-oII" != notificationFeed.Token() {
 		t.Fail()
 		return
 	}
 
-	if "NWH8lcFHfHYEc2xdMs2kOhM-oII" != notificationFeed.GenerateToken(notificationFeed.Client.signer) {
+	if "NWH8lcFHfHYEc2xdMs2kOhM-oII" != notificationFeed.GenerateToken(notificationFeed.Client().signer) {
 		t.Fail()
 		return
 	}
