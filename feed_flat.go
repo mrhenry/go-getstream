@@ -135,16 +135,16 @@ func (f *FlatFeed) RemoveActivity(input *FlatFeedActivity) error {
 // RemoveActivityByForeignID removes an Activity from a FlatFeedGroup by ForeignID
 func (f *FlatFeed) RemoveActivityByForeignID(input *FlatFeedActivity) error {
 
+	if input.ForeignID == "" {
+		return errors.New("no ForeignID")
+	}
+
 	r, err := regexp.Compile("^[a-z0-9]{8}-[a-z0-9]{4}-[1-5][a-z0-9]{3}-[a-z0-9]{4}-[a-z0-9]{12}$")
 	if err != nil {
 		return err
 	}
 	if !r.MatchString(input.ForeignID) {
 		return errors.New("invalid ForeignID")
-	}
-
-	if input.ForeignID == "" {
-		return errors.New("no ForeignID")
 	}
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + input.ForeignID + "/"
@@ -162,6 +162,7 @@ func (f *FlatFeed) RemoveActivityByForeignID(input *FlatFeedActivity) error {
 // FollowFeedWithCopyLimit sets a Feed to follow another target Feed
 // CopyLimit is the maximum number of Activities to Copy from History
 func (f *FlatFeed) FollowFeedWithCopyLimit(target *FlatFeed, copyLimit int) error {
+
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/"
 
 	input := postFlatFeedFollowingInput{

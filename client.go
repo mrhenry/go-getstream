@@ -141,6 +141,36 @@ func (c *Client) AggregatedFeed(feedSlug string, userID string) (*AggregatedFeed
 	return feed, nil
 }
 
+// UpdateActivities is used to update multiple Activities
+// func (c *Client) UpdateActivities(activities []*FlatFeedActivity) ([]*FlatFeedActivity, error) {
+//
+// 	for _, activity := range activities {
+// 		activity.ID = ""
+// 	}
+//
+// 	payload, err := json.Marshal(map[string][]*FlatFeedActivity{
+// 		"activities": activities,
+// 	})
+// 	if err != nil {
+// 		return nil, err
+// 	}
+//
+// 	endpoint := "activities/"
+//
+// 	resultBytes, err := f.post(endpoint, f.Signature(), payload)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+//
+// 	output := &postFlatFeedOutputActivities{}
+// 	err = json.Unmarshal(resultBytes, output)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+//
+// 	return output.Activities, err
+// }
+
 // absoluteUrl create a url.URL instance and sets query params (bad!!!)
 func (c *Client) absoluteURL(path string) (*url.URL, error) {
 

@@ -220,10 +220,10 @@ type GetFlatFeedInput struct {
 	Limit  int `json:"limit,omitempty"`
 	Offset int `json:"offset,omitempty"`
 
-	IDGTE int `json:"id_gte,omitempty"`
-	IDGT  int `json:"id_gt,omitempty"`
-	IDLTE int `json:"id_lte,omitempty"`
-	IDLT  int `json:"id_lt,omitempty"`
+	IDGTE string `json:"id_gte,omitempty"`
+	IDGT  string `json:"id_gt,omitempty"`
+	IDLTE string `json:"id_lte,omitempty"`
+	IDLT  string `json:"id_lt,omitempty"`
 
 	Ranking string `json:"ranking,omitempty"`
 }

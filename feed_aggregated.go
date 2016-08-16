@@ -129,16 +129,16 @@ func (f *AggregatedFeed) RemoveActivity(input *AggregatedFeedActivity) error {
 // RemoveActivityByForeignID removes an Activity from a NotificationFeedGroup by ForeignID
 func (f *AggregatedFeed) RemoveActivityByForeignID(input *AggregatedFeedActivity) error {
 
+	if input.ForeignID == "" {
+		return errors.New("no ForeignID")
+	}
+
 	r, err := regexp.Compile("^[a-z0-9]{8}-[a-z0-9]{4}-[1-5][a-z0-9]{3}-[a-z0-9]{4}-[a-z0-9]{12}$")
 	if err != nil {
 		return err
 	}
 	if !r.MatchString(input.ForeignID) {
 		return errors.New("invalid ForeignID")
-	}
-
-	if input.ForeignID == "" {
-		return errors.New("no ForeignID")
 	}
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + input.ForeignID + "/"

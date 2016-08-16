@@ -3,6 +3,7 @@ package getstream
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"regexp"
 	"strings"
 )
@@ -94,6 +95,52 @@ func (f *NotificationFeed) AddActivities(activities []*NotificationFeedActivity)
 	return output.Activities, err
 }
 
+// MarkActivitiesAsRead marks activities as read for this feed
+func (f *NotificationFeed) MarkActivitiesAsRead(activities []*NotificationFeedActivity) error {
+
+	var ids []string
+	for _, activity := range activities {
+		ids = append(ids, activity.ID)
+	}
+
+	idStr := strings.Join(ids, ",")
+
+	payload, err := json.Marshal(map[string]string{
+		"mark_read": idStr,
+	})
+	if err != nil {
+		return err
+	}
+
+	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/"
+
+	response, err := f.get(endpoint, f.Signature(), payload)
+
+	fmt.Println(string(response))
+
+	return err
+}
+
+// MarkActivitiesAsSeen marks activities as seen for this feed
+func (f *NotificationFeed) MarkActivitiesAsSeen() error {
+
+	payload, err := json.Marshal(map[string]interface{}{
+		"mark_seen": true,
+		"limit":     5,
+	})
+	if err != nil {
+		return err
+	}
+
+	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/"
+
+	response, err := f.get(endpoint, f.Signature(), payload)
+
+	fmt.Println(string(response))
+
+	return err
+}
+
 // Activities returns a list of Activities for a NotificationFeedGroup
 func (f *NotificationFeed) Activities(input *GetNotificationFeedInput) (*GetNotificationFeedOutput, error) {
 
@@ -129,16 +176,16 @@ func (f *NotificationFeed) RemoveActivity(input *NotificationFeedActivity) error
 // RemoveActivityByForeignID removes an Activity from a NotificationFeedGroup by ForeignID
 func (f *NotificationFeed) RemoveActivityByForeignID(input *NotificationFeedActivity) error {
 
+	if input.ForeignID == "" {
+		return errors.New("no ForeignID")
+	}
+
 	r, err := regexp.Compile("^[a-z0-9]{8}-[a-z0-9]{4}-[1-5][a-z0-9]{3}-[a-z0-9]{4}-[a-z0-9]{12}$")
 	if err != nil {
 		return err
 	}
 	if !r.MatchString(input.ForeignID) {
 		return errors.New("invalid ForeignID")
-	}
-
-	if input.ForeignID == "" {
-		return errors.New("no ForeignID")
 	}
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + input.ForeignID + "/"
