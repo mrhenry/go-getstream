@@ -48,3 +48,7 @@ If you can't know the contents of an Activity you can use metadata which is a `m
 ### Design Choices :
 
 - Flat / Aggregated / Notification Feeds have separate structures and methods to prevent the impact of future getstream changes. If two types of feeds grow farther apart this can be incorporated in this client without breaking everything.
+
+### Up Next :
+
+- Client Side Scope Tokens
