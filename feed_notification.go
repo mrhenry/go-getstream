@@ -11,10 +11,14 @@ import (
 // NotificationFeed is a getstream NotificationFeed
 // Use it to for CRUD on NotificationFeed Groups
 type NotificationFeed struct {
-	Client   *Client
+	client   *Client
 	FeedSlug string
 	UserID   string
 	token    string
+}
+
+func (f NotificationFeed) Client() *Client {
+	return f.client
 }
 
 // Signature is used to sign Requests : "FeedSlugUserID Token"
@@ -55,7 +59,7 @@ func (f *NotificationFeed) AddActivity(activity *NotificationFeedActivity) (*Not
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/"
 
-	resultBytes, err := f.post(endpoint, f.Signature(), payload)
+	resultBytes, err := f.Client().post(f, endpoint, f.Signature(), payload, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -81,7 +85,7 @@ func (f *NotificationFeed) AddActivities(activities []*NotificationFeedActivity)
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/"
 
-	resultBytes, err := f.post(endpoint, f.Signature(), payload)
+	resultBytes, err := f.Client().post(f, endpoint, f.Signature(), payload, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -114,7 +118,7 @@ func (f *NotificationFeed) MarkActivitiesAsRead(activities []*NotificationFeedAc
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/"
 
-	response, err := f.get(endpoint, f.Signature(), payload)
+	response, err := f.Client().get(f, endpoint, f.Signature(), payload, nil)
 
 	fmt.Println(string(response))
 
@@ -134,7 +138,7 @@ func (f *NotificationFeed) MarkActivitiesAsSeen() error {
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/"
 
-	response, err := f.get(endpoint, f.Signature(), payload)
+	response, err := f.Client().get(f, endpoint, f.Signature(), payload, nil)
 
 	fmt.Println(string(response))
 
@@ -151,7 +155,7 @@ func (f *NotificationFeed) Activities(input *GetNotificationFeedInput) (*GetNoti
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/"
 
-	result, err := f.get(endpoint, f.Signature(), payload)
+	result, err := f.Client().get(f, endpoint, f.Signature(), payload, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -170,7 +174,7 @@ func (f *NotificationFeed) RemoveActivity(input *NotificationFeedActivity) error
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + input.ID + "/"
 
-	return f.del(endpoint, f.Signature(), nil)
+	return f.Client().del(f, endpoint, f.Signature(), nil, nil)
 }
 
 // RemoveActivityByForeignID removes an Activity from a NotificationFeedGroup by ForeignID
@@ -190,14 +194,9 @@ func (f *NotificationFeed) RemoveActivityByForeignID(input *NotificationFeedActi
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + input.ForeignID + "/"
 
-	payload, err := json.Marshal(map[string]string{
+	return f.Client().del(f, endpoint, f.Signature(), nil, map[string]string{
 		"foreign_id": "1",
 	})
-	if err != nil {
-		return err
-	}
-
-	return f.del(endpoint, f.Signature(), payload)
 }
 
 // FollowFeedWithCopyLimit sets a Feed to follow another target Feed
@@ -215,7 +214,7 @@ func (f *NotificationFeed) FollowFeedWithCopyLimit(target *FlatFeed, copyLimit i
 		return err
 	}
 
-	_, err = f.post(endpoint, f.Signature(), payload)
+	_, err = f.Client().post(f, endpoint, f.Signature(), payload, nil)
 	return err
 
 }
@@ -225,7 +224,7 @@ func (f *NotificationFeed) Unfollow(target *FlatFeed) error {
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/" + target.FeedID().Value() + "/"
 
-	return f.del(endpoint, f.Signature(), nil)
+	return f.Client().del(f, endpoint, f.Signature(), nil, nil)
 
 }
 
@@ -242,7 +241,7 @@ func (f *NotificationFeed) UnfollowKeepingHistory(target *FlatFeed) error {
 		return err
 	}
 
-	return f.del(endpoint, f.Signature(), payload)
+	return f.Client().del(f, endpoint, f.Signature(), payload, nil)
 
 }
 
@@ -259,7 +258,7 @@ func (f *NotificationFeed) FollowingWithLimitAndSkip(limit int, skip int) ([]*Ge
 		return nil, err
 	}
 
-	resultBytes, err := f.get(endpoint, f.Signature(), payload)
+	resultBytes, err := f.Client().get(f, endpoint, f.Signature(), payload, nil)
 
 	output := &getNotificationFeedFollowersOutput{}
 	err = json.Unmarshal(resultBytes, output)

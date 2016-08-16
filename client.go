@@ -76,7 +76,7 @@ func (c *Client) FlatFeed(feedSlug string, userID string) (*FlatFeed, error) {
 	}
 
 	feed := &FlatFeed{
-		Client:   c,
+		client:   c,
 		FeedSlug: feedSlug,
 		UserID:   userID,
 	}
@@ -104,7 +104,7 @@ func (c *Client) NotificationFeed(feedSlug string, userID string) (*Notification
 	}
 
 	feed := &NotificationFeed{
-		Client:   c,
+		client:   c,
 		FeedSlug: feedSlug,
 		UserID:   userID,
 	}
@@ -132,7 +132,7 @@ func (c *Client) AggregatedFeed(feedSlug string, userID string) (*AggregatedFeed
 	}
 
 	feed := &AggregatedFeed{
-		Client:   c,
+		client:   c,
 		FeedSlug: feedSlug,
 		UserID:   userID,
 	}
