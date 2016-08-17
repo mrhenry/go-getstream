@@ -3,6 +3,7 @@ package getstream
 import (
 	"fmt"
 	"testing"
+	"time"
 )
 
 func ExampleNotificationFeed_AddActivity() {
@@ -440,12 +441,16 @@ func TestMarkAsSeen(t *testing.T) {
 		},
 	})
 
+	time.Sleep(time.Second * 2)
+
 	output, _ := feed.Activities(nil)
 	if output.Unseen == 0 {
 		t.Fail()
 	}
 
 	feed.MarkActivitiesAsSeenWithLimit(15)
+
+	time.Sleep(time.Second * 2)
 
 	output, _ = feed.Activities(nil)
 	if output.Unseen != 0 {
@@ -486,6 +491,8 @@ func TestMarkAsRead(t *testing.T) {
 		},
 	})
 
+	time.Sleep(time.Second * 2)
+
 	output, _ := feed.Activities(nil)
 	if output.Unread == 0 {
 		t.Fail()
@@ -499,6 +506,8 @@ func TestMarkAsRead(t *testing.T) {
 			return
 		}
 	}
+
+	time.Sleep(time.Second * 2)
 
 	output, _ = feed.Activities(nil)
 	if output.Unread != 0 {
