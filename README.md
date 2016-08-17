@@ -53,3 +53,7 @@ If you can't know the contents of an Activity you can use metadata which is a `m
 ### Design Choices :
 
 - Flat / Aggregated / Notification Feeds have separate structures and methods to prevent the impact of future getstream changes. If two types of feeds grow farther apart this can be incorporated in this client without breaking everything.
+
+### Credits :
+
+This pkg started out as a fork from https://github.com/hyperworks/go-getstream and still borrows snippets (token & errors) from the original. I decided to make this a separate repo entirely because drastic changes were made to the interface and internal workings.

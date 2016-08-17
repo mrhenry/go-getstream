@@ -4,6 +4,8 @@ import (
 	"time"
 )
 
+// Credits to https://github.com/hyperworks/go-getstream for the error handling.
+
 // Error is a getstream error
 type Error struct {
 	Code       int `json:"code"`
