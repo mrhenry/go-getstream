@@ -3,8 +3,8 @@ package getstream
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -109,38 +109,24 @@ func (f *NotificationFeed) MarkActivitiesAsRead(activities []*NotificationFeedAc
 
 	idStr := strings.Join(ids, ",")
 
-	payload, err := json.Marshal(map[string]string{
-		"mark_read": idStr,
-	})
-	if err != nil {
-		return err
-	}
-
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/"
 
-	response, err := f.Client().get(f, endpoint, f.Signature(), payload, nil)
-
-	fmt.Println(string(response))
+	_, err := f.Client().get(f, endpoint, f.Signature(), nil, map[string]string{
+		"mark_read": idStr,
+	})
 
 	return err
 }
 
-// MarkActivitiesAsSeen marks activities as seen for this feed
-func (f *NotificationFeed) MarkActivitiesAsSeen() error {
-
-	payload, err := json.Marshal(map[string]interface{}{
-		"mark_seen": true,
-		"limit":     5,
-	})
-	if err != nil {
-		return err
-	}
+// MarkActivitiesAsSeenWithLimit marks activities as seen for this feed
+func (f *NotificationFeed) MarkActivitiesAsSeenWithLimit(limit int) error {
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/"
 
-	response, err := f.Client().get(f, endpoint, f.Signature(), payload, nil)
-
-	fmt.Println(string(response))
+	_, err := f.Client().get(f, endpoint, f.Signature(), nil, map[string]string{
+		"mark_seen": "true",
+		"limit":     strconv.Itoa(limit),
+	})
 
 	return err
 }
@@ -148,9 +134,14 @@ func (f *NotificationFeed) MarkActivitiesAsSeen() error {
 // Activities returns a list of Activities for a NotificationFeedGroup
 func (f *NotificationFeed) Activities(input *GetNotificationFeedInput) (*GetNotificationFeedOutput, error) {
 
-	payload, err := json.Marshal(input)
-	if err != nil {
-		return nil, err
+	var payload []byte
+	var err error
+
+	if input != nil {
+		payload, err = json.Marshal(input)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/"
