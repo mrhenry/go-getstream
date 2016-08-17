@@ -3,8 +3,6 @@ package getstream
 import (
 	"fmt"
 	"testing"
-
-	"github.com/mrhenry/go-getstream"
 )
 
 func ExampleNotificationFeed_AddActivity() {
@@ -434,10 +432,10 @@ func TestMarkAsSeen(t *testing.T) {
 		return
 	}
 
-	feed.AddActivities([]*getstream.NotificationFeedActivity{
-		&getstream.NotificationFeedActivity{
-			Actor:  getstream.FeedID("flat:larry"),
-			Object: getstream.FeedID("notification:larry"),
+	feed.AddActivities([]*NotificationFeedActivity{
+		&NotificationFeedActivity{
+			Actor:  FeedID("flat:larry"),
+			Object: FeedID("notification:larry"),
 			Verb:   "post",
 		},
 	})
@@ -480,10 +478,10 @@ func TestMarkAsRead(t *testing.T) {
 		return
 	}
 
-	feed.AddActivities([]*getstream.NotificationFeedActivity{
-		&getstream.NotificationFeedActivity{
-			Actor:  getstream.FeedID("flat:larry"),
-			Object: getstream.FeedID("notification:larry"),
+	feed.AddActivities([]*NotificationFeedActivity{
+		&NotificationFeedActivity{
+			Actor:  FeedID("flat:larry"),
+			Object: FeedID("notification:larry"),
 			Verb:   "post",
 		},
 	})
