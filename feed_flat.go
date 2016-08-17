@@ -107,9 +107,14 @@ func (f *FlatFeed) AddActivities(activities []*FlatFeedActivity) ([]*FlatFeedAct
 // Activities returns a list of Activities for a FlatFeedGroup
 func (f *FlatFeed) Activities(input *GetFlatFeedInput) (*GetFlatFeedOutput, error) {
 
-	payload, err := json.Marshal(input)
-	if err != nil {
-		return nil, err
+	var payload []byte
+	var err error
+
+	if input != nil {
+		payload, err = json.Marshal(input)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/"
