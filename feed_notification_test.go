@@ -3,6 +3,8 @@ package getstream
 import (
 	"fmt"
 	"testing"
+
+	"github.com/mrhenry/go-getstream"
 )
 
 func ExampleNotificationFeed_AddActivity() {
@@ -414,4 +416,103 @@ func TestNotificationFeedFollowingFollowers(t *testing.T) {
 
 	testCleanUpFollows(client, []*FlatFeed{feedB, feedC})
 
+}
+
+func TestMarkAsSeen(t *testing.T) {
+
+	client, err := testSetup()
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	feed, err := client.NotificationFeed("notification", "larry")
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	feed.AddActivities([]*getstream.NotificationFeedActivity{
+		&getstream.NotificationFeedActivity{
+			Actor:  getstream.FeedID("flat:larry"),
+			Object: getstream.FeedID("notification:larry"),
+			Verb:   "post",
+		},
+	})
+
+	output, _ := feed.Activities(nil)
+	if output.Unseen == 0 {
+		t.Fail()
+	}
+
+	feed.MarkActivitiesAsSeenWithLimit(15)
+
+	output, _ = feed.Activities(nil)
+	if output.Unseen != 0 {
+		t.Fail()
+	}
+
+	for _, result := range output.Results {
+		err = testCleanUp(client, nil, result.Activities, nil)
+		if err != nil {
+			fmt.Println(err)
+			t.Fail()
+			return
+		}
+	}
+}
+
+func TestMarkAsRead(t *testing.T) {
+
+	client, err := testSetup()
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	feed, err := client.NotificationFeed("notification", "larry")
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	feed.AddActivities([]*getstream.NotificationFeedActivity{
+		&getstream.NotificationFeedActivity{
+			Actor:  getstream.FeedID("flat:larry"),
+			Object: getstream.FeedID("notification:larry"),
+			Verb:   "post",
+		},
+	})
+
+	output, _ := feed.Activities(nil)
+	if output.Unread == 0 {
+		t.Fail()
+	}
+
+	for _, result := range output.Results {
+		err = feed.MarkActivitiesAsRead(result.Activities)
+		if err != nil {
+			fmt.Println(err)
+			t.Fail()
+			return
+		}
+	}
+
+	output, _ = feed.Activities(nil)
+	if output.Unread != 0 {
+		t.Fail()
+	}
+
+	for _, result := range output.Results {
+		err = testCleanUp(client, nil, result.Activities, nil)
+		if err != nil {
+			fmt.Println(err)
+			t.Fail()
+			return
+		}
+	}
 }
