@@ -11,6 +11,8 @@ import (
 	"github.com/pborman/uuid"
 )
 
+// Credits to https://github.com/hyperworks/go-getstream for the urlSafe and generateToken methods
+
 // Signer is responsible for generating Tokens
 type Signer struct {
 	Secret string
