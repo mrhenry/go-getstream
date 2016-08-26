@@ -4,7 +4,7 @@
 [![godoc](https://godoc.org/github.com/mrhenry/go-getstream?status.svg)](https://godoc.org/github.com/mrhenry/go-getstream)
 [![codecov](https://codecov.io/gh/mrhenry/go-getstream/branch/master/graph/badge.svg)](https://codecov.io/gh/mrhenry/go-getstream)
 
-## Beta [getstream.io](getstream.io) client in pure GO.
+Golang pkg for [getstream.io](getstream.io). The goal of this package is to provide server-side support for getstream and to generate client-side tokens.
 
 ### Supported :
 - Flat Feed
