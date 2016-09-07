@@ -40,8 +40,8 @@ Golang pkg for [getstream.io](getstream.io). The goal of this package is to prov
   - Mark Read
   - Mark Seen
 
-- Untested :
-  - Client Side Scope Tokens
+- Client Side Tokens :
+  - fully implemented
 
 ### Structure :
 - Follows getstream API standards for all request payloads
@@ -49,7 +49,7 @@ Golang pkg for [getstream.io](getstream.io). The goal of this package is to prov
 - `metadata` : Top-level key/value pairs
 
 You can/should use `data` to send golang structures through getstream. This will give you the benefit of golang's static type system.
-If you can't know the contents of an Activity you can use metadata which is a `map[string]string`, encoding to json will move this values to the top-level. This means that keys which conflict with standard getstream keys will be overwritten. The benefit of this structure is that these key/value pairs will be exposes to getstream internals such as ranking,...
+If you can't know the contents of an Activity you can use metadata which is a `map[string]string`, encoding to json will move these values to the top-level. This means that keys which conflict with standard getstream keys will be overwritten. The benefit of this structure is that these key/value pairs will be exposed to getstream internals such as ranking,...
 
 ### Design Choices :
 
@@ -58,3 +58,5 @@ If you can't know the contents of an Activity you can use metadata which is a `m
 ### Credits :
 
 This pkg started out as a fork from https://github.com/hyperworks/go-getstream and still borrows snippets (token & errors) from the original. I decided to make this a separate repo entirely because drastic changes were made to the interface and internal workings.
+
+We received great support from getstream while creating this pkg for which we are very grateful and we also want to thank them for creating getstream in the first place.

@@ -5,10 +5,8 @@ import (
 	"crypto/sha1"
 	"encoding/base64"
 	"strings"
-	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/pborman/uuid"
 )
 
 // Credits to https://github.com/hyperworks/go-getstream for the urlSafe and generateToken methods
@@ -43,16 +41,16 @@ func (s Signer) GenerateFeedScopeToken(resource ScopeContext, action ScopeAction
 		"resource": resource.Value(),
 		"action":   action.Value(),
 		// "aud":
-		"exp": time.Now().Add(time.Hour * 1),
-		"jti": uuid.New(),
-		"iat": time.Now(),
+		// "exp": time.Now().UTC().Add(time.Hour * 1),
+		// "jti": uuid.New(),
+		// "iat": time.Now(),
 		// "iss":
-		"nbf": time.Now().Unix(),
+		// "nbf": time.Now().Unix(),
 		// "sub":
 	}
 
 	if feed != nil {
-		claims["feed_id"] = feed.FeedID().Value()
+		claims["feed_id"] = feed.feedIDWithoutColon()
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -62,6 +60,7 @@ func (s Signer) GenerateFeedScopeToken(resource ScopeContext, action ScopeAction
 	if err != nil {
 		return "", err
 	}
+
 	return tokenString, nil
 }
 
@@ -72,11 +71,11 @@ func (s Signer) GenerateUserScopeToken(resource ScopeContext, action ScopeAction
 		"resource": resource.Value(),
 		"action":   action.Value(),
 		// "aud":
-		"exp": time.Now().Add(time.Hour * 1),
-		"jti": uuid.New(),
-		"iat": time.Now(),
+		// "exp": time.Now().UTC().Add(time.Hour * 1),
+		// "jti": uuid.New(),
+		// "iat": time.Now(),
 		// "iss":
-		"nbf": time.Now().Unix(),
+		// "nbf": time.Now().Unix(),
 		// "sub":
 	}
 
@@ -91,5 +90,6 @@ func (s Signer) GenerateUserScopeToken(resource ScopeContext, action ScopeAction
 	if err != nil {
 		return "", err
 	}
+
 	return tokenString, nil
 }

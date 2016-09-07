@@ -27,6 +27,8 @@ type NotificationFeedActivity struct {
 	To []Feed
 }
 
+// MarshalJSON is the custom marshal function for NotificationFeedActivities
+// It will be used by json.Marshal()
 func (a NotificationFeedActivity) MarshalJSON() ([]byte, error) {
 
 	payload := make(map[string]interface{})
@@ -85,6 +87,8 @@ func (a NotificationFeedActivity) MarshalJSON() ([]byte, error) {
 
 }
 
+// UnmarshalJSON is the custom marshal function for NotificationFeedActivities
+// It will be used by json.Unmarshal()
 func (a *NotificationFeedActivity) UnmarshalJSON(b []byte) (err error) {
 
 	rawPayload := make(map[string]*json.RawMessage)

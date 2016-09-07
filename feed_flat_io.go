@@ -26,6 +26,8 @@ type FlatFeedActivity struct {
 	To []Feed
 }
 
+// MarshalJSON is the custom marshal function for FlatFeedActivities
+// It will be used by json.Marshal()
 func (a FlatFeedActivity) MarshalJSON() ([]byte, error) {
 
 	payload := make(map[string]interface{})
@@ -83,6 +85,8 @@ func (a FlatFeedActivity) MarshalJSON() ([]byte, error) {
 
 }
 
+// UnmarshalJSON is the custom marshal function for FlatFeedActivities
+// It will be used by json.Unmarshal()
 func (a *FlatFeedActivity) UnmarshalJSON(b []byte) (err error) {
 
 	rawPayload := make(map[string]*json.RawMessage)
@@ -228,6 +232,7 @@ type GetFlatFeedInput struct {
 	Ranking string `json:"ranking,omitempty"`
 }
 
+// GetFlatFeedOutput is the response from a FlatFeed Activities Get Request
 type GetFlatFeedOutput struct {
 	Duration   string              `json:"duration"`
 	Next       string              `json:"next"`

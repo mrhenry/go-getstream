@@ -16,6 +16,7 @@ type FlatFeed struct {
 	token    string
 }
 
+// Client returns the Client associated with the FlatFeed
 func (f FlatFeed) Client() *Client {
 	return f.client
 }
@@ -23,9 +24,9 @@ func (f FlatFeed) Client() *Client {
 // Signature is used to sign Requests : "FeedSlugUserID Token"
 func (f *FlatFeed) Signature() string {
 	if f.Token() == "" {
-		return f.FeedSlug + f.UserID
+		return f.feedIDWithoutColon()
 	}
-	return f.FeedSlug + f.UserID + " " + f.Token()
+	return f.feedIDWithoutColon() + " " + f.Token()
 }
 
 // FeedID is the combo if the FeedSlug and UserID : "FeedSlug:UserID"
@@ -33,9 +34,13 @@ func (f *FlatFeed) FeedID() FeedID {
 	return FeedID(f.FeedSlug + ":" + f.UserID)
 }
 
+func (f *FlatFeed) feedIDWithoutColon() string {
+	return f.FeedSlug + f.UserID
+}
+
 // SignFeed sets the token on a Feed
 func (f *FlatFeed) SignFeed(signer *Signer) {
-	f.token = signer.generateToken(f.FeedSlug + f.UserID)
+	f.token = signer.generateToken(f.feedIDWithoutColon())
 }
 
 // Token returns the token of a Feed
@@ -213,6 +218,8 @@ func (f *FlatFeed) UnfollowKeepingHistory(target *FlatFeed) error {
 // FollowersWithLimitAndSkip returns a list of GeneralFeed following the current FlatFeed
 func (f *FlatFeed) FollowersWithLimitAndSkip(limit int, skip int) ([]*GeneralFeed, error) {
 
+	var err error
+
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "followers" + "/"
 
 	payload, err := json.Marshal(&getFlatFeedFollowersInput{
@@ -236,7 +243,8 @@ func (f *FlatFeed) FollowersWithLimitAndSkip(limit int, skip int) ([]*GeneralFee
 
 		feed := GeneralFeed{}
 
-		match, err := regexp.MatchString(`^.*?:.*?$`, result.FeedID)
+		var match bool
+		match, err = regexp.MatchString(`^.*?:.*?$`, result.FeedID)
 		if err != nil {
 			continue
 		}
@@ -257,6 +265,8 @@ func (f *FlatFeed) FollowersWithLimitAndSkip(limit int, skip int) ([]*GeneralFee
 
 // FollowingWithLimitAndSkip returns a list of GeneralFeed followed by the current FlatFeed
 func (f *FlatFeed) FollowingWithLimitAndSkip(limit int, skip int) ([]*GeneralFeed, error) {
+
+	var err error
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/"
 
@@ -281,7 +291,8 @@ func (f *FlatFeed) FollowingWithLimitAndSkip(limit int, skip int) ([]*GeneralFee
 
 		feed := GeneralFeed{}
 
-		match, err := regexp.MatchString(`^.*?:.*?$`, result.FeedID)
+		var match bool
+		match, err = regexp.MatchString(`^.*?:.*?$`, result.FeedID)
 		if err != nil {
 			continue
 		}

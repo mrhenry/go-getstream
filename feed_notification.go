@@ -17,6 +17,7 @@ type NotificationFeed struct {
 	token    string
 }
 
+// Client returns the Client associated with the NotificationFeed
 func (f NotificationFeed) Client() *Client {
 	return f.client
 }
@@ -24,9 +25,9 @@ func (f NotificationFeed) Client() *Client {
 // Signature is used to sign Requests : "FeedSlugUserID Token"
 func (f *NotificationFeed) Signature() string {
 	if f.Token() == "" {
-		return f.FeedSlug + f.UserID
+		return f.feedIDWithoutColon()
 	}
-	return f.FeedSlug + f.UserID + " " + f.Token()
+	return f.feedIDWithoutColon() + " " + f.Token()
 }
 
 // FeedID is the combo if the FeedSlug and UserID : "FeedSlug:UserID"
@@ -34,9 +35,13 @@ func (f *NotificationFeed) FeedID() FeedID {
 	return FeedID(f.FeedSlug + ":" + f.UserID)
 }
 
+func (f *NotificationFeed) feedIDWithoutColon() string {
+	return f.FeedSlug + f.UserID
+}
+
 // SignFeed sets the token on a Feed
 func (f *NotificationFeed) SignFeed(signer *Signer) {
-	f.token = signer.generateToken(f.FeedSlug + f.UserID)
+	f.token = signer.generateToken(f.feedIDWithoutColon())
 }
 
 // Token returns the token of a Feed
@@ -239,6 +244,8 @@ func (f *NotificationFeed) UnfollowKeepingHistory(target *FlatFeed) error {
 // FollowingWithLimitAndSkip returns a list of GeneralFeed followed by the current FlatFeed
 func (f *NotificationFeed) FollowingWithLimitAndSkip(limit int, skip int) ([]*GeneralFeed, error) {
 
+	var err error
+
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/"
 
 	payload, err := json.Marshal(&getNotificationFeedFollowersInput{
@@ -262,7 +269,8 @@ func (f *NotificationFeed) FollowingWithLimitAndSkip(limit int, skip int) ([]*Ge
 
 		feed := GeneralFeed{}
 
-		match, err := regexp.MatchString(`^.*?:.*?$`, result.FeedID)
+		var match bool
+		match, err = regexp.MatchString(`^.*?:.*?$`, result.FeedID)
 		if err != nil {
 			continue
 		}

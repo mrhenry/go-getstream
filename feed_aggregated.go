@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-// NotificationFeed is a getstream AggregatedFeed
+// AggregatedFeed is a getstream AggregatedFeed
 // Use it to for CRUD on AggregatedFeed Groups
 type AggregatedFeed struct {
 	client   *Client
@@ -16,6 +16,7 @@ type AggregatedFeed struct {
 	token    string
 }
 
+// Client returns the Client associated with the AggregatedFeed
 func (f AggregatedFeed) Client() *Client {
 	return f.client
 }
@@ -23,9 +24,9 @@ func (f AggregatedFeed) Client() *Client {
 // Signature is used to sign Requests : "FeedSlugUserID Token"
 func (f *AggregatedFeed) Signature() string {
 	if f.Token() == "" {
-		return f.FeedSlug + f.UserID
+		return f.feedIDWithoutColon()
 	}
-	return f.FeedSlug + f.UserID + " " + f.Token()
+	return f.feedIDWithoutColon() + " " + f.Token()
 }
 
 // FeedID is the combo if the FeedSlug and UserID : "FeedSlug:UserID"
@@ -33,9 +34,13 @@ func (f *AggregatedFeed) FeedID() FeedID {
 	return FeedID(f.FeedSlug + ":" + f.UserID)
 }
 
+func (f *AggregatedFeed) feedIDWithoutColon() string {
+	return f.FeedSlug + f.UserID
+}
+
 // SignFeed sets the token on a Feed
 func (f *AggregatedFeed) SignFeed(signer *Signer) {
-	f.token = signer.generateToken(f.FeedSlug + f.UserID)
+	f.token = signer.generateToken(f.feedIDWithoutColon())
 }
 
 // Token returns the token of a Feed
@@ -206,6 +211,8 @@ func (f *AggregatedFeed) UnfollowKeepingHistory(target *FlatFeed) error {
 // FollowingWithLimitAndSkip returns a list of GeneralFeed followed by the current FlatFeed
 func (f *AggregatedFeed) FollowingWithLimitAndSkip(limit int, skip int) ([]*GeneralFeed, error) {
 
+	var err error
+
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/"
 
 	payload, err := json.Marshal(&getAggregatedFeedFollowersInput{
@@ -229,7 +236,8 @@ func (f *AggregatedFeed) FollowingWithLimitAndSkip(limit int, skip int) ([]*Gene
 
 		feed := GeneralFeed{}
 
-		match, err := regexp.MatchString(`^.*?:.*?$`, result.FeedID)
+		var match bool
+		match, err = regexp.MatchString(`^.*?:.*?$`, result.FeedID)
 		if err != nil {
 			continue
 		}
