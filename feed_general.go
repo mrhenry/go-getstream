@@ -9,6 +9,7 @@ type GeneralFeed struct {
 	token    string
 }
 
+// Client returns the Client associated with the GeneralFeed
 func (f GeneralFeed) Client() *Client {
 	return f.client
 }
@@ -16,9 +17,9 @@ func (f GeneralFeed) Client() *Client {
 // Signature is used to sign Requests : "FeedSlugUserID Token"
 func (f *GeneralFeed) Signature() string {
 	if f.Token() == "" {
-		return f.FeedSlug + f.UserID
+		return f.feedIDWithoutColon()
 	}
-	return f.FeedSlug + f.UserID + " " + f.Token()
+	return f.feedIDWithoutColon() + " " + f.Token()
 }
 
 // FeedID is the combo if the FeedSlug and UserID : "FeedSlug:UserID"
@@ -26,9 +27,13 @@ func (f *GeneralFeed) FeedID() FeedID {
 	return FeedID(f.FeedSlug + ":" + f.UserID)
 }
 
+func (f *GeneralFeed) feedIDWithoutColon() string {
+	return f.FeedSlug + f.UserID
+}
+
 // SignFeed sets the token on a Feed
 func (f *GeneralFeed) SignFeed(signer *Signer) {
-	f.token = signer.generateToken(f.FeedSlug + f.UserID)
+	f.token = signer.generateToken(f.feedIDWithoutColon())
 }
 
 // Token returns the token of a Feed

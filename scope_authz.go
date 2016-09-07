@@ -4,14 +4,14 @@ package getstream
 type ScopeAction uint32
 
 const (
-	// ReadAction : GET, OPTIONS, HEAD
-	ReadAction ScopeAction = 1
-	// WriteAction : POST, PUT, PATCH
-	WriteAction ScopeAction = 2
-	// DeleteAction : DELETE
-	DeleteAction ScopeAction = 4
-	// AllActions : The JWT has permission to all HTTP verbs
-	AllActions ScopeAction = 8
+	// ScopeActionRead : GET, OPTIONS, HEAD
+	ScopeActionRead ScopeAction = 1
+	// ScopeActionWrite : POST, PUT, PATCH
+	ScopeActionWrite ScopeAction = 2
+	// ScopeActionDelete : DELETE
+	ScopeActionDelete ScopeAction = 4
+	// ScopeActionAll : The JWT has permission to all HTTP verbs
+	ScopeActionAll ScopeAction = 8
 )
 
 // Value returns a string representation
@@ -34,14 +34,14 @@ func (a ScopeAction) Value() string {
 type ScopeContext uint32
 
 const (
-	// ActivitiesContext :  Activities Endpoint
-	ActivitiesContext ScopeContext = 1
-	// FeedContext : Feed Endpoint
-	FeedContext ScopeContext = 2
-	// FollowerContext : Following + Followers Endpoint
-	FollowerContext ScopeContext = 4
-	// AllContexts : Allow access to any resource
-	AllContexts ScopeContext = 8
+	// ScopeContextActivities :  Activities Endpoint
+	ScopeContextActivities ScopeContext = 1
+	// ScopeContextFeed : Feed Endpoint
+	ScopeContextFeed ScopeContext = 2
+	// ScopeContextFollower : Following + Followers Endpoint
+	ScopeContextFollower ScopeContext = 4
+	// ScopeContextAll : Allow access to any resource
+	ScopeContextAll ScopeContext = 8
 )
 
 // Value returns a string representation

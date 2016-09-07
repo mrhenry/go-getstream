@@ -8,9 +8,9 @@ import (
 	"time"
 )
 
-// NotificationFeedActivity is a getstream Activity
-// Use it to post activities to NotificationFeeds
-// It is also the response from NotificationFeed Fetch and List Requests
+// AggregatedFeedActivity is a getstream Activity
+// Use it to post activities to AggregatedFeeds
+// It is also the response from AggregatedFeed Fetch and List Requests
 type AggregatedFeedActivity struct {
 	ID        string
 	Actor     FeedID
@@ -27,6 +27,8 @@ type AggregatedFeedActivity struct {
 	To []Feed
 }
 
+// MarshalJSON is the custom marshal function for AggregatedFeedActivities
+// It will be used by json.Marshal()
 func (a AggregatedFeedActivity) MarshalJSON() ([]byte, error) {
 
 	payload := make(map[string]interface{})
@@ -85,6 +87,8 @@ func (a AggregatedFeedActivity) MarshalJSON() ([]byte, error) {
 
 }
 
+// UnmarshalJSON is the custom unmarshal function for AggregatedFeedActivities
+// It will be used by json.Unmarshal()
 func (a *AggregatedFeedActivity) UnmarshalJSON(b []byte) (err error) {
 
 	rawPayload := make(map[string]*json.RawMessage)
@@ -219,7 +223,7 @@ type postAggregatedFeedOutputActivities struct {
 	Activities []*AggregatedFeedActivity `json:"activities"`
 }
 
-// GetNotificationFeedInput is used to Get a list of Activities from a NotificationFeed
+// GetAggregatedFeedInput is used to Get a list of Activities from a AggregatedFeed
 type GetAggregatedFeedInput struct {
 	Limit  int `json:"limit,omitempty"`
 	Offset int `json:"offset,omitempty"`
@@ -232,7 +236,7 @@ type GetAggregatedFeedInput struct {
 	Ranking string `json:"ranking,omitempty"`
 }
 
-// GetNotificationFeedOutput is the response from a NotificationFeed Activities Get Request
+// GetAggregatedFeedOutput is the response from a AggregatedFeed Activities Get Request
 type GetAggregatedFeedOutput struct {
 	Duration string
 	Next     string
