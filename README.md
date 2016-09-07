@@ -6,6 +6,59 @@
 
 Golang pkg for [getstream.io](getstream.io). The goal of this package is to provide server-side support for getstream and to generate client-side tokens.
 
+### Examples :
+
+Server Side
+
+```go
+client, err := getstream.New("APIKey", "APISecret", "AppID", "Region")
+if err != nil {
+  fmt.Println(err)
+  return
+}
+
+feed, err := client.FlatFeed("FeedSlug", "UserID")
+if err != nil {
+  fmt.Println(err)
+  return
+}
+
+activity, err := feed.AddActivity(&FlatFeedActivity{
+  Verb:      "post",
+  ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
+  Object:    FeedID("flat:eric"),
+  Actor:     FeedID("flat:john"),
+})
+if err != nil {
+  fmt.Println(err)
+}
+```
+
+Client Side Token
+
+```go
+signer := getstream.Signer{
+  Secret: "APIKey",
+}
+
+client, err := getstream.New("APIKey", "APISecret", "AppID", "Region")
+if err != nil {
+  fmt.Println(err)
+  return
+}
+
+feed, err := client.FlatFeed("FeedSlug", "UserID")
+if err != nil {
+  fmt.Println(err)
+  return
+}
+
+token, err := signer.GenerateFeedScopeToken(ScopeContextFeed, ScopeActionRead, feed)
+if err != nil {
+  fmt.Println(err)
+}
+```
+
 ### Supported :
 - Flat Feed
   - Add
