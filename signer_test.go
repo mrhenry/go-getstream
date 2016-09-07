@@ -39,27 +39,27 @@ func TestFeedScopeToken(t *testing.T) {
 		t.Fail()
 	}
 
-	_, err = client.signer.GenerateFeedScopeToken(FeedContext, ReadAction, feed)
+	_, err = client.signer.GenerateFeedScopeToken(ScopeContextFeed, ScopeActionRead, feed)
 	if err != nil {
 		t.Fail()
 	}
 
-	_, err = client.signer.GenerateFeedScopeToken(ActivitiesContext, WriteAction, feed)
+	_, err = client.signer.GenerateFeedScopeToken(ScopeContextActivities, ScopeActionWrite, feed)
 	if err != nil {
 		t.Fail()
 	}
 
-	_, err = client.signer.GenerateFeedScopeToken(FollowerContext, DeleteAction, feed)
+	_, err = client.signer.GenerateFeedScopeToken(ScopeContextFollower, ScopeActionDelete, feed)
 	if err != nil {
 		t.Fail()
 	}
 
-	_, err = client.signer.GenerateFeedScopeToken(AllContexts, AllActions, feed)
+	_, err = client.signer.GenerateFeedScopeToken(ScopeContextAll, ScopeActionAll, feed)
 	if err != nil {
 		t.Fail()
 	}
 
-	_, err = client.signer.GenerateFeedScopeToken(FeedContext, ReadAction, nil)
+	_, err = client.signer.GenerateFeedScopeToken(ScopeContextFeed, ScopeActionRead, nil)
 	if err != nil {
 		t.Fail()
 	}
@@ -74,27 +74,27 @@ func TestUserScopeToken(t *testing.T) {
 
 	user := "bob"
 
-	_, err = client.signer.GenerateUserScopeToken(FeedContext, ReadAction, user)
+	_, err = client.signer.GenerateUserScopeToken(ScopeContextFeed, ScopeActionRead, user)
 	if err != nil {
 		t.Fail()
 	}
 
-	_, err = client.signer.GenerateUserScopeToken(ActivitiesContext, WriteAction, user)
+	_, err = client.signer.GenerateUserScopeToken(ScopeContextActivities, ScopeActionWrite, user)
 	if err != nil {
 		t.Fail()
 	}
 
-	_, err = client.signer.GenerateUserScopeToken(FollowerContext, DeleteAction, user)
+	_, err = client.signer.GenerateUserScopeToken(ScopeContextFollower, ScopeActionDelete, user)
 	if err != nil {
 		t.Fail()
 	}
 
-	_, err = client.signer.GenerateUserScopeToken(AllContexts, AllActions, user)
+	_, err = client.signer.GenerateUserScopeToken(ScopeContextAll, ScopeActionAll, user)
 	if err != nil {
 		t.Fail()
 	}
 
-	_, err = client.signer.GenerateUserScopeToken(FeedContext, ReadAction, "")
+	_, err = client.signer.GenerateUserScopeToken(ScopeContextFeed, ScopeActionRead, "")
 	if err != nil {
 		t.Fail()
 	}
