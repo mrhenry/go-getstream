@@ -51,7 +51,7 @@ func New(key, secret, appID, location string) (*Client, error) {
 		AppID:    appID,
 		Location: location,
 
-		signer: &Signer{
+		Signer: &Signer{
 			Secret: secret,
 		},
 	}, nil
@@ -81,7 +81,7 @@ func (c *Client) FlatFeed(feedSlug string, userID string) (*FlatFeed, error) {
 		UserID:   userID,
 	}
 
-	feed.SignFeed(c.signer)
+	feed.SignFeed(c.Signer)
 	return feed, nil
 }
 
@@ -109,7 +109,7 @@ func (c *Client) NotificationFeed(feedSlug string, userID string) (*Notification
 		UserID:   userID,
 	}
 
-	feed.SignFeed(c.signer)
+	feed.SignFeed(c.Signer)
 	return feed, nil
 }
 
@@ -137,7 +137,7 @@ func (c *Client) AggregatedFeed(feedSlug string, userID string) (*AggregatedFeed
 		UserID:   userID,
 	}
 
-	feed.SignFeed(c.signer)
+	feed.SignFeed(c.Signer)
 	return feed, nil
 }
 

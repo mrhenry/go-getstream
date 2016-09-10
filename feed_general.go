@@ -50,7 +50,7 @@ func (f *GeneralFeed) GenerateToken(signer *Signer) string {
 func (f *GeneralFeed) Unfollow(client *Client, target *FlatFeed) error {
 
 	f.client = client
-	f.SignFeed(f.Client().signer)
+	f.SignFeed(f.Client().Signer)
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/" + target.FeedID().Value() + "/"
 
