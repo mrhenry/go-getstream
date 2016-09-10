@@ -37,9 +37,6 @@ if err != nil {
 Client Side Token
 
 ```go
-signer := getstream.Signer{
-  Secret: "APIKey",
-}
 
 client, err := getstream.New("APIKey", "APISecret", "AppID", "Region")
 if err != nil {
@@ -53,7 +50,7 @@ if err != nil {
   return
 }
 
-token, err := signer.GenerateFeedScopeToken(ScopeContextFeed, ScopeActionRead, feed)
+token, err := client.Signer.GenerateFeedScopeToken(ScopeContextFeed, ScopeActionRead, feed)
 if err != nil {
   fmt.Println(err)
 }

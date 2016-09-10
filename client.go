@@ -19,7 +19,7 @@ type Client struct {
 	AppID    string
 	Location string // https://location-api.getstream.io/api/
 
-	signer *Signer
+	Signer *Signer
 }
 
 // New returns a getstream client.
@@ -51,7 +51,7 @@ func New(key, secret, appID, location string) (*Client, error) {
 		AppID:    appID,
 		Location: location,
 
-		signer: &Signer{
+		Signer: &Signer{
 			Secret: secret,
 		},
 	}, nil
@@ -81,7 +81,7 @@ func (c *Client) FlatFeed(feedSlug string, userID string) (*FlatFeed, error) {
 		UserID:   userID,
 	}
 
-	feed.SignFeed(c.signer)
+	feed.SignFeed(c.Signer)
 	return feed, nil
 }
 
@@ -109,7 +109,7 @@ func (c *Client) NotificationFeed(feedSlug string, userID string) (*Notification
 		UserID:   userID,
 	}
 
-	feed.SignFeed(c.signer)
+	feed.SignFeed(c.Signer)
 	return feed, nil
 }
 
@@ -137,7 +137,7 @@ func (c *Client) AggregatedFeed(feedSlug string, userID string) (*AggregatedFeed
 		UserID:   userID,
 	}
 
-	feed.SignFeed(c.signer)
+	feed.SignFeed(c.Signer)
 	return feed, nil
 }
 
@@ -193,4 +193,13 @@ func (c *Client) absoluteURL(path string) (*url.URL, error) {
 	result.RawQuery = qs.Encode()
 
 	return result, nil
+}
+
+// ConvertUUIDToWord replaces - with _
+// It is used by go-getstream to convert UUID to a string that matches the word regex
+// You can use it to convert UUID's to match go-getstream internals.
+func ConvertUUIDToWord(uuid string) string {
+
+	return strings.Replace(uuid, "-", "_", -1)
+
 }
