@@ -194,3 +194,12 @@ func (c *Client) absoluteURL(path string) (*url.URL, error) {
 
 	return result, nil
 }
+
+// ConvertUUIDToWord replaces - with _
+// It is used by go-getstream to convert UUID to a string that matches the word regex
+// You can use it to convert UUID's to match go-getstream internals.
+func ConvertUUIDToWord(uuid string) string {
+
+	return strings.Replace(uuid, "-", "_", -1)
+
+}
