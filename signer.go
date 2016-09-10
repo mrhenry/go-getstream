@@ -6,7 +6,7 @@ import (
 	"encoding/base64"
 	"strings"
 
-	"github.com/dgrijalva/jwt-go"
+	"gopkg.in/dgrijalva/jwt-go.v3"
 )
 
 // Credits to https://github.com/hyperworks/go-getstream for the urlSafe and generateToken methods
