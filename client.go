@@ -19,7 +19,7 @@ type Client struct {
 	AppID    string
 	Location string // https://location-api.getstream.io/api/
 
-	signer *Signer
+	Signer *Signer
 }
 
 // New returns a getstream client.
