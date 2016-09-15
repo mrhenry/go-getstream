@@ -29,7 +29,7 @@ type Client struct {
 // - appID
 // - region
 // An http.Client with custom settings can be assigned after construction
-func New(key, secret, appID, location string) (*Client, error) {
+func New(key string, secret string, appID string, location string) (*Client, error) {
 	baseURLStr := "https://api.getstream.io/api/v1.0/"
 	if location != "" {
 		baseURLStr = "https://" + location + "-api.getstream.io/api/v1.0/"

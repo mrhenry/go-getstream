@@ -64,7 +64,7 @@ func (f *NotificationFeed) AddActivity(activity *NotificationFeedActivity) (*Not
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/"
 
-	resultBytes, err := f.Client().post(f, endpoint, f.Signature(), payload, nil)
+	resultBytes, err := f.Client().post(f, endpoint, payload, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -90,7 +90,7 @@ func (f *NotificationFeed) AddActivities(activities []*NotificationFeedActivity)
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/"
 
-	resultBytes, err := f.Client().post(f, endpoint, f.Signature(), payload, nil)
+	resultBytes, err := f.Client().post(f, endpoint, payload, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -116,7 +116,7 @@ func (f *NotificationFeed) MarkActivitiesAsRead(activities []*NotificationFeedAc
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/"
 
-	_, err := f.Client().get(f, endpoint, f.Signature(), nil, map[string]string{
+	_, err := f.Client().get(f, endpoint, nil, map[string]string{
 		"mark_read": idStr,
 	})
 
@@ -128,7 +128,7 @@ func (f *NotificationFeed) MarkActivitiesAsSeenWithLimit(limit int) error {
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/"
 
-	_, err := f.Client().get(f, endpoint, f.Signature(), nil, map[string]string{
+	_, err := f.Client().get(f, endpoint, nil, map[string]string{
 		"mark_seen": "true",
 		"limit":     strconv.Itoa(limit),
 	})
@@ -151,7 +151,7 @@ func (f *NotificationFeed) Activities(input *GetNotificationFeedInput) (*GetNoti
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/"
 
-	result, err := f.Client().get(f, endpoint, f.Signature(), payload, nil)
+	result, err := f.Client().get(f, endpoint, payload, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -170,7 +170,7 @@ func (f *NotificationFeed) RemoveActivity(input *NotificationFeedActivity) error
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + input.ID + "/"
 
-	return f.Client().del(f, endpoint, f.Signature(), nil, nil)
+	return f.Client().del(f, endpoint, nil, nil)
 }
 
 // RemoveActivityByForeignID removes an Activity from a NotificationFeedGroup by ForeignID
@@ -190,7 +190,7 @@ func (f *NotificationFeed) RemoveActivityByForeignID(input *NotificationFeedActi
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + input.ForeignID + "/"
 
-	return f.Client().del(f, endpoint, f.Signature(), nil, map[string]string{
+	return f.Client().del(f, endpoint, nil, map[string]string{
 		"foreign_id": "1",
 	})
 }
@@ -210,7 +210,7 @@ func (f *NotificationFeed) FollowFeedWithCopyLimit(target *FlatFeed, copyLimit i
 		return err
 	}
 
-	_, err = f.Client().post(f, endpoint, f.Signature(), payload, nil)
+	_, err = f.Client().post(f, endpoint, payload, nil)
 	return err
 
 }
@@ -220,7 +220,7 @@ func (f *NotificationFeed) Unfollow(target *FlatFeed) error {
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/" + target.FeedID().Value() + "/"
 
-	return f.Client().del(f, endpoint, f.Signature(), nil, nil)
+	return f.Client().del(f, endpoint, nil, nil)
 
 }
 
@@ -237,7 +237,7 @@ func (f *NotificationFeed) UnfollowKeepingHistory(target *FlatFeed) error {
 		return err
 	}
 
-	return f.Client().del(f, endpoint, f.Signature(), payload, nil)
+	return f.Client().del(f, endpoint, payload, nil)
 
 }
 
@@ -256,7 +256,7 @@ func (f *NotificationFeed) FollowingWithLimitAndSkip(limit int, skip int) ([]*Ge
 		return nil, err
 	}
 
-	resultBytes, err := f.Client().get(f, endpoint, f.Signature(), payload, nil)
+	resultBytes, err := f.Client().get(f, endpoint, payload, nil)
 
 	output := &getNotificationFeedFollowersOutput{}
 	err = json.Unmarshal(resultBytes, output)

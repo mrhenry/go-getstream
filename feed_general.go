@@ -54,6 +54,6 @@ func (f *GeneralFeed) Unfollow(client *Client, target *FlatFeed) error {
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/" + target.FeedID().Value() + "/"
 
-	return f.Client().del(f, endpoint, f.Signature(), nil, nil)
+	return f.Client().del(f, endpoint, nil, nil)
 
 }

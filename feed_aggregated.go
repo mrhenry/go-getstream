@@ -63,7 +63,7 @@ func (f *AggregatedFeed) AddActivity(activity *AggregatedFeedActivity) (*Aggrega
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/"
 
-	resultBytes, err := f.Client().post(f, endpoint, f.Signature(), payload, nil)
+	resultBytes, err := f.Client().post(f, endpoint, payload, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -89,7 +89,7 @@ func (f *AggregatedFeed) AddActivities(activities []*AggregatedFeedActivity) ([]
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/"
 
-	resultBytes, err := f.Client().post(f, endpoint, f.Signature(), payload, nil)
+	resultBytes, err := f.Client().post(f, endpoint, payload, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -118,7 +118,7 @@ func (f *AggregatedFeed) Activities(input *GetAggregatedFeedInput) (*GetAggregat
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/"
 
-	result, err := f.Client().get(f, endpoint, f.Signature(), payload, nil)
+	result, err := f.Client().get(f, endpoint, payload, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -137,7 +137,7 @@ func (f *AggregatedFeed) RemoveActivity(input *AggregatedFeedActivity) error {
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + input.ID + "/"
 
-	return f.Client().del(f, endpoint, f.Signature(), nil, nil)
+	return f.Client().del(f, endpoint, nil, nil)
 }
 
 // RemoveActivityByForeignID removes an Activity from a NotificationFeedGroup by ForeignID
@@ -157,7 +157,7 @@ func (f *AggregatedFeed) RemoveActivityByForeignID(input *AggregatedFeedActivity
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + input.ForeignID + "/"
 
-	return f.Client().del(f, endpoint, f.Signature(), nil, map[string]string{
+	return f.Client().del(f, endpoint, nil, map[string]string{
 		"foreign_id": "1",
 	})
 }
@@ -177,7 +177,7 @@ func (f *AggregatedFeed) FollowFeedWithCopyLimit(target *FlatFeed, copyLimit int
 		return err
 	}
 
-	_, err = f.Client().post(f, endpoint, f.Signature(), payload, nil)
+	_, err = f.Client().post(f, endpoint, payload, nil)
 	return err
 
 }
@@ -187,7 +187,7 @@ func (f *AggregatedFeed) Unfollow(target *FlatFeed) error {
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/" + target.FeedID().Value() + "/"
 
-	return f.Client().del(f, endpoint, f.Signature(), nil, nil)
+	return f.Client().del(f, endpoint, nil, nil)
 
 }
 
@@ -204,7 +204,7 @@ func (f *AggregatedFeed) UnfollowKeepingHistory(target *FlatFeed) error {
 		return err
 	}
 
-	return f.Client().del(f, endpoint, f.Signature(), payload, nil)
+	return f.Client().del(f, endpoint, payload, nil)
 
 }
 
@@ -223,7 +223,7 @@ func (f *AggregatedFeed) FollowingWithLimitAndSkip(limit int, skip int) ([]*Gene
 		return nil, err
 	}
 
-	resultBytes, err := f.Client().get(f, endpoint, f.Signature(), payload, nil)
+	resultBytes, err := f.Client().get(f, endpoint, payload, nil)
 
 	output := &getAggregatedFeedFollowersOutput{}
 	err = json.Unmarshal(resultBytes, output)
