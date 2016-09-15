@@ -6,7 +6,7 @@ import "testing"
 import "encoding/json"
 import "fmt"
 
-func TestNotificationActivityMetaData(t *testing.T) {
+func TestActivityMarshalling(t *testing.T) {
 
 	now := time.Now()
 
@@ -32,12 +32,13 @@ func TestNotificationActivityMetaData(t *testing.T) {
 		Actor:     FeedID("user:eric"),
 		Object:    FeedID("user:bob"),
 		Target:    FeedID("user:john"),
-		Origin:    FeedID("user:barry"),
 		Verb:      "post",
 		TimeStamp: &now,
 		Data:      &raw,
-		MetaData: map[string]string{
-			"meta": "data",
+		MetaData: map[string]interface{}{
+			"stringKey": "stringValue",
+			"intKey":    1,
+			"boolKey":   true,
 		},
 	}
 
@@ -67,62 +68,87 @@ func TestNotificationActivityMetaData(t *testing.T) {
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
+		return
 	}
 
 	if resultActivity.ForeignID != activity.ForeignID {
 		fmt.Println(activity.ForeignID)
 		fmt.Println(resultActivity.ForeignID)
 		t.Fail()
+		return
 	}
 	if resultActivity.Actor != activity.Actor {
 		fmt.Println(activity.Actor)
 		fmt.Println(resultActivity.Actor)
 		t.Fail()
-	}
-	if resultActivity.Origin != activity.Origin {
-		fmt.Println(activity.Origin)
-		fmt.Println(resultActivity.Origin)
-		t.Fail()
+		return
 	}
 	if resultActivity.Verb != activity.Verb {
 		fmt.Println(activity.Verb)
 		fmt.Println(resultActivity.Verb)
 		t.Fail()
+		return
 	}
 	if resultActivity.Object != activity.Object {
 		fmt.Println(activity.Object)
 		fmt.Println(resultActivity.Object)
 		t.Fail()
+		return
 	}
 	if resultActivity.Target != activity.Target {
 		fmt.Println(activity.Target)
 		fmt.Println(resultActivity.Target)
 		t.Fail()
+		return
 	}
 	if resultActivity.TimeStamp.Format("2006-01-02T15:04:05.999999") != activity.TimeStamp.Format("2006-01-02T15:04:05.999999") {
 		fmt.Println(activity.TimeStamp)
 		fmt.Println(resultActivity.TimeStamp)
 		t.Fail()
+		return
 	}
-	if resultActivity.MetaData["meta"] != activity.MetaData["meta"] {
-		fmt.Println(activity.MetaData)
-		fmt.Println(resultActivity.MetaData)
-		t.Fail()
-	}
+
 	if string(*resultActivity.Data) != string(*activity.Data) {
 		fmt.Println(string(*activity.Data))
 		fmt.Println(string(*resultActivity.Data))
 		t.Fail()
+		return
 	}
 
-	// fmt.Println(resultActivity)
-	// fmt.Println(resultActivity.ForeignID)
-	// fmt.Println(string(resultActivity.Data))
-	// fmt.Println(resultActivity.MetaData)
-	//
-	// fmt.Println(resultActivity2)
-	// fmt.Println(resultActivity2.ForeignID)
-	// fmt.Println(string(resultActivity2.Data))
-	// fmt.Println(resultActivity2.MetaData)
+	vString, okString := resultActivity.MetaData["stringKey"].(string)
+	if !okString {
+		fmt.Println("Not a String")
+		t.Fail()
+		return
+	}
+	if vString != "stringValue" {
+		fmt.Println("Not the correct value")
+		t.Fail()
+		return
+	}
+
+	vInt, okInt := resultActivity.MetaData["intKey"].(int)
+	if !okInt {
+		fmt.Println("Not an Int")
+		t.Fail()
+		return
+	}
+	if vInt != 1 {
+		fmt.Println("Not the correct value")
+		t.Fail()
+		return
+	}
+
+	vBool, okBool := resultActivity.MetaData["boolKey"].(bool)
+	if !okBool {
+		fmt.Println("Not a Bool")
+		t.Fail()
+		return
+	}
+	if vBool != true {
+		fmt.Println("Not the correct value")
+		t.Fail()
+		return
+	}
 
 }
