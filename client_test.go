@@ -238,7 +238,7 @@ func TestClientRequestFails(t *testing.T) {
 		return
 	}
 
-	_, err := client.request(feed, "GET", "!@#$%", nil, nil)
+	_, err = client.request(feed, "GET", "!@#$%", nil, nil)
 	if err == nil {
 		t.Fail()
 		return
