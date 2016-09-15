@@ -31,13 +31,6 @@ func (f *GeneralFeed) feedIDWithoutColon() string {
 	return f.FeedSlug + f.UserID
 }
 
-// SignFeed sets the token on a Feed
-func (f *GeneralFeed) SignFeed(signer *Signer) {
-	if f.Client().Signer != nil {
-		f.token = signer.generateToken(f.feedIDWithoutColon())
-	}
-}
-
 // Token returns the token of a Feed
 func (f *GeneralFeed) Token() string {
 	return f.token
@@ -55,7 +48,7 @@ func (f *GeneralFeed) GenerateToken(signer *Signer) string {
 func (f *GeneralFeed) Unfollow(client *Client, target *FlatFeed) error {
 
 	f.client = client
-	f.SignFeed(f.Client().Signer)
+	f.token = f.GenerateToken(f.Client().Signer)
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/" + target.FeedID().Value() + "/"
 

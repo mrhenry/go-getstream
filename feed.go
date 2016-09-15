@@ -16,6 +16,5 @@ type Feed interface {
 	FeedID() FeedID
 	feedIDWithoutColon() string
 	Token() string
-	SignFeed(signer *Signer)
 	GenerateToken(signer *Signer) string
 }

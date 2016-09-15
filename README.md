@@ -96,7 +96,8 @@ if err != nil {
   - Mark Seen
 
 - Client Side Tokens :
-  - fully implemented
+  - generation
+  - token based client
 
 ### Structure :
 - Follows getstream API standards for all request payloads

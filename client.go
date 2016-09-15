@@ -114,7 +114,9 @@ func (c *Client) FlatFeed(feedSlug string, userID string) (*FlatFeed, error) {
 		UserID:   userID,
 	}
 
-	feed.SignFeed(c.Signer)
+	if c.Signer != nil {
+		feed.token = c.Signer.generateToken(feed.feedIDWithoutColon())
+	}
 	return feed, nil
 }
 
@@ -142,7 +144,9 @@ func (c *Client) NotificationFeed(feedSlug string, userID string) (*Notification
 		UserID:   userID,
 	}
 
-	feed.SignFeed(c.Signer)
+	if c.Signer != nil {
+		feed.token = c.Signer.generateToken(feed.feedIDWithoutColon())
+	}
 	return feed, nil
 }
 
@@ -170,7 +174,9 @@ func (c *Client) AggregatedFeed(feedSlug string, userID string) (*AggregatedFeed
 		UserID:   userID,
 	}
 
-	feed.SignFeed(c.Signer)
+	if c.Signer != nil {
+		feed.token = c.Signer.generateToken(feed.feedIDWithoutColon())
+	}
 	return feed, nil
 }
 

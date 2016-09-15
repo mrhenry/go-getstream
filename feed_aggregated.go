@@ -38,13 +38,6 @@ func (f *AggregatedFeed) feedIDWithoutColon() string {
 	return f.FeedSlug + f.UserID
 }
 
-// SignFeed sets the token on a Feed
-func (f *AggregatedFeed) SignFeed(signer *Signer) {
-	if f.Client().Signer != nil {
-		f.token = signer.generateToken(f.feedIDWithoutColon())
-	}
-}
-
 // Token returns the token of a Feed
 func (f *AggregatedFeed) Token() string {
 	return f.token

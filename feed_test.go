@@ -29,7 +29,7 @@ func TestGeneralFeedBasic(t *testing.T) {
 		return
 	}
 
-	general.SignFeed(general.Client().Signer)
+	general.token = general.GenerateToken(general.Client().Signer)
 	if "NWH8lcFHfHYEc2xdMs2kOhM-oII" != general.Token() {
 		t.Fail()
 		return
@@ -70,7 +70,7 @@ func TestFlatFeedBasic(t *testing.T) {
 		return
 	}
 
-	flatFeed.SignFeed(flatFeed.Client().Signer)
+	flatFeed.token = flatFeed.GenerateToken(flatFeed.Client().Signer)
 	if "NWH8lcFHfHYEc2xdMs2kOhM-oII" != flatFeed.Token() {
 		t.Fail()
 		return
@@ -111,7 +111,7 @@ func TestNotificationFeedBasic(t *testing.T) {
 		return
 	}
 
-	notificationFeed.SignFeed(notificationFeed.Client().Signer)
+	notificationFeed.token = notificationFeed.GenerateToken(notificationFeed.Client().Signer)
 	if "NWH8lcFHfHYEc2xdMs2kOhM-oII" != notificationFeed.Token() {
 		t.Fail()
 		return
