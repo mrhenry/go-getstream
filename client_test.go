@@ -262,4 +262,39 @@ func TestClientRequestFails(t *testing.T) {
 		return
 	}
 
+	testAPIKey := os.Getenv("key")
+	testAppID := os.Getenv("app_id")
+	testRegion := os.Getenv("region")
+	token, err := client.Signer.GenerateFeedScopeToken(ScopeContextAll, ScopeActionRead, feed)
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	failingClient, err := NewWithToken(testAPIKey, token, testAppID, testRegion)
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	clientFeed, err := failingClient.FlatFeed("flat", "bob")
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	_, err = clientFeed.AddActivity(&Activity{
+		Verb:      "post",
+		ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
+		Object:    FeedID("flat:eric"),
+		Actor:     FeedID("flat:john"),
+	})
+
+	if err == nil {
+		t.Fail()
+	}
+
 }
