@@ -90,7 +90,14 @@ func TestClientInitWithToken(t *testing.T) {
 		return
 	}
 
-	token, err := serverClient.Signer.GenerateUserScopeToken(ScopeContextAll, ScopeActionAll, "bob")
+	serverFeed, err := serverClient.FlatFeed("flat", "bob")
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	token, err := serverClient.Signer.GenerateFeedScopeToken(ScopeContextAll, ScopeActionAll, serverFeed)
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
