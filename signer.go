@@ -35,10 +35,10 @@ func (s Signer) generateToken(message string) string {
 }
 
 // GenerateFeedScopeToken returns a jwt
-func (s Signer) GenerateFeedScopeToken(resource ScopeContext, action ScopeAction, feed Feed) (string, error) {
+func (s Signer) GenerateFeedScopeToken(context ScopeContext, action ScopeAction, feed Feed) (string, error) {
 
 	claims := jwt.MapClaims{
-		"resource": resource.Value(),
+		"resource": context.Value(),
 		"action":   action.Value(),
 		// "aud":
 		// "exp": time.Now().UTC().Add(time.Hour * 1),
@@ -65,10 +65,10 @@ func (s Signer) GenerateFeedScopeToken(resource ScopeContext, action ScopeAction
 }
 
 // GenerateUserScopeToken returns a jwt
-func (s Signer) GenerateUserScopeToken(resource ScopeContext, action ScopeAction, userID string) (string, error) {
+func (s Signer) GenerateUserScopeToken(context ScopeContext, action ScopeAction, userID string) (string, error) {
 
 	claims := jwt.MapClaims{
-		"resource": resource.Value(),
+		"resource": context.Value(),
 		"action":   action.Value(),
 		// "aud":
 		// "exp": time.Now().UTC().Add(time.Hour * 1),

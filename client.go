@@ -19,6 +19,8 @@ type Client struct {
 	AppID    string
 	Location string // https://location-api.getstream.io/api/
 
+	Token string
+
 	Signer *Signer
 }
 
@@ -54,6 +56,37 @@ func New(key string, secret string, appID string, location string) (*Client, err
 		Signer: &Signer{
 			Secret: secret,
 		},
+	}, nil
+}
+
+// NewWithToken returns a getstream client.
+// Params :
+// - api key
+// - token
+// - appID
+// - region
+// An http.Client with custom settings can be assigned after construction
+func NewWithToken(key string, token string, appID string, location string) (*Client, error) {
+	baseURLStr := "https://api.getstream.io/api/v1.0/"
+	if location != "" {
+		baseURLStr = "https://" + location + "-api.getstream.io/api/v1.0/"
+	}
+
+	baseURL, err := url.Parse(baseURLStr)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Client{
+		HTTP: &http.Client{
+			Timeout: 3 * time.Second,
+		},
+		baseURL: baseURL,
+
+		Key:      key,
+		Token:    token,
+		AppID:    appID,
+		Location: location,
 	}, nil
 }
 

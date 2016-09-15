@@ -3,6 +3,7 @@ package getstream
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -95,11 +96,22 @@ func (c *Client) setRequestParams(query url.Values, params map[string]string) ur
 	return query
 }
 
-func (c *Client) setHeaders(request *http.Request, f Feed) {
+func (c *Client) setHeaders(request *http.Request, f Feed) error {
 
-	request.Header.Set("Content-Type", "application/json")
-	if f.Token() != "" {
+	if c.Secret != "" && f.Token() != "" {
+		request.Header.Set("Content-Type", "application/json")
 		request.Header.Set("Authorization", f.Signature())
+
+		return nil
+
+	} else if c.Token != "" {
+		request.Header.Set("stream-auth-type", "jwt")
+		request.Header.Set("Authorization", c.Token)
+
+		return nil
+
 	}
+
+	return errors.New("No Secret or Token")
 
 }

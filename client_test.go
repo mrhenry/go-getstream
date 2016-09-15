@@ -2,6 +2,7 @@ package getstream
 
 import (
 	"fmt"
+	"os"
 	"testing"
 )
 
@@ -72,6 +73,64 @@ func TestClientInit(t *testing.T) {
 	}
 
 	_, err = New("my_key", "my_secret", "111111", "us-east")
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+}
+
+func TestClientInitWithToken(t *testing.T) {
+
+	serverClient, err := testSetup()
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	token, err := serverClient.Signer.GenerateUserScopeToken(ScopeContextAll, ScopeActionAll, "bob")
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	testAPIKey := os.Getenv("key")
+	testAppID := os.Getenv("app_id")
+	testRegion := os.Getenv("region")
+
+	clientClient, err := NewWithToken(testAPIKey, token, testAppID, testRegion)
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	feed, err := clientClient.FlatFeed("flat", "bob")
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	activity, err := feed.AddActivity(&Activity{
+		Verb:      "post",
+		ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
+		Object:    FeedID("flat:eric"),
+		Actor:     FeedID("flat:john"),
+	})
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+
+	if activity.Verb != "post" && activity.ForeignID != "48d024fe-3752-467a-8489-23febd1dec4e" {
+		t.Fail()
+	}
+
+	err = testCleanUp(serverClient, []*Activity{activity}, nil, nil)
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
