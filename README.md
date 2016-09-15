@@ -50,7 +50,12 @@ if err != nil {
   return
 }
 
-token, err := client.Signer.GenerateFeedScopeToken(ScopeContextFeed, ScopeActionRead, feed)
+token, err := client.Signer.GenerateFeedScopeToken(getstream.ScopeContextFeed, getstream.ScopeActionRead, feed)
+if err != nil {
+  fmt.Println(err)
+}
+
+clientSideClient, err := getstream.NewWithToken("APIKey", token, "AppID", "Region")
 if err != nil {
   fmt.Println(err)
 }
