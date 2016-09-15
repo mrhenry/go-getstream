@@ -221,3 +221,43 @@ func TestClientAbsoluteURL(t *testing.T) {
 	}
 
 }
+
+func TestClientRequestFails(t *testing.T) {
+
+	client, err := testSetup()
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	feed, err := client.FlatFeed("flat", "bob")
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	_, err := client.request(feed, "GET", "!@#$%", nil, nil)
+	if err == nil {
+		t.Fail()
+		return
+	}
+	if err.Error() != string(`parse @#%#$: invalid URL escape "!@#$%"`) {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	_, err = client.request(feed, "!@#$%", "!@#$%", nil, nil)
+	if err == nil {
+		t.Fail()
+		return
+	}
+	if err.Error() != string(`net/http: invalid method "!@#$%"`) {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+}
