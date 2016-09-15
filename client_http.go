@@ -105,6 +105,7 @@ func (c *Client) setHeaders(request *http.Request, f Feed) error {
 		return nil
 
 	} else if c.Token != "" {
+		request.Header.Set("Content-Type", "application/json")
 		request.Header.Set("stream-auth-type", "jwt")
 		request.Header.Set("Authorization", c.Token)
 
