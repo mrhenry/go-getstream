@@ -23,7 +23,7 @@ if err != nil {
   return
 }
 
-activity, err := feed.AddActivity(&FlatFeedActivity{
+activity, err := feed.AddActivity(&Activity{
   Verb:      "post",
   ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
   Object:    FeedID("flat:eric"),

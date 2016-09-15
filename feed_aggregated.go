@@ -54,7 +54,7 @@ func (f *AggregatedFeed) GenerateToken(signer *Signer) string {
 }
 
 // AddActivity is used to add an Activity to a AggregatedFeed
-func (f *AggregatedFeed) AddActivity(activity *AggregatedFeedActivity) (*AggregatedFeedActivity, error) {
+func (f *AggregatedFeed) AddActivity(activity *Activity) (*Activity, error) {
 
 	payload, err := json.Marshal(activity)
 	if err != nil {
@@ -68,7 +68,7 @@ func (f *AggregatedFeed) AddActivity(activity *AggregatedFeedActivity) (*Aggrega
 		return nil, err
 	}
 
-	output := &AggregatedFeedActivity{}
+	output := &Activity{}
 	err = json.Unmarshal(resultBytes, output)
 	if err != nil {
 		return nil, err
@@ -78,9 +78,9 @@ func (f *AggregatedFeed) AddActivity(activity *AggregatedFeedActivity) (*Aggrega
 }
 
 // AddActivities is used to add multiple Activities to a NotificationFeed
-func (f *AggregatedFeed) AddActivities(activities []*AggregatedFeedActivity) ([]*AggregatedFeedActivity, error) {
+func (f *AggregatedFeed) AddActivities(activities []*Activity) ([]*Activity, error) {
 
-	payload, err := json.Marshal(map[string][]*AggregatedFeedActivity{
+	payload, err := json.Marshal(map[string][]*Activity{
 		"activities": activities,
 	})
 	if err != nil {
@@ -133,7 +133,7 @@ func (f *AggregatedFeed) Activities(input *GetAggregatedFeedInput) (*GetAggregat
 }
 
 // RemoveActivity removes an Activity from a NotificationFeedGroup
-func (f *AggregatedFeed) RemoveActivity(input *AggregatedFeedActivity) error {
+func (f *AggregatedFeed) RemoveActivity(input *Activity) error {
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + input.ID + "/"
 
@@ -141,7 +141,7 @@ func (f *AggregatedFeed) RemoveActivity(input *AggregatedFeedActivity) error {
 }
 
 // RemoveActivityByForeignID removes an Activity from a NotificationFeedGroup by ForeignID
-func (f *AggregatedFeed) RemoveActivityByForeignID(input *AggregatedFeedActivity) error {
+func (f *AggregatedFeed) RemoveActivityByForeignID(input *Activity) error {
 
 	if input.ForeignID == "" {
 		return errors.New("no ForeignID")

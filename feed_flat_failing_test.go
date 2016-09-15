@@ -21,7 +21,7 @@ func TestFlatFeedAddActivityFail(t *testing.T) {
 		return
 	}
 
-	_, err = feed.AddActivity(&FlatFeedActivity{
+	_, err = feed.AddActivity(&Activity{
 		Verb:      "post",
 		ForeignID: "not a real foreign id",
 		Object:    FeedID("flat:eric"),

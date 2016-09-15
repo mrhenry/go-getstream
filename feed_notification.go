@@ -55,7 +55,7 @@ func (f *NotificationFeed) GenerateToken(signer *Signer) string {
 }
 
 // AddActivity is used to add an Activity to a NotificationFeed
-func (f *NotificationFeed) AddActivity(activity *NotificationFeedActivity) (*NotificationFeedActivity, error) {
+func (f *NotificationFeed) AddActivity(activity *Activity) (*Activity, error) {
 
 	payload, err := json.Marshal(activity)
 	if err != nil {
@@ -69,7 +69,7 @@ func (f *NotificationFeed) AddActivity(activity *NotificationFeedActivity) (*Not
 		return nil, err
 	}
 
-	output := &NotificationFeedActivity{}
+	output := &Activity{}
 	err = json.Unmarshal(resultBytes, output)
 	if err != nil {
 		return nil, err
@@ -79,9 +79,9 @@ func (f *NotificationFeed) AddActivity(activity *NotificationFeedActivity) (*Not
 }
 
 // AddActivities is used to add multiple Activities to a NotificationFeed
-func (f *NotificationFeed) AddActivities(activities []*NotificationFeedActivity) ([]*NotificationFeedActivity, error) {
+func (f *NotificationFeed) AddActivities(activities []*Activity) ([]*Activity, error) {
 
-	payload, err := json.Marshal(map[string][]*NotificationFeedActivity{
+	payload, err := json.Marshal(map[string][]*Activity{
 		"activities": activities,
 	})
 	if err != nil {
@@ -105,7 +105,7 @@ func (f *NotificationFeed) AddActivities(activities []*NotificationFeedActivity)
 }
 
 // MarkActivitiesAsRead marks activities as read for this feed
-func (f *NotificationFeed) MarkActivitiesAsRead(activities []*NotificationFeedActivity) error {
+func (f *NotificationFeed) MarkActivitiesAsRead(activities []*Activity) error {
 
 	var ids []string
 	for _, activity := range activities {
@@ -166,7 +166,7 @@ func (f *NotificationFeed) Activities(input *GetNotificationFeedInput) (*GetNoti
 }
 
 // RemoveActivity removes an Activity from a NotificationFeedGroup
-func (f *NotificationFeed) RemoveActivity(input *NotificationFeedActivity) error {
+func (f *NotificationFeed) RemoveActivity(input *Activity) error {
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + input.ID + "/"
 
@@ -174,7 +174,7 @@ func (f *NotificationFeed) RemoveActivity(input *NotificationFeedActivity) error
 }
 
 // RemoveActivityByForeignID removes an Activity from a NotificationFeedGroup by ForeignID
-func (f *NotificationFeed) RemoveActivityByForeignID(input *NotificationFeedActivity) error {
+func (f *NotificationFeed) RemoveActivityByForeignID(input *Activity) error {
 
 	if input.ForeignID == "" {
 		return errors.New("no ForeignID")

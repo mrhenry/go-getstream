@@ -141,23 +141,17 @@ func (c *Client) AggregatedFeed(feedSlug string, userID string) (*AggregatedFeed
 	return feed, nil
 }
 
-// UpdateActivities is used to update multiple Activities
-// func (c *Client) UpdateActivities(activities []*FlatFeedActivity) ([]*FlatFeedActivity, error) {
+// // UpdateActivities is used to update multiple Activities
+// func (c *Client) UpdateActivities(activities []interface{}) ([]*Activity, error) {
 //
-// 	for _, activity := range activities {
-// 		activity.ID = ""
-// 	}
-//
-// 	payload, err := json.Marshal(map[string][]*FlatFeedActivity{
-// 		"activities": activities,
-// 	})
+// 	payload, err := json.Marshal(activities)
 // 	if err != nil {
 // 		return nil, err
 // 	}
 //
 // 	endpoint := "activities/"
 //
-// 	resultBytes, err := f.post(endpoint, f.Signature(), payload)
+// 	resultBytes, err := c.post(endpoint, payload, nil)
 // 	if err != nil {
 // 		return nil, err
 // 	}

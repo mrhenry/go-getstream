@@ -54,7 +54,7 @@ func (f *FlatFeed) GenerateToken(signer *Signer) string {
 }
 
 // AddActivity is used to add an Activity to a FlatFeed
-func (f *FlatFeed) AddActivity(activity *FlatFeedActivity) (*FlatFeedActivity, error) {
+func (f *FlatFeed) AddActivity(activity *Activity) (*Activity, error) {
 
 	activity.ID = ""
 
@@ -70,7 +70,7 @@ func (f *FlatFeed) AddActivity(activity *FlatFeedActivity) (*FlatFeedActivity, e
 		return nil, err
 	}
 
-	output := &FlatFeedActivity{}
+	output := &Activity{}
 	err = json.Unmarshal(resultBytes, output)
 	if err != nil {
 		return nil, err
@@ -80,13 +80,13 @@ func (f *FlatFeed) AddActivity(activity *FlatFeedActivity) (*FlatFeedActivity, e
 }
 
 // AddActivities is used to add multiple Activities to a FlatFeed
-func (f *FlatFeed) AddActivities(activities []*FlatFeedActivity) ([]*FlatFeedActivity, error) {
+func (f *FlatFeed) AddActivities(activities []*Activity) ([]*Activity, error) {
 
 	for _, activity := range activities {
 		activity.ID = ""
 	}
 
-	payload, err := json.Marshal(map[string][]*FlatFeedActivity{
+	payload, err := json.Marshal(map[string][]*Activity{
 		"activities": activities,
 	})
 	if err != nil {
@@ -139,7 +139,7 @@ func (f *FlatFeed) Activities(input *GetFlatFeedInput) (*GetFlatFeedOutput, erro
 }
 
 // RemoveActivity removes an Activity from a FlatFeedGroup
-func (f *FlatFeed) RemoveActivity(input *FlatFeedActivity) error {
+func (f *FlatFeed) RemoveActivity(input *Activity) error {
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + input.ID + "/"
 
@@ -147,7 +147,7 @@ func (f *FlatFeed) RemoveActivity(input *FlatFeedActivity) error {
 }
 
 // RemoveActivityByForeignID removes an Activity from a FlatFeedGroup by ForeignID
-func (f *FlatFeed) RemoveActivityByForeignID(input *FlatFeedActivity) error {
+func (f *FlatFeed) RemoveActivityByForeignID(input *Activity) error {
 
 	if input.ForeignID == "" {
 		return errors.New("no ForeignID")
