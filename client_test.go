@@ -250,7 +250,7 @@ func TestClientRequestFails(t *testing.T) {
 		return
 	}
 
-	_, err = client.request(feed, "!@#$%", "!@#$%", nil, nil)
+	_, err = client.request(feed, "!@#$%", "somepath", nil, nil)
 	if err == nil {
 		fmt.Println(err)
 		t.Fail()
