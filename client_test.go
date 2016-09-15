@@ -292,7 +292,24 @@ func TestClientRequestFails(t *testing.T) {
 		Object:    FeedID("flat:eric"),
 		Actor:     FeedID("flat:john"),
 	})
+	if err == nil {
+		t.Fail()
+	}
 
+	failingClient.Token = ""
+	clientFeed, err = failingClient.FlatFeed("flat", "bob")
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	_, err = clientFeed.AddActivity(&Activity{
+		Verb:      "post",
+		ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
+		Object:    FeedID("flat:eric"),
+		Actor:     FeedID("flat:john"),
+	})
 	if err == nil {
 		t.Fail()
 	}

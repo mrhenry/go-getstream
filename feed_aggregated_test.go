@@ -42,6 +42,8 @@ func TestAggregatedFeedAddActivity(t *testing.T) {
 		return
 	}
 
+	client.Location = ""
+
 	feed, err := client.AggregatedFeed("aggregated", "bob")
 	if err != nil {
 		fmt.Println(err)
