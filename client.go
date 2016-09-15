@@ -19,6 +19,8 @@ type Client struct {
 	AppID    string
 	Location string // https://location-api.getstream.io/api/
 
+	Token string
+
 	Signer *Signer
 }
 
@@ -29,7 +31,7 @@ type Client struct {
 // - appID
 // - region
 // An http.Client with custom settings can be assigned after construction
-func New(key, secret, appID, location string) (*Client, error) {
+func New(key string, secret string, appID string, location string) (*Client, error) {
 	baseURLStr := "https://api.getstream.io/api/v1.0/"
 	if location != "" {
 		baseURLStr = "https://" + location + "-api.getstream.io/api/v1.0/"
@@ -54,6 +56,37 @@ func New(key, secret, appID, location string) (*Client, error) {
 		Signer: &Signer{
 			Secret: secret,
 		},
+	}, nil
+}
+
+// NewWithToken returns a getstream client.
+// Params :
+// - api key
+// - token
+// - appID
+// - region
+// An http.Client with custom settings can be assigned after construction
+func NewWithToken(key string, token string, appID string, location string) (*Client, error) {
+	baseURLStr := "https://api.getstream.io/api/v1.0/"
+	if location != "" {
+		baseURLStr = "https://" + location + "-api.getstream.io/api/v1.0/"
+	}
+
+	baseURL, err := url.Parse(baseURLStr)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Client{
+		HTTP: &http.Client{
+			Timeout: 3 * time.Second,
+		},
+		baseURL: baseURL,
+
+		Key:      key,
+		Token:    token,
+		AppID:    appID,
+		Location: location,
 	}, nil
 }
 
@@ -141,23 +174,17 @@ func (c *Client) AggregatedFeed(feedSlug string, userID string) (*AggregatedFeed
 	return feed, nil
 }
 
-// UpdateActivities is used to update multiple Activities
-// func (c *Client) UpdateActivities(activities []*FlatFeedActivity) ([]*FlatFeedActivity, error) {
+// // UpdateActivities is used to update multiple Activities
+// func (c *Client) UpdateActivities(activities []interface{}) ([]*Activity, error) {
 //
-// 	for _, activity := range activities {
-// 		activity.ID = ""
-// 	}
-//
-// 	payload, err := json.Marshal(map[string][]*FlatFeedActivity{
-// 		"activities": activities,
-// 	})
+// 	payload, err := json.Marshal(activities)
 // 	if err != nil {
 // 		return nil, err
 // 	}
 //
 // 	endpoint := "activities/"
 //
-// 	resultBytes, err := f.post(endpoint, f.Signature(), payload)
+// 	resultBytes, err := c.post(endpoint, payload, nil)
 // 	if err != nil {
 // 		return nil, err
 // 	}

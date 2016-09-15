@@ -3,31 +3,32 @@ package getstream
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 )
 
 // get request helper
-func (c *Client) get(f Feed, path string, signature string, payload []byte, params map[string]string) ([]byte, error) {
-	res, err := c.request(f, "GET", path, signature, payload, params)
+func (c *Client) get(f Feed, path string, payload []byte, params map[string]string) ([]byte, error) {
+	res, err := c.request(f, "GET", path, payload, params)
 	return res, err
 }
 
 // post request helper
-func (c *Client) post(f Feed, path string, signature string, payload []byte, params map[string]string) ([]byte, error) {
-	res, err := c.request(f, "POST", path, signature, payload, params)
+func (c *Client) post(f Feed, path string, payload []byte, params map[string]string) ([]byte, error) {
+	res, err := c.request(f, "POST", path, payload, params)
 	return res, err
 }
 
 // delete request helper
-func (c *Client) del(f Feed, path string, signature string, payload []byte, params map[string]string) error {
-	_, err := c.request(f, "DELETE", path, signature, payload, params)
+func (c *Client) del(f Feed, path string, payload []byte, params map[string]string) error {
+	_, err := c.request(f, "DELETE", path, payload, params)
 	return err
 }
 
 // request helper
-func (c *Client) request(f Feed, method string, path string, signature string, payload []byte, params map[string]string) ([]byte, error) {
+func (c *Client) request(f Feed, method string, path string, payload []byte, params map[string]string) ([]byte, error) {
 
 	url, err := url.Parse(path)
 	if err != nil {
@@ -37,16 +38,8 @@ func (c *Client) request(f Feed, method string, path string, signature string, p
 	url = c.baseURL.ResolveReference(url)
 
 	query := url.Query()
-	query.Set("api_key", c.Key)
-	if c.Location == "" {
-		query.Set("location", "unspecified")
-	} else {
-		query.Set("location", c.Location)
-	}
-
-	for key, value := range params {
-		query.Set(key, value)
-	}
+	query = c.setStandardParams(query)
+	query = c.setRequestParams(query, params)
 	url.RawQuery = query.Encode()
 
 	// create a new http request
@@ -56,10 +49,7 @@ func (c *Client) request(f Feed, method string, path string, signature string, p
 	}
 
 	// set the Auth headers for the http request
-	req.Header.Set("Content-Type", "application/json")
-	if f.Token() != "" {
-		req.Header.Set("Authorization", signature)
-	}
+	c.setHeaders(req, f)
 
 	// perform the http request
 	resp, err := c.HTTP.Do(req)
@@ -77,10 +67,7 @@ func (c *Client) request(f Feed, method string, path string, signature string, p
 	// handle the response
 	switch {
 	case resp.StatusCode/100 == 2: // SUCCESS
-		if body != nil {
-			return body, nil
-		}
-		return nil, nil
+		return body, nil
 	default:
 		var respErr Error
 		err = json.Unmarshal(body, &respErr)
@@ -89,4 +76,43 @@ func (c *Client) request(f Feed, method string, path string, signature string, p
 		}
 		return nil, &respErr
 	}
+}
+
+func (c *Client) setStandardParams(query url.Values) url.Values {
+	query.Set("api_key", c.Key)
+	if c.Location == "" {
+		query.Set("location", "unspecified")
+	} else {
+		query.Set("location", c.Location)
+	}
+
+	return query
+}
+
+func (c *Client) setRequestParams(query url.Values, params map[string]string) url.Values {
+	for key, value := range params {
+		query.Set(key, value)
+	}
+	return query
+}
+
+func (c *Client) setHeaders(request *http.Request, f Feed) error {
+
+	if c.Secret != "" && f.Token() != "" {
+		request.Header.Set("Content-Type", "application/json")
+		request.Header.Set("Authorization", f.Signature())
+
+		return nil
+
+	} else if c.Token != "" {
+		request.Header.Set("Content-Type", "application/json")
+		request.Header.Set("stream-auth-type", "jwt")
+		request.Header.Set("Authorization", c.Token)
+
+		return nil
+
+	}
+
+	return errors.New("No Secret or Token")
+
 }

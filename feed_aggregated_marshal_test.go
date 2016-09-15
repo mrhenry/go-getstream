@@ -27,7 +27,7 @@ func TestAggregatedActivityMetaData(t *testing.T) {
 
 	raw := json.RawMessage(dataB)
 
-	activity := AggregatedFeedActivity{
+	activity := Activity{
 		ForeignID: uuid.New(),
 		Actor:     FeedID("user:eric"),
 		Object:    FeedID("user:bob"),
@@ -55,14 +55,14 @@ func TestAggregatedActivityMetaData(t *testing.T) {
 		return
 	}
 
-	resultActivity := AggregatedFeedActivity{}
+	resultActivity := Activity{}
 	err = json.Unmarshal(b, &resultActivity)
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
 	}
 
-	resultActivity2 := AggregatedFeedActivity{}
+	resultActivity2 := Activity{}
 	err = json.Unmarshal(b2, &resultActivity2)
 	if err != nil {
 		fmt.Println(err)

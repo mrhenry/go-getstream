@@ -18,7 +18,7 @@ func testSetup() (*Client, error) {
 
 }
 
-func testCleanUp(client *Client, flats []*FlatFeedActivity, notifications []*NotificationFeedActivity, aggregations []*AggregatedFeedActivity) error {
+func testCleanUp(client *Client, flats []*Activity, notifications []*Activity, aggregations []*Activity) error {
 
 	if len(flats) > 0 {
 

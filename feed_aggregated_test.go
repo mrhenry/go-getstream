@@ -19,7 +19,7 @@ func ExampleAggregatedFeed_AddActivity() {
 		return
 	}
 
-	activity, err := feed.AddActivity(&AggregatedFeedActivity{
+	activity, err := feed.AddActivity(&Activity{
 		Verb:      "post",
 		ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
 		Object:    FeedID("flat:eric"),
@@ -49,7 +49,7 @@ func TestAggregatedFeedAddActivity(t *testing.T) {
 		return
 	}
 
-	activity, err := feed.AddActivity(&AggregatedFeedActivity{
+	activity, err := feed.AddActivity(&Activity{
 		Verb:      "post",
 		ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
 		Object:    FeedID("flat:eric"),
@@ -64,7 +64,7 @@ func TestAggregatedFeedAddActivity(t *testing.T) {
 		t.Fail()
 	}
 
-	err = testCleanUp(client, nil, nil, []*AggregatedFeedActivity{activity})
+	err = testCleanUp(client, nil, nil, []*Activity{activity})
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -95,7 +95,7 @@ func TestAggregatedFeedAddActivityWithTo(t *testing.T) {
 		return
 	}
 
-	activity, err := feed.AddActivity(&AggregatedFeedActivity{
+	activity, err := feed.AddActivity(&Activity{
 		Verb:      "post",
 		ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
 		Object:    FeedID("flat:eric"),
@@ -111,7 +111,7 @@ func TestAggregatedFeedAddActivityWithTo(t *testing.T) {
 		t.Fail()
 	}
 
-	err = testCleanUp(client, nil, nil, []*AggregatedFeedActivity{activity})
+	err = testCleanUp(client, nil, nil, []*Activity{activity})
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -135,7 +135,7 @@ func TestAggregatedFeedRemoveActivity(t *testing.T) {
 		return
 	}
 
-	activity, err := feed.AddActivity(&AggregatedFeedActivity{
+	activity, err := feed.AddActivity(&Activity{
 		Verb:   "post",
 		Object: FeedID("flat:eric"),
 		Actor:  FeedID("flat:john"),
@@ -149,7 +149,7 @@ func TestAggregatedFeedRemoveActivity(t *testing.T) {
 		t.Fail()
 	}
 
-	rmActivity := AggregatedFeedActivity{
+	rmActivity := Activity{
 		ID: activity.ID,
 	}
 
@@ -177,7 +177,7 @@ func TestAggregatedFeedRemoveByForeignIDActivity(t *testing.T) {
 		return
 	}
 
-	activity, err := feed.AddActivity(&AggregatedFeedActivity{
+	activity, err := feed.AddActivity(&Activity{
 		Verb:      "post",
 		ForeignID: "08f01c47-014f-11e4-aa8f-0cc47a024be0",
 		Object:    FeedID("flat:eric"),
@@ -192,7 +192,7 @@ func TestAggregatedFeedRemoveByForeignIDActivity(t *testing.T) {
 		t.Fail()
 	}
 
-	rmActivity := AggregatedFeedActivity{
+	rmActivity := Activity{
 		ForeignID: activity.ForeignID,
 	}
 	_ = rmActivity
@@ -204,7 +204,7 @@ func TestAggregatedFeedRemoveByForeignIDActivity(t *testing.T) {
 		return
 	}
 
-	testCleanUp(client, nil, nil, []*AggregatedFeedActivity{activity})
+	testCleanUp(client, nil, nil, []*Activity{activity})
 
 }
 
@@ -224,7 +224,7 @@ func TestAggregatedFeedActivities(t *testing.T) {
 		return
 	}
 
-	_, err = feed.AddActivity(&AggregatedFeedActivity{
+	_, err = feed.AddActivity(&Activity{
 		Verb:      "post",
 		ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
 		Object:    FeedID("flat:eric"),
@@ -267,13 +267,13 @@ func TestAggregatedFeedAddActivities(t *testing.T) {
 		return
 	}
 
-	activities, err := feed.AddActivities([]*AggregatedFeedActivity{
-		&AggregatedFeedActivity{
+	activities, err := feed.AddActivities([]*Activity{
+		&Activity{
 			Verb:      "post",
 			ForeignID: "099978b6-3b72-4f5c-bc43-247ba6ae2dd9",
 			Object:    FeedID("flat:eric"),
 			Actor:     FeedID("flat:john"),
-		}, &AggregatedFeedActivity{
+		}, &Activity{
 			Verb:      "walk",
 			ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
 			Object:    FeedID("flat:john"),

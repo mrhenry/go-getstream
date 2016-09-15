@@ -27,7 +27,7 @@ func TestFlatActivityMetaData(t *testing.T) {
 
 	raw := json.RawMessage(dataB)
 
-	activity := FlatFeedActivity{
+	activity := Activity{
 		ForeignID: uuid.New(),
 		Actor:     FeedID("user:eric"),
 		Object:    FeedID("user:bob"),
@@ -54,14 +54,14 @@ func TestFlatActivityMetaData(t *testing.T) {
 		return
 	}
 
-	resultActivity := FlatFeedActivity{}
+	resultActivity := Activity{}
 	err = json.Unmarshal(b, &resultActivity)
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
 	}
 
-	resultActivity2 := FlatFeedActivity{}
+	resultActivity2 := Activity{}
 	err = json.Unmarshal(b2, &resultActivity2)
 	if err != nil {
 		fmt.Println(err)

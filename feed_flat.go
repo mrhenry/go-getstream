@@ -40,7 +40,9 @@ func (f *FlatFeed) feedIDWithoutColon() string {
 
 // SignFeed sets the token on a Feed
 func (f *FlatFeed) SignFeed(signer *Signer) {
-	f.token = signer.generateToken(f.feedIDWithoutColon())
+	if f.Client().Signer != nil {
+		f.token = signer.generateToken(f.feedIDWithoutColon())
+	}
 }
 
 // Token returns the token of a Feed
@@ -50,11 +52,14 @@ func (f *FlatFeed) Token() string {
 
 // GenerateToken returns a new Token for a Feed without setting it to the Feed
 func (f *FlatFeed) GenerateToken(signer *Signer) string {
-	return signer.generateToken(f.FeedSlug + f.UserID)
+	if f.Client().Signer != nil {
+		return signer.generateToken(f.FeedSlug + f.UserID)
+	}
+	return ""
 }
 
 // AddActivity is used to add an Activity to a FlatFeed
-func (f *FlatFeed) AddActivity(activity *FlatFeedActivity) (*FlatFeedActivity, error) {
+func (f *FlatFeed) AddActivity(activity *Activity) (*Activity, error) {
 
 	activity.ID = ""
 
@@ -65,12 +70,12 @@ func (f *FlatFeed) AddActivity(activity *FlatFeedActivity) (*FlatFeedActivity, e
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/"
 
-	resultBytes, err := f.Client().post(f, endpoint, f.Signature(), payload, nil)
+	resultBytes, err := f.Client().post(f, endpoint, payload, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	output := &FlatFeedActivity{}
+	output := &Activity{}
 	err = json.Unmarshal(resultBytes, output)
 	if err != nil {
 		return nil, err
@@ -80,13 +85,13 @@ func (f *FlatFeed) AddActivity(activity *FlatFeedActivity) (*FlatFeedActivity, e
 }
 
 // AddActivities is used to add multiple Activities to a FlatFeed
-func (f *FlatFeed) AddActivities(activities []*FlatFeedActivity) ([]*FlatFeedActivity, error) {
+func (f *FlatFeed) AddActivities(activities []*Activity) ([]*Activity, error) {
 
 	for _, activity := range activities {
 		activity.ID = ""
 	}
 
-	payload, err := json.Marshal(map[string][]*FlatFeedActivity{
+	payload, err := json.Marshal(map[string][]*Activity{
 		"activities": activities,
 	})
 	if err != nil {
@@ -95,7 +100,7 @@ func (f *FlatFeed) AddActivities(activities []*FlatFeedActivity) ([]*FlatFeedAct
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/"
 
-	resultBytes, err := f.Client().post(f, endpoint, f.Signature(), payload, nil)
+	resultBytes, err := f.Client().post(f, endpoint, payload, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -124,7 +129,7 @@ func (f *FlatFeed) Activities(input *GetFlatFeedInput) (*GetFlatFeedOutput, erro
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/"
 
-	result, err := f.Client().get(f, endpoint, f.Signature(), payload, nil)
+	result, err := f.Client().get(f, endpoint, payload, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -139,15 +144,15 @@ func (f *FlatFeed) Activities(input *GetFlatFeedInput) (*GetFlatFeedOutput, erro
 }
 
 // RemoveActivity removes an Activity from a FlatFeedGroup
-func (f *FlatFeed) RemoveActivity(input *FlatFeedActivity) error {
+func (f *FlatFeed) RemoveActivity(input *Activity) error {
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + input.ID + "/"
 
-	return f.Client().del(f, endpoint, f.Signature(), nil, nil)
+	return f.Client().del(f, endpoint, nil, nil)
 }
 
 // RemoveActivityByForeignID removes an Activity from a FlatFeedGroup by ForeignID
-func (f *FlatFeed) RemoveActivityByForeignID(input *FlatFeedActivity) error {
+func (f *FlatFeed) RemoveActivityByForeignID(input *Activity) error {
 
 	if input.ForeignID == "" {
 		return errors.New("no ForeignID")
@@ -163,7 +168,7 @@ func (f *FlatFeed) RemoveActivityByForeignID(input *FlatFeedActivity) error {
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + input.ForeignID + "/"
 
-	return f.Client().del(f, endpoint, f.Signature(), nil, map[string]string{
+	return f.Client().del(f, endpoint, nil, map[string]string{
 		"foreign_id": "1",
 	})
 }
@@ -184,7 +189,7 @@ func (f *FlatFeed) FollowFeedWithCopyLimit(target *FlatFeed, copyLimit int) erro
 		return err
 	}
 
-	_, err = f.Client().post(f, endpoint, f.Signature(), payload, nil)
+	_, err = f.Client().post(f, endpoint, payload, nil)
 	return err
 
 }
@@ -194,7 +199,7 @@ func (f *FlatFeed) Unfollow(target *FlatFeed) error {
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/" + target.FeedID().Value() + "/"
 
-	return f.Client().del(f, endpoint, f.Signature(), nil, nil)
+	return f.Client().del(f, endpoint, nil, nil)
 
 }
 
@@ -211,7 +216,7 @@ func (f *FlatFeed) UnfollowKeepingHistory(target *FlatFeed) error {
 		return err
 	}
 
-	return f.Client().del(f, endpoint, f.Signature(), payload, nil)
+	return f.Client().del(f, endpoint, payload, nil)
 
 }
 
@@ -230,7 +235,7 @@ func (f *FlatFeed) FollowersWithLimitAndSkip(limit int, skip int) ([]*GeneralFee
 		return nil, err
 	}
 
-	resultBytes, err := f.Client().get(f, endpoint, f.Signature(), payload, nil)
+	resultBytes, err := f.Client().get(f, endpoint, payload, nil)
 
 	output := &getFlatFeedFollowersOutput{}
 	err = json.Unmarshal(resultBytes, output)
@@ -278,7 +283,7 @@ func (f *FlatFeed) FollowingWithLimitAndSkip(limit int, skip int) ([]*GeneralFee
 		return nil, err
 	}
 
-	resultBytes, err := f.Client().get(f, endpoint, f.Signature(), payload, nil)
+	resultBytes, err := f.Client().get(f, endpoint, payload, nil)
 
 	output := &getFlatFeedFollowersOutput{}
 	err = json.Unmarshal(resultBytes, output)

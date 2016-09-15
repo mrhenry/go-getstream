@@ -20,7 +20,7 @@ func ExampleNotificationFeed_AddActivity() {
 		return
 	}
 
-	activity, err := feed.AddActivity(&NotificationFeedActivity{
+	activity, err := feed.AddActivity(&Activity{
 		Verb:      "post",
 		ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
 		Object:    FeedID("flat:eric"),
@@ -50,7 +50,7 @@ func TestNotificationFeedAddActivity(t *testing.T) {
 		return
 	}
 
-	activity, err := feed.AddActivity(&NotificationFeedActivity{
+	activity, err := feed.AddActivity(&Activity{
 		Verb:      "post",
 		ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
 		Object:    FeedID("flat:eric"),
@@ -65,7 +65,7 @@ func TestNotificationFeedAddActivity(t *testing.T) {
 		t.Fail()
 	}
 
-	err = testCleanUp(client, nil, []*NotificationFeedActivity{activity}, nil)
+	err = testCleanUp(client, nil, []*Activity{activity}, nil)
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -96,7 +96,7 @@ func TestNotificationFeedAddActivityWithTo(t *testing.T) {
 		return
 	}
 
-	activity, err := feed.AddActivity(&NotificationFeedActivity{
+	activity, err := feed.AddActivity(&Activity{
 		Verb:      "post",
 		ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
 		Object:    FeedID("flat:eric"),
@@ -112,7 +112,7 @@ func TestNotificationFeedAddActivityWithTo(t *testing.T) {
 		t.Fail()
 	}
 
-	err = testCleanUp(client, nil, []*NotificationFeedActivity{activity}, nil)
+	err = testCleanUp(client, nil, []*Activity{activity}, nil)
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -136,7 +136,7 @@ func TestNotificationFeedRemoveActivity(t *testing.T) {
 		return
 	}
 
-	activity, err := feed.AddActivity(&NotificationFeedActivity{
+	activity, err := feed.AddActivity(&Activity{
 		Verb:   "post",
 		Object: FeedID("flat:eric"),
 		Actor:  FeedID("flat:john"),
@@ -150,7 +150,7 @@ func TestNotificationFeedRemoveActivity(t *testing.T) {
 		t.Fail()
 	}
 
-	rmActivity := NotificationFeedActivity{
+	rmActivity := Activity{
 		ID: activity.ID,
 	}
 
@@ -178,7 +178,7 @@ func TestNotificationFeedRemoveByForeignIDActivity(t *testing.T) {
 		return
 	}
 
-	activity, err := feed.AddActivity(&NotificationFeedActivity{
+	activity, err := feed.AddActivity(&Activity{
 		Verb:      "post",
 		ForeignID: "08f01c47-014f-11e4-aa8f-0cc47a024be0",
 		Object:    FeedID("flat:eric"),
@@ -193,7 +193,7 @@ func TestNotificationFeedRemoveByForeignIDActivity(t *testing.T) {
 		t.Fail()
 	}
 
-	rmActivity := NotificationFeedActivity{
+	rmActivity := Activity{
 		ForeignID: activity.ForeignID,
 	}
 	_ = rmActivity
@@ -205,7 +205,7 @@ func TestNotificationFeedRemoveByForeignIDActivity(t *testing.T) {
 		return
 	}
 
-	testCleanUp(client, nil, []*NotificationFeedActivity{activity}, nil)
+	testCleanUp(client, nil, []*Activity{activity}, nil)
 
 }
 
@@ -225,7 +225,7 @@ func TestNotificationFeedActivities(t *testing.T) {
 		return
 	}
 
-	_, err = feed.AddActivity(&NotificationFeedActivity{
+	_, err = feed.AddActivity(&Activity{
 		Verb:      "post",
 		ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
 		Object:    FeedID("flat:eric"),
@@ -268,13 +268,13 @@ func TestNotificationFeedAddActivities(t *testing.T) {
 		return
 	}
 
-	activities, err := feed.AddActivities([]*NotificationFeedActivity{
-		&NotificationFeedActivity{
+	activities, err := feed.AddActivities([]*Activity{
+		&Activity{
 			Verb:      "post",
 			ForeignID: "099978b6-3b72-4f5c-bc43-247ba6ae2dd9",
 			Object:    FeedID("flat:eric"),
 			Actor:     FeedID("flat:john"),
-		}, &NotificationFeedActivity{
+		}, &Activity{
 			Verb:      "walk",
 			ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
 			Object:    FeedID("flat:john"),
@@ -433,8 +433,8 @@ func TestMarkAsSeen(t *testing.T) {
 		return
 	}
 
-	feed.AddActivities([]*NotificationFeedActivity{
-		&NotificationFeedActivity{
+	feed.AddActivities([]*Activity{
+		&Activity{
 			Actor:  FeedID("flat:larry"),
 			Object: FeedID("notification:larry"),
 			Verb:   "post",
@@ -483,8 +483,8 @@ func TestMarkAsRead(t *testing.T) {
 		return
 	}
 
-	feed.AddActivities([]*NotificationFeedActivity{
-		&NotificationFeedActivity{
+	feed.AddActivities([]*Activity{
+		&Activity{
 			Actor:  FeedID("flat:larry"),
 			Object: FeedID("notification:larry"),
 			Verb:   "post",

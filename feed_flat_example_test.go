@@ -17,7 +17,7 @@ func ExampleFlatFeed_AddActivity() {
 		return
 	}
 
-	activity, err := feed.AddActivity(&getstream.FlatFeedActivity{
+	activity, err := feed.AddActivity(&getstream.Activity{
 		Verb:      "post",
 		ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
 		Object:    getstream.FeedID("flat:eric"),

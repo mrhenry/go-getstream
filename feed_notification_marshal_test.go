@@ -27,7 +27,7 @@ func TestNotificationActivityMetaData(t *testing.T) {
 
 	raw := json.RawMessage(dataB)
 
-	activity := NotificationFeedActivity{
+	activity := Activity{
 		ForeignID: uuid.New(),
 		Actor:     FeedID("user:eric"),
 		Object:    FeedID("user:bob"),
@@ -55,14 +55,14 @@ func TestNotificationActivityMetaData(t *testing.T) {
 		return
 	}
 
-	resultActivity := NotificationFeedActivity{}
+	resultActivity := Activity{}
 	err = json.Unmarshal(b, &resultActivity)
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
 	}
 
-	resultActivity2 := NotificationFeedActivity{}
+	resultActivity2 := Activity{}
 	err = json.Unmarshal(b2, &resultActivity2)
 	if err != nil {
 		fmt.Println(err)
