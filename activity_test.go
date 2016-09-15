@@ -140,7 +140,7 @@ func TestActivityMarshalling(t *testing.T) {
 		return
 	}
 
-	vInt, okInt := resultActivity.MetaData["intKey"].(int)
+	vInt, okInt := resultActivity.MetaData["intKey"].(float64)
 	if !okInt {
 		fmt.Println(reflect.TypeOf(resultActivity.MetaData["intKey"]))
 		fmt.Println("Not an Int")
