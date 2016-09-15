@@ -240,10 +240,11 @@ func TestClientRequestFails(t *testing.T) {
 
 	_, err = client.request(feed, "GET", "!@#$%", nil, nil)
 	if err == nil {
+		fmt.Println(err)
 		t.Fail()
 		return
 	}
-	if err.Error() != string(`parse @#%#$: invalid URL escape "!@#$%"`) {
+	if err.Error() != string(`parse !@#$%: invalid URL escape "%"`) {
 		fmt.Println(err)
 		t.Fail()
 		return
@@ -251,6 +252,7 @@ func TestClientRequestFails(t *testing.T) {
 
 	_, err = client.request(feed, "!@#$%", "!@#$%", nil, nil)
 	if err == nil {
+		fmt.Println(err)
 		t.Fail()
 		return
 	}
