@@ -33,7 +33,9 @@ func (f *GeneralFeed) feedIDWithoutColon() string {
 
 // SignFeed sets the token on a Feed
 func (f *GeneralFeed) SignFeed(signer *Signer) {
-	f.token = signer.generateToken(f.feedIDWithoutColon())
+	if f.Client().Signer != nil {
+		f.token = signer.generateToken(f.feedIDWithoutColon())
+	}
 }
 
 // Token returns the token of a Feed
@@ -43,7 +45,10 @@ func (f *GeneralFeed) Token() string {
 
 // GenerateToken returns a new Token for a Feed without setting it to the Feed
 func (f *GeneralFeed) GenerateToken(signer *Signer) string {
-	return signer.generateToken(f.FeedSlug + f.UserID)
+	if f.Client().Signer != nil {
+		return signer.generateToken(f.FeedSlug + f.UserID)
+	}
+	return ""
 }
 
 // Unfollow is used to Unfollow a target Feed

@@ -40,7 +40,9 @@ func (f *AggregatedFeed) feedIDWithoutColon() string {
 
 // SignFeed sets the token on a Feed
 func (f *AggregatedFeed) SignFeed(signer *Signer) {
-	f.token = signer.generateToken(f.feedIDWithoutColon())
+	if f.Client().Signer != nil {
+		f.token = signer.generateToken(f.feedIDWithoutColon())
+	}
 }
 
 // Token returns the token of a Feed
@@ -50,7 +52,10 @@ func (f *AggregatedFeed) Token() string {
 
 // GenerateToken returns a new Token for a Feed without setting it to the Feed
 func (f *AggregatedFeed) GenerateToken(signer *Signer) string {
-	return signer.generateToken(f.FeedSlug + f.UserID)
+	if f.Client().Signer != nil {
+		return signer.generateToken(f.FeedSlug + f.UserID)
+	}
+	return ""
 }
 
 // AddActivity is used to add an Activity to a AggregatedFeed
