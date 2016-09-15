@@ -35,7 +35,7 @@ func (c *Client) request(f Feed, method string, path string, payload []byte, par
 		return nil, err
 	}
 
-	url = c.baseURL.ResolveReference(url)
+	url = c.BaseURL.ResolveReference(url)
 
 	query := url.Query()
 	query = c.setStandardParams(query)

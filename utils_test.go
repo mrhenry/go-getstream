@@ -1,82 +1,73 @@
-package getstream
+package getstream_test
 
-import "os"
+import (
+	"testing"
+	"fmt"
+	"github.com/GetStream/stream-go"
+)
 
-func testSetup() (*Client, error) {
-
-	testAPIKey := os.Getenv("key")
-	testAPISecret := os.Getenv("secret")
-	testAppID := os.Getenv("app_id")
-	testRegion := os.Getenv("region")
-
-	client, err := New(testAPIKey, testAPISecret, testAppID, testRegion)
+func TestFeedSlug(t *testing.T) {
+	slug, err := getstream.ValidateFeedSlug("foo")
 	if err != nil {
-		return nil, err
+		fmt.Println(err)
+		t.Fail()
+	}
+	if slug != "foo" {
+		fmt.Println("feedSlug not 'foo'")
+		t.Fail()
 	}
 
-	return client, nil
-
+	slug, err = getstream.ValidateFeedSlug("f-o-o")
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+	if slug != "f_o_o" {
+		fmt.Println("feedSlug not 'f_o_o'")
+		t.Fail()
+	}
 }
 
-func testCleanUp(client *Client, flats []*Activity, notifications []*Activity, aggregations []*Activity) error {
-
-	if len(flats) > 0 {
-
-		feed, err := client.FlatFeed("flat", "bob")
-		if err != nil {
-			return err
-		}
-
-		for _, activity := range flats {
-			err := feed.RemoveActivity(activity)
-			if err != nil {
-				return err
-			}
-		}
+func TestFeedID(t *testing.T) {
+	feedID, err := getstream.ValidateFeedID("123")
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+	if feedID != "123" {
+		fmt.Println("feedID not '123'")
+		t.Fail()
 	}
 
-	if len(notifications) > 0 {
-
-		feed, err := client.NotificationFeed("notification", "bob")
-		if err != nil {
-			return err
-		}
-
-		for _, activity := range notifications {
-			err := feed.RemoveActivity(activity)
-			if err != nil {
-				return err
-			}
-		}
+	feedID, err = getstream.ValidateFeedID("1-2-3")
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
 	}
-
-	if len(aggregations) > 0 {
-
-		feed, err := client.AggregatedFeed("aggregated", "bob")
-		if err != nil {
-			return err
-		}
-
-		for _, activity := range aggregations {
-			err := feed.RemoveActivity(activity)
-			if err != nil {
-				return err
-			}
-		}
+	if feedID != "1_2_3" {
+		fmt.Println("feedSlug not '1_2_3'")
+		t.Fail()
 	}
-
-	return nil
 }
 
-func testCleanUpFollows(client *Client, flats []*FlatFeed) error {
-
-	for _, flat := range flats {
-
-		followers, _ := flat.FollowersWithLimitAndSkip(300, 0)
-
-		for _, follower := range followers {
-			follower.Unfollow(client, flat)
-		}
+func TestUserID(t *testing.T) {
+	userID, err := getstream.ValidateUserID("123")
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
 	}
-	return nil
+	if userID != "123" {
+		fmt.Println("userID not '123'")
+		t.Fail()
+	}
+
+	userID, err = getstream.ValidateUserID("1-2-3")
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+	if userID != "1_2_3" {
+		fmt.Println("userSlug not '1_2_3'")
+		t.Fail()
+	}
 }

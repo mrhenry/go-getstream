@@ -1,15 +1,16 @@
-package getstream
+package getstream_test
 
 import (
 	"fmt"
 	"testing"
 
 	"github.com/pborman/uuid"
+	"github.com/GetStream/stream-go"
 )
 
 func TestFlatFeedAddActivity(t *testing.T) {
 
-	client, err := testSetup()
+	client, err := getstream.PreTestSetup()
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -23,22 +24,23 @@ func TestFlatFeedAddActivity(t *testing.T) {
 		return
 	}
 
-	activity, err := feed.AddActivity(&Activity{
+	activity, err := feed.AddActivity(&getstream.Activity{
 		Verb:      "post",
 		ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
-		Object:    FeedID("flat:eric"),
-		Actor:     FeedID("flat:john"),
+		Object:    getstream.FeedID("flat:eric"),
+		Actor:     getstream.FeedID("flat:john"),
 	})
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
+		return
 	}
 
 	if activity.Verb != "post" && activity.ForeignID != "48d024fe-3752-467a-8489-23febd1dec4e" {
 		t.Fail()
 	}
 
-	err = testCleanUp(client, []*Activity{activity}, nil, nil)
+	err = getstream.PostTestCleanUp(client, []*getstream.Activity{activity}, nil, nil)
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -48,7 +50,7 @@ func TestFlatFeedAddActivity(t *testing.T) {
 
 func TestFlatFeedAddActivityWithTo(t *testing.T) {
 
-	client, err := testSetup()
+	client, err := getstream.PreTestSetup()
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -76,23 +78,24 @@ func TestFlatFeedAddActivityWithTo(t *testing.T) {
 		return
 	}
 
-	activity, err := feed.AddActivity(&Activity{
+	activity, err := feed.AddActivity(&getstream.Activity{
 		Verb:      "post",
 		ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
-		Object:    FeedID("flat:eric"),
-		Actor:     FeedID("flat:john"),
-		To:        []Feed{feedTo, feedToB},
+		Object:    getstream.FeedID("flat:eric"),
+		Actor:     getstream.FeedID("flat:john"),
+		To:        []getstream.Feed{feedTo, feedToB},
 	})
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
+		return
 	}
 
 	if activity.Verb != "post" && activity.ForeignID != "48d024fe-3752-467a-8489-23febd1dec4e" {
 		t.Fail()
 	}
 
-	err = testCleanUp(client, []*Activity{activity}, nil, nil)
+	err = getstream.PostTestCleanUp(client, []*getstream.Activity{activity}, nil, nil)
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -102,7 +105,7 @@ func TestFlatFeedAddActivityWithTo(t *testing.T) {
 
 func TestFlatFeedUUID(t *testing.T) {
 
-	client, err := testSetup()
+	client, err := getstream.PreTestSetup()
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -116,17 +119,17 @@ func TestFlatFeedUUID(t *testing.T) {
 		return
 	}
 
-	var activities []*Activity
+	var activities []*getstream.Activity
 
 	for i := 0; i < 10; i++ {
 
 		foreignID := uuid.New()
 
-		activity, err := feed.AddActivity(&Activity{
+		activity, err := feed.AddActivity(&getstream.Activity{
 			Verb:      "post",
 			ForeignID: foreignID,
-			Object:    FeedID("flat:eric"),
-			Actor:     FeedID("flat:john"),
+			Object:    getstream.FeedID("flat:eric"),
+			Actor:     getstream.FeedID("flat:john"),
 		})
 		if err != nil {
 			t.Log("fail add activity with UUID : ")
@@ -143,12 +146,12 @@ func TestFlatFeedUUID(t *testing.T) {
 		activities = append(activities, activity)
 	}
 
-	testCleanUp(client, activities, nil, nil)
+	getstream.PostTestCleanUp(client, activities, nil, nil)
 }
 
 func TestFlatFeedRemoveActivity(t *testing.T) {
 
-	client, err := testSetup()
+	client, err := getstream.PreTestSetup()
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -162,21 +165,22 @@ func TestFlatFeedRemoveActivity(t *testing.T) {
 		return
 	}
 
-	activity, err := feed.AddActivity(&Activity{
+	activity, err := feed.AddActivity(&getstream.Activity{
 		Verb:   "post",
-		Object: FeedID("flat:eric"),
-		Actor:  FeedID("flat:john"),
+		Object:getstream.FeedID("flat:eric"),
+		Actor: getstream.FeedID("flat:john"),
 	})
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
+		return
 	}
 
 	if activity.Verb != "post" {
 		t.Fail()
 	}
 
-	rmActivity := Activity{
+	rmActivity := getstream.Activity{
 		ID: activity.ID,
 	}
 
@@ -190,7 +194,7 @@ func TestFlatFeedRemoveActivity(t *testing.T) {
 
 func TestFlatFeedRemoveByForeignIDActivity(t *testing.T) {
 
-	client, err := testSetup()
+	client, err := getstream.PreTestSetup()
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -204,11 +208,11 @@ func TestFlatFeedRemoveByForeignIDActivity(t *testing.T) {
 		return
 	}
 
-	activity, err := feed.AddActivity(&Activity{
+	activity, err := feed.AddActivity(&getstream.Activity{
 		Verb:      "post",
 		ForeignID: "08f01c47-014f-11e4-aa8f-0cc47a024be0",
-		Object:    FeedID("flat:eric"),
-		Actor:     FeedID("flat:john"),
+		Object:   getstream.FeedID("flat:eric"),
+		Actor:    getstream.FeedID("flat:john"),
 	})
 	if err != nil {
 		fmt.Println(err)
@@ -219,7 +223,7 @@ func TestFlatFeedRemoveByForeignIDActivity(t *testing.T) {
 		t.Fail()
 	}
 
-	rmActivity := Activity{
+	rmActivity := getstream.Activity{
 		ForeignID: activity.ForeignID,
 	}
 	_ = rmActivity
@@ -230,13 +234,13 @@ func TestFlatFeedRemoveByForeignIDActivity(t *testing.T) {
 		return
 	}
 
-	testCleanUp(client, []*Activity{activity}, nil, nil)
+	getstream.PostTestCleanUp(client, []*getstream.Activity{activity}, nil, nil)
 
 }
 
 func TestFlatFeedActivities(t *testing.T) {
 
-	client, err := testSetup()
+	client, err := getstream.PreTestSetup()
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -250,24 +254,24 @@ func TestFlatFeedActivities(t *testing.T) {
 		return
 	}
 
-	_, err = feed.AddActivity(&Activity{
+	_, err = feed.AddActivity(&getstream.Activity{
 		Verb:      "post",
 		ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
-		Object:    FeedID("flat:eric"),
-		Actor:     FeedID("flat:john"),
+		Object:   getstream.FeedID("flat:eric"),
+		Actor:    getstream.FeedID("flat:john"),
 	})
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
 	}
 
-	activities, err := feed.Activities(&GetFlatFeedInput{})
+	activities, err := feed.Activities(&getstream.GetFlatFeedInput{})
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
 	}
 
-	err = testCleanUp(client, activities.Activities, nil, nil)
+	err = getstream.PostTestCleanUp(client, activities.Activities, nil, nil)
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -277,7 +281,7 @@ func TestFlatFeedActivities(t *testing.T) {
 
 func TestFlatFeedAddActivities(t *testing.T) {
 
-	client, err := testSetup()
+	client, err := getstream.PreTestSetup()
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -291,17 +295,17 @@ func TestFlatFeedAddActivities(t *testing.T) {
 		return
 	}
 
-	activities, err := feed.AddActivities([]*Activity{
-		&Activity{
+	activities, err := feed.AddActivities([]*getstream.Activity{
+		&getstream.Activity{
 			Verb:      "post",
 			ForeignID: "099978b6-3b72-4f5c-bc43-247ba6ae2dd9",
-			Object:    FeedID("flat:eric"),
-			Actor:     FeedID("flat:john"),
-		}, &Activity{
+			Object:    getstream.FeedID("flat:eric"),
+			Actor:     getstream.FeedID("flat:john"),
+		}, &getstream.Activity{
 			Verb:      "walk",
 			ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
-			Object:    FeedID("flat:john"),
-			Actor:     FeedID("flat:eric"),
+			Object:   getstream.FeedID("flat:john"),
+			Actor:    getstream.FeedID("flat:eric"),
 		},
 	})
 	if err != nil {
@@ -309,7 +313,7 @@ func TestFlatFeedAddActivities(t *testing.T) {
 		t.Fail()
 	}
 
-	err = testCleanUp(client, activities, nil, nil)
+	err = getstream.PostTestCleanUp(client, activities, nil, nil)
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -319,7 +323,7 @@ func TestFlatFeedAddActivities(t *testing.T) {
 
 func TestFlatFeedFollow(t *testing.T) {
 
-	client, err := testSetup()
+	client, err := getstream.PreTestSetup()
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -345,13 +349,13 @@ func TestFlatFeedFollow(t *testing.T) {
 		t.Fail()
 	}
 
-	testCleanUpFollows(client, []*FlatFeed{feedA, feedB})
+	getstream.PostTestCleanUpFollows(client, []*getstream.FlatFeed{feedA, feedB})
 
 }
 
 func TestFlatFeedFollowingFollowers(t *testing.T) {
 
-	client, err := testSetup()
+	client, err := getstream.PreTestSetup()
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -399,13 +403,13 @@ func TestFlatFeedFollowingFollowers(t *testing.T) {
 		t.Fail()
 	}
 
-	testCleanUpFollows(client, []*FlatFeed{feedA, feedB, feedC})
+	getstream.PostTestCleanUpFollows(client, []*getstream.FlatFeed{feedA, feedB, feedC})
 
 }
 
 func TestFlatFeedUnFollow(t *testing.T) {
 
-	client, err := testSetup()
+	client, err := getstream.PreTestSetup()
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -436,13 +440,13 @@ func TestFlatFeedUnFollow(t *testing.T) {
 		t.Fail()
 	}
 
-	testCleanUpFollows(client, []*FlatFeed{feedA, feedB})
+	getstream.PostTestCleanUpFollows(client, []*getstream.FlatFeed{feedA, feedB})
 
 }
 
 func TestFlatFeedUnFollowKeepingHistory(t *testing.T) {
 
-	client, err := testSetup()
+	client, err := getstream.PreTestSetup()
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -473,6 +477,6 @@ func TestFlatFeedUnFollowKeepingHistory(t *testing.T) {
 		t.Fail()
 	}
 
-	testCleanUpFollows(client, []*FlatFeed{feedA, feedB})
+	getstream.PostTestCleanUpFollows(client, []*getstream.FlatFeed{feedA, feedB})
 
 }

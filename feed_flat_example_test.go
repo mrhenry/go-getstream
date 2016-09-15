@@ -1,7 +1,7 @@
 package getstream_test
 
 import "fmt"
-import "github.com/mrhenry/go-getstream"
+import "github.com/GetStream/stream-go"
 
 func ExampleFlatFeed_AddActivity() {
 

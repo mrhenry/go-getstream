@@ -1,13 +1,14 @@
-package getstream
+package getstream_test
 
 import (
 	"fmt"
 	"testing"
+	"github.com/GetStream/stream-go"
 )
 
 func TestFlatFeedAddActivityFail(t *testing.T) {
 
-	client, err := testSetup()
+	client, err := getstream.PreTestSetup()
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -21,11 +22,11 @@ func TestFlatFeedAddActivityFail(t *testing.T) {
 		return
 	}
 
-	_, err = feed.AddActivity(&Activity{
+	_, err = feed.AddActivity(&getstream.Activity{
 		Verb:      "post",
 		ForeignID: "not a real foreign id",
-		Object:    FeedID("flat:eric"),
-		Actor:     FeedID("flat:john"),
+		Object:    getstream.FeedID("flat:eric"),
+		Actor:     getstream.FeedID("flat:john"),
 	})
 	if err == nil {
 		t.Fail()

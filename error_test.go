@@ -1,17 +1,19 @@
-package getstream
+package getstream_test
 
 import (
 	"encoding/json"
 	"fmt"
 	"testing"
 	"time"
+
+	getstream "github.com/GetStream/stream-go"
 )
 
 func TestError(t *testing.T) {
 
 	errorResponse := "{\"code\": 5, \"detail\": \"some detail\", \"duration\": \"36ms\", \"exception\": \"an exception\", \"status_code\": 400}"
 
-	var getStreamError Error
+	var getStreamError getstream.Error
 	err := json.Unmarshal([]byte(errorResponse), &getStreamError)
 	if err != nil {
 		fmt.Println(err)
@@ -19,7 +21,7 @@ func TestError(t *testing.T) {
 		return
 	}
 
-	testError := Error{
+	testError := getstream.Error{
 		Code:        5,
 		Detail:      "some detail",
 		RawDuration: "36ms",
@@ -45,7 +47,7 @@ func TestError(t *testing.T) {
 
 func TestErrorBadDuration(t *testing.T) {
 
-	testError := Error{
+	testError := getstream.Error{
 		Code:        5,
 		Detail:      "some detail",
 		RawDuration: "36blah",

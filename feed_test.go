@@ -1,20 +1,21 @@
-package getstream
+package getstream_test
 
 import (
 	"fmt"
 	"testing"
+	"github.com/GetStream/stream-go"
 )
 
 func TestGeneralFeedBasic(t *testing.T) {
 
-	client, err := New("a key", "a secret", "11111", "us-east")
+	client, err := getstream.New("a key", "a secret", "11111", "us-east")
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
 	}
 
-	general := GeneralFeed{
-		client:   client,
+	general := getstream.GeneralFeed{
+		Client:   client,
 		FeedSlug: "feedGroup",
 		UserID:   "feedName",
 	}
@@ -29,13 +30,13 @@ func TestGeneralFeedBasic(t *testing.T) {
 		return
 	}
 
-	general.SignFeed(general.Client().Signer)
+	general.SignFeed(general.Client.Signer)
 	if "NWH8lcFHfHYEc2xdMs2kOhM-oII" != general.Token() {
 		t.Fail()
 		return
 	}
 
-	if "NWH8lcFHfHYEc2xdMs2kOhM-oII" != general.GenerateToken(general.Client().Signer) {
+	if "NWH8lcFHfHYEc2xdMs2kOhM-oII" != general.GenerateToken(general.Client.Signer) {
 		t.Fail()
 		return
 	}
@@ -48,14 +49,14 @@ func TestGeneralFeedBasic(t *testing.T) {
 
 func TestFlatFeedBasic(t *testing.T) {
 
-	client, err := New("a key", "a secret", "11111", "us-east")
+	client, err := getstream.New("a key", "a secret", "11111", "us-east")
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
 	}
 
-	flatFeed := FlatFeed{
-		client:   client,
+	flatFeed := getstream.FlatFeed{
+		Client:   client,
 		FeedSlug: "feedGroup",
 		UserID:   "feedName",
 	}
@@ -70,13 +71,13 @@ func TestFlatFeedBasic(t *testing.T) {
 		return
 	}
 
-	flatFeed.SignFeed(flatFeed.Client().Signer)
+	flatFeed.SignFeed(flatFeed.Client.Signer)
 	if "NWH8lcFHfHYEc2xdMs2kOhM-oII" != flatFeed.Token() {
 		t.Fail()
 		return
 	}
 
-	if "NWH8lcFHfHYEc2xdMs2kOhM-oII" != flatFeed.GenerateToken(flatFeed.Client().Signer) {
+	if "NWH8lcFHfHYEc2xdMs2kOhM-oII" != flatFeed.GenerateToken(flatFeed.Client.Signer) {
 		t.Fail()
 		return
 	}
@@ -89,14 +90,14 @@ func TestFlatFeedBasic(t *testing.T) {
 
 func TestNotificationFeedBasic(t *testing.T) {
 
-	client, err := New("a key", "a secret", "11111", "us-east")
+	client, err := getstream.New("a key", "a secret", "11111", "us-east")
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
 	}
 
-	notificationFeed := NotificationFeed{
-		client:   client,
+	notificationFeed := getstream.NotificationFeed{
+		Client:   client,
 		FeedSlug: "feedGroup",
 		UserID:   "feedName",
 	}
@@ -111,13 +112,13 @@ func TestNotificationFeedBasic(t *testing.T) {
 		return
 	}
 
-	notificationFeed.SignFeed(notificationFeed.Client().Signer)
+	notificationFeed.SignFeed(notificationFeed.Client.Signer)
 	if "NWH8lcFHfHYEc2xdMs2kOhM-oII" != notificationFeed.Token() {
 		t.Fail()
 		return
 	}
 
-	if "NWH8lcFHfHYEc2xdMs2kOhM-oII" != notificationFeed.GenerateToken(notificationFeed.Client().Signer) {
+	if "NWH8lcFHfHYEc2xdMs2kOhM-oII" != notificationFeed.GenerateToken(notificationFeed.Client.Signer) {
 		t.Fail()
 		return
 	}

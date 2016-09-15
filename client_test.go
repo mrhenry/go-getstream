@@ -1,14 +1,16 @@
-package getstream
+package getstream_test
 
 import (
 	"fmt"
 	"os"
 	"testing"
+
+	getstream "github.com/GetStream/stream-go"
 )
 
 func TestFlatFeedInputValidation(t *testing.T) {
 
-	client, err := New("my_key", "my_secret", "111111", "us-east")
+	client, err := getstream.New("my_key", "my_secret", "111111", "us-east")
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -33,7 +35,7 @@ func TestFlatFeedInputValidation(t *testing.T) {
 
 func TestNotificationFeedInputValidation(t *testing.T) {
 
-	client, err := New("my_key", "my_secret", "111111", "us-east")
+	client, err := getstream.New("my_key", "my_secret", "111111", "us-east")
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -58,21 +60,21 @@ func TestNotificationFeedInputValidation(t *testing.T) {
 
 func TestClientInit(t *testing.T) {
 
-	_, err := New("my_key", "my_secret", "111111", "!#@#$%ˆ&*((*=/*-+[]',.><")
+	_, err := getstream.New("my_key", "my_secret", "111111", "!#@#$%ˆ&*((*=/*-+[]',.><")
 	if err == nil {
 		fmt.Println(err)
 		t.Fail()
 		return
 	}
 
-	_, err = New("my_key", "my_secret", "111111", "")
+	_, err = getstream.New("my_key", "my_secret", "111111", "")
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
 		return
 	}
 
-	_, err = New("my_key", "my_secret", "111111", "us-east")
+	_, err = getstream.New("my_key", "my_secret", "111111", "us-east")
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -83,7 +85,7 @@ func TestClientInit(t *testing.T) {
 
 func TestClientInitWithToken(t *testing.T) {
 
-	serverClient, err := testSetup()
+	serverClient, err := getstream.PreTestSetup()
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -97,7 +99,10 @@ func TestClientInitWithToken(t *testing.T) {
 		return
 	}
 
-	token, err := serverClient.Signer.GenerateFeedScopeToken(ScopeContextAll, ScopeActionAll, serverFeed)
+	token, err := serverClient.Signer.GenerateFeedScopeToken(
+		getstream.ScopeContextAll,
+		getstream.ScopeActionAll,
+		serverFeed.FeedIDWithoutColon())
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -108,7 +113,7 @@ func TestClientInitWithToken(t *testing.T) {
 	testAppID := os.Getenv("app_id")
 	testRegion := os.Getenv("region")
 
-	clientClient, err := NewWithToken(testAPIKey, token, testAppID, testRegion)
+	clientClient, err := getstream.NewWithToken(testAPIKey, token, testAppID, testRegion)
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -122,11 +127,11 @@ func TestClientInitWithToken(t *testing.T) {
 		return
 	}
 
-	activity, err := feed.AddActivity(&Activity{
+	activity, err := feed.AddActivity(&getstream.Activity{
 		Verb:      "post",
 		ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
-		Object:    FeedID("flat:eric"),
-		Actor:     FeedID("flat:john"),
+		Object:    getstream.FeedID("flat:eric"),
+		Actor:     getstream.FeedID("flat:john"),
 	})
 	if err != nil {
 		fmt.Println(err)
@@ -139,7 +144,7 @@ func TestClientInitWithToken(t *testing.T) {
 		return
 	}
 
-	err = testCleanUp(serverClient, []*Activity{activity}, nil, nil)
+	err = getstream.PostTestCleanUp(serverClient, []*getstream.Activity{activity}, nil, nil)
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -150,14 +155,14 @@ func TestClientInitWithToken(t *testing.T) {
 
 func TestClientBaseURL(t *testing.T) {
 
-	client, err := New("my_key", "my_secret", "111111", "us-east")
+	client, err := getstream.New("my_key", "my_secret", "111111", "us-east")
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
 		return
 	}
 
-	if "https://us-east-api.getstream.io/api/v1.0/" != client.baseURL.String() {
+	if client.BaseURL.String() != "https://us-east-api.getstream.io/api/v1.0/"{
 		fmt.Println(err)
 		t.Fail()
 		return
@@ -166,14 +171,14 @@ func TestClientBaseURL(t *testing.T) {
 
 func TestClientAbsoluteURL(t *testing.T) {
 
-	client, err := New("my_key", "my_secret", "111111", "us-east")
+	client, err := getstream.New("my_key", "my_secret", "111111", "us-east")
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
 		return
 	}
 
-	url, err := client.absoluteURL("user")
+	url, err := client.AbsoluteURL("user")
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -186,14 +191,14 @@ func TestClientAbsoluteURL(t *testing.T) {
 		return
 	}
 
-	client, err = New("my_key", "my_secret", "111111", "")
+	client, err = getstream.New("my_key", "my_secret", "111111", "")
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
 		return
 	}
 
-	url, err = client.absoluteURL("flat")
+	url, err = client.AbsoluteURL("flat")
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -206,14 +211,14 @@ func TestClientAbsoluteURL(t *testing.T) {
 		return
 	}
 
-	client, err = New("my_key", "my_secret", "111111", "")
+	client, err = getstream.New("my_key", "my_secret", "111111", "")
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
 		return
 	}
 
-	url, err = client.absoluteURL("!#@#$%ˆ&*((*=/*-+[]',.><")
+	url, err = client.AbsoluteURL("!#@#$%ˆ&*((*=/*-+[]',.><")
 	if err == nil {
 		fmt.Println(err)
 		t.Fail()

@@ -1,2 +1,7 @@
 coverage.out
 coverage.html
+
+
+# IDEs
+.idea
+stream-go.iml

@@ -10,23 +10,18 @@ import (
 // FlatFeed is a getstream FlatFeed
 // Use it to for CRUD on FlatFeed Groups
 type FlatFeed struct {
-	client   *Client
+	Client   *Client
 	FeedSlug string
 	UserID   string
 	token    string
 }
 
-// Client returns the Client associated with the FlatFeed
-func (f FlatFeed) Client() *Client {
-	return f.client
-}
-
 // Signature is used to sign Requests : "FeedSlugUserID Token"
 func (f *FlatFeed) Signature() string {
 	if f.Token() == "" {
-		return f.feedIDWithoutColon()
+		return f.FeedIDWithoutColon()
 	}
-	return f.feedIDWithoutColon() + " " + f.Token()
+	return f.FeedIDWithoutColon() + " " + f.Token()
 }
 
 // FeedID is the combo if the FeedSlug and UserID : "FeedSlug:UserID"
@@ -34,14 +29,14 @@ func (f *FlatFeed) FeedID() FeedID {
 	return FeedID(f.FeedSlug + ":" + f.UserID)
 }
 
-func (f *FlatFeed) feedIDWithoutColon() string {
+func (f *FlatFeed) FeedIDWithoutColon() string {
 	return f.FeedSlug + f.UserID
 }
 
 // SignFeed sets the token on a Feed
 func (f *FlatFeed) SignFeed(signer *Signer) {
-	if f.Client().Signer != nil {
-		f.token = signer.generateToken(f.feedIDWithoutColon())
+	if f.Client.Signer != nil {
+		f.token = signer.GenerateToken(f.FeedIDWithoutColon())
 	}
 }
 
@@ -52,8 +47,8 @@ func (f *FlatFeed) Token() string {
 
 // GenerateToken returns a new Token for a Feed without setting it to the Feed
 func (f *FlatFeed) GenerateToken(signer *Signer) string {
-	if f.Client().Signer != nil {
-		return signer.generateToken(f.FeedSlug + f.UserID)
+	if f.Client.Signer != nil {
+		return signer.GenerateToken(f.FeedSlug + f.UserID)
 	}
 	return ""
 }
@@ -70,7 +65,7 @@ func (f *FlatFeed) AddActivity(activity *Activity) (*Activity, error) {
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/"
 
-	resultBytes, err := f.Client().post(f, endpoint, payload, nil)
+	resultBytes, err := f.Client.post(f, endpoint, payload, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -100,7 +95,7 @@ func (f *FlatFeed) AddActivities(activities []*Activity) ([]*Activity, error) {
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/"
 
-	resultBytes, err := f.Client().post(f, endpoint, payload, nil)
+	resultBytes, err := f.Client.post(f, endpoint, payload, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -129,7 +124,7 @@ func (f *FlatFeed) Activities(input *GetFlatFeedInput) (*GetFlatFeedOutput, erro
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/"
 
-	result, err := f.Client().get(f, endpoint, payload, nil)
+	result, err := f.Client.get(f, endpoint, payload, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -148,7 +143,7 @@ func (f *FlatFeed) RemoveActivity(input *Activity) error {
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + input.ID + "/"
 
-	return f.Client().del(f, endpoint, nil, nil)
+	return f.Client.del(f, endpoint, nil, nil)
 }
 
 // RemoveActivityByForeignID removes an Activity from a FlatFeedGroup by ForeignID
@@ -168,7 +163,7 @@ func (f *FlatFeed) RemoveActivityByForeignID(input *Activity) error {
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + input.ForeignID + "/"
 
-	return f.Client().del(f, endpoint, nil, map[string]string{
+	return f.Client.del(f, endpoint, nil, map[string]string{
 		"foreign_id": "1",
 	})
 }
@@ -189,7 +184,7 @@ func (f *FlatFeed) FollowFeedWithCopyLimit(target *FlatFeed, copyLimit int) erro
 		return err
 	}
 
-	_, err = f.Client().post(f, endpoint, payload, nil)
+	_, err = f.Client.post(f, endpoint, payload, nil)
 	return err
 
 }
@@ -199,7 +194,7 @@ func (f *FlatFeed) Unfollow(target *FlatFeed) error {
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/" + target.FeedID().Value() + "/"
 
-	return f.Client().del(f, endpoint, nil, nil)
+	return f.Client.del(f, endpoint, nil, nil)
 
 }
 
@@ -216,7 +211,7 @@ func (f *FlatFeed) UnfollowKeepingHistory(target *FlatFeed) error {
 		return err
 	}
 
-	return f.Client().del(f, endpoint, payload, nil)
+	return f.Client.del(f, endpoint, payload, nil)
 
 }
 
@@ -235,7 +230,7 @@ func (f *FlatFeed) FollowersWithLimitAndSkip(limit int, skip int) ([]*GeneralFee
 		return nil, err
 	}
 
-	resultBytes, err := f.Client().get(f, endpoint, payload, nil)
+	resultBytes, err := f.Client.get(f, endpoint, payload, nil)
 
 	output := &getFlatFeedFollowersOutput{}
 	err = json.Unmarshal(resultBytes, output)
@@ -283,7 +278,7 @@ func (f *FlatFeed) FollowingWithLimitAndSkip(limit int, skip int) ([]*GeneralFee
 		return nil, err
 	}
 
-	resultBytes, err := f.Client().get(f, endpoint, payload, nil)
+	resultBytes, err := f.Client.get(f, endpoint, payload, nil)
 
 	output := &getFlatFeedFollowersOutput{}
 	err = json.Unmarshal(resultBytes, output)

@@ -12,7 +12,7 @@ import (
 // Client is used to connect to getstream.io
 type Client struct {
 	HTTP    *http.Client
-	baseURL *url.URL // https://api.getstream.io/api/
+	BaseURL *url.URL // https://api.getstream.io/api/
 
 	Key      string
 	Secret   string
@@ -46,7 +46,7 @@ func New(key string, secret string, appID string, location string) (*Client, err
 		HTTP: &http.Client{
 			Timeout: 3 * time.Second,
 		},
-		baseURL: baseURL,
+		BaseURL: baseURL,
 
 		Key:      key,
 		Secret:   secret,
@@ -81,7 +81,7 @@ func NewWithToken(key string, token string, appID string, location string) (*Cli
 		HTTP: &http.Client{
 			Timeout: 3 * time.Second,
 		},
-		baseURL: baseURL,
+		BaseURL: baseURL,
 
 		Key:      key,
 		Token:    token,
@@ -109,7 +109,7 @@ func (c *Client) FlatFeed(feedSlug string, userID string) (*FlatFeed, error) {
 	}
 
 	feed := &FlatFeed{
-		client:   c,
+		Client:   c,
 		FeedSlug: feedSlug,
 		UserID:   userID,
 	}
@@ -137,7 +137,7 @@ func (c *Client) NotificationFeed(feedSlug string, userID string) (*Notification
 	}
 
 	feed := &NotificationFeed{
-		client:   c,
+		Client:   c,
 		FeedSlug: feedSlug,
 		UserID:   userID,
 	}
@@ -165,7 +165,7 @@ func (c *Client) AggregatedFeed(feedSlug string, userID string) (*AggregatedFeed
 	}
 
 	feed := &AggregatedFeed{
-		client:   c,
+		Client:   c,
 		FeedSlug: feedSlug,
 		UserID:   userID,
 	}
@@ -199,7 +199,7 @@ func (c *Client) AggregatedFeed(feedSlug string, userID string) (*AggregatedFeed
 // }
 
 // absoluteUrl create a url.URL instance and sets query params (bad!!!)
-func (c *Client) absoluteURL(path string) (*url.URL, error) {
+func (c *Client) AbsoluteURL(path string) (*url.URL, error) {
 
 	result, err := url.Parse(path)
 	if err != nil {
@@ -208,7 +208,7 @@ func (c *Client) absoluteURL(path string) (*url.URL, error) {
 
 	// DEBUG: Use this line to send stuff to a proxy instead.
 	// c.baseURL, _ = url.Parse("http://0.0.0.0:8000/")
-	result = c.baseURL.ResolveReference(result)
+	result = c.BaseURL.ResolveReference(result)
 
 	qs := result.Query()
 	qs.Set("api_key", c.Key)

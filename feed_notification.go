@@ -11,23 +11,18 @@ import (
 // NotificationFeed is a getstream NotificationFeed
 // Use it to for CRUD on NotificationFeed Groups
 type NotificationFeed struct {
-	client   *Client
+	Client   *Client
 	FeedSlug string
 	UserID   string
 	token    string
 }
 
-// Client returns the Client associated with the NotificationFeed
-func (f NotificationFeed) Client() *Client {
-	return f.client
-}
-
 // Signature is used to sign Requests : "FeedSlugUserID Token"
 func (f *NotificationFeed) Signature() string {
 	if f.Token() == "" {
-		return f.feedIDWithoutColon()
+		return f.FeedIDWithoutColon()
 	}
-	return f.feedIDWithoutColon() + " " + f.Token()
+	return f.FeedIDWithoutColon() + " " + f.Token()
 }
 
 // FeedID is the combo if the FeedSlug and UserID : "FeedSlug:UserID"
@@ -35,14 +30,14 @@ func (f *NotificationFeed) FeedID() FeedID {
 	return FeedID(f.FeedSlug + ":" + f.UserID)
 }
 
-func (f *NotificationFeed) feedIDWithoutColon() string {
+func (f *NotificationFeed) FeedIDWithoutColon() string {
 	return f.FeedSlug + f.UserID
 }
 
 // SignFeed sets the token on a Feed
 func (f *NotificationFeed) SignFeed(signer *Signer) {
-	if f.Client().Signer != nil {
-		f.token = signer.generateToken(f.feedIDWithoutColon())
+	if f.Client.Signer != nil {
+		f.token = signer.GenerateToken(f.FeedIDWithoutColon())
 	}
 }
 
@@ -53,8 +48,8 @@ func (f *NotificationFeed) Token() string {
 
 // GenerateToken returns a new Token for a Feed without setting it to the Feed
 func (f *NotificationFeed) GenerateToken(signer *Signer) string {
-	if f.Client().Signer != nil {
-		return signer.generateToken(f.FeedSlug + f.UserID)
+	if f.Client.Signer != nil {
+		return signer.GenerateToken(f.FeedSlug + f.UserID)
 	}
 	return ""
 }
@@ -69,7 +64,7 @@ func (f *NotificationFeed) AddActivity(activity *Activity) (*Activity, error) {
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/"
 
-	resultBytes, err := f.Client().post(f, endpoint, payload, nil)
+	resultBytes, err := f.Client.post(f, endpoint, payload, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -95,7 +90,7 @@ func (f *NotificationFeed) AddActivities(activities []*Activity) ([]*Activity, e
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/"
 
-	resultBytes, err := f.Client().post(f, endpoint, payload, nil)
+	resultBytes, err := f.Client.post(f, endpoint, payload, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -121,7 +116,7 @@ func (f *NotificationFeed) MarkActivitiesAsRead(activities []*Activity) error {
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/"
 
-	_, err := f.Client().get(f, endpoint, nil, map[string]string{
+	_, err := f.Client.get(f, endpoint, nil, map[string]string{
 		"mark_read": idStr,
 	})
 
@@ -133,7 +128,7 @@ func (f *NotificationFeed) MarkActivitiesAsSeenWithLimit(limit int) error {
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/"
 
-	_, err := f.Client().get(f, endpoint, nil, map[string]string{
+	_, err := f.Client.get(f, endpoint, nil, map[string]string{
 		"mark_seen": "true",
 		"limit":     strconv.Itoa(limit),
 	})
@@ -156,7 +151,7 @@ func (f *NotificationFeed) Activities(input *GetNotificationFeedInput) (*GetNoti
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/"
 
-	result, err := f.Client().get(f, endpoint, payload, nil)
+	result, err := f.Client.get(f, endpoint, payload, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -175,7 +170,7 @@ func (f *NotificationFeed) RemoveActivity(input *Activity) error {
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + input.ID + "/"
 
-	return f.Client().del(f, endpoint, nil, nil)
+	return f.Client.del(f, endpoint, nil, nil)
 }
 
 // RemoveActivityByForeignID removes an Activity from a NotificationFeedGroup by ForeignID
@@ -195,7 +190,7 @@ func (f *NotificationFeed) RemoveActivityByForeignID(input *Activity) error {
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + input.ForeignID + "/"
 
-	return f.Client().del(f, endpoint, nil, map[string]string{
+	return f.Client.del(f, endpoint, nil, map[string]string{
 		"foreign_id": "1",
 	})
 }
@@ -215,7 +210,7 @@ func (f *NotificationFeed) FollowFeedWithCopyLimit(target *FlatFeed, copyLimit i
 		return err
 	}
 
-	_, err = f.Client().post(f, endpoint, payload, nil)
+	_, err = f.Client.post(f, endpoint, payload, nil)
 	return err
 
 }
@@ -225,7 +220,7 @@ func (f *NotificationFeed) Unfollow(target *FlatFeed) error {
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/" + target.FeedID().Value() + "/"
 
-	return f.Client().del(f, endpoint, nil, nil)
+	return f.Client.del(f, endpoint, nil, nil)
 
 }
 
@@ -242,7 +237,7 @@ func (f *NotificationFeed) UnfollowKeepingHistory(target *FlatFeed) error {
 		return err
 	}
 
-	return f.Client().del(f, endpoint, payload, nil)
+	return f.Client.del(f, endpoint, payload, nil)
 
 }
 
@@ -261,7 +256,7 @@ func (f *NotificationFeed) FollowingWithLimitAndSkip(limit int, skip int) ([]*Ge
 		return nil, err
 	}
 
-	resultBytes, err := f.Client().get(f, endpoint, payload, nil)
+	resultBytes, err := f.Client.get(f, endpoint, payload, nil)
 
 	output := &getNotificationFeedFollowersOutput{}
 	err = json.Unmarshal(resultBytes, output)

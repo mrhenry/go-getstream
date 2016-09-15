@@ -16,7 +16,12 @@ type Signer struct {
 	Secret string
 }
 
-func (s Signer) urlSafe(src string) string {
+// SignFeed sets the token on a Feed
+func (s Signer) SignFeed(feedID string) string {
+	return s.GenerateToken(feedID)
+}
+
+func (s Signer) UrlSafe(src string) string {
 	src = strings.Replace(src, "+", "-", -1)
 	src = strings.Replace(src, "/", "_", -1)
 	src = strings.Trim(src, "=")
@@ -24,18 +29,18 @@ func (s Signer) urlSafe(src string) string {
 }
 
 // generateToken will user the Secret of the signer and the message passed as an argument to generate a Token
-func (s Signer) generateToken(message string) string {
+func (s Signer) GenerateToken(message string) string {
 	hash := sha1.New()
 	hash.Write([]byte(s.Secret))
 	key := hash.Sum(nil)
 	mac := hmac.New(sha1.New, key)
 	mac.Write([]byte(message))
 	digest := base64.StdEncoding.EncodeToString(mac.Sum(nil))
-	return s.urlSafe(digest)
+	return s.UrlSafe(digest)
 }
 
 // GenerateFeedScopeToken returns a jwt
-func (s Signer) GenerateFeedScopeToken(context ScopeContext, action ScopeAction, feed Feed) (string, error) {
+func (s Signer) GenerateFeedScopeToken(context ScopeContext, action ScopeAction, feedIDWithoutColon string) (string, error) {
 
 	claims := jwt.MapClaims{
 		"resource": context.Value(),
@@ -49,8 +54,8 @@ func (s Signer) GenerateFeedScopeToken(context ScopeContext, action ScopeAction,
 		// "sub":
 	}
 
-	if feed != nil {
-		claims["feed_id"] = feed.feedIDWithoutColon()
+	if feedIDWithoutColon != "" {
+		claims["feed_id"] = feedIDWithoutColon
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

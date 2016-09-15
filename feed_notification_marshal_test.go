@@ -1,10 +1,13 @@
-package getstream
+package getstream_test
 
 import "github.com/pborman/uuid"
 import "time"
 import "testing"
 import "encoding/json"
-import "fmt"
+import (
+	"fmt"
+	"github.com/GetStream/stream-go"
+)
 
 func TestNotificationActivityMetaData(t *testing.T) {
 
@@ -27,12 +30,12 @@ func TestNotificationActivityMetaData(t *testing.T) {
 
 	raw := json.RawMessage(dataB)
 
-	activity := Activity{
+	activity := getstream.Activity{
 		ForeignID: uuid.New(),
-		Actor:     FeedID("user:eric"),
-		Object:    FeedID("user:bob"),
-		Target:    FeedID("user:john"),
-		Origin:    FeedID("user:barry"),
+		Actor:     getstream.FeedID("user:eric"),
+		Object:    getstream.FeedID("user:bob"),
+		Target:    getstream.FeedID("user:john"),
+		Origin:    getstream.FeedID("user:barry"),
 		Verb:      "post",
 		TimeStamp: &now,
 		Data:      &raw,
@@ -55,14 +58,14 @@ func TestNotificationActivityMetaData(t *testing.T) {
 		return
 	}
 
-	resultActivity := Activity{}
+	resultActivity := getstream.Activity{}
 	err = json.Unmarshal(b, &resultActivity)
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
 	}
 
-	resultActivity2 := Activity{}
+	resultActivity2 := getstream.Activity{}
 	err = json.Unmarshal(b2, &resultActivity2)
 	if err != nil {
 		fmt.Println(err)
