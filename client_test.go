@@ -131,10 +131,12 @@ func TestClientInitWithToken(t *testing.T) {
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
+		return
 	}
 
 	if activity.Verb != "post" && activity.ForeignID != "48d024fe-3752-467a-8489-23febd1dec4e" {
 		t.Fail()
+		return
 	}
 
 	err = testCleanUp(serverClient, []*Activity{activity}, nil, nil)
