@@ -23,7 +23,7 @@ if err != nil {
   return
 }
 
-activity, err := feed.AddActivity(&Activity{
+activity, err := feed.AddActivity(&getstream.Activity{
   Verb:      "post",
   ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
   Object:    FeedID("flat:eric"),
@@ -37,7 +37,6 @@ if err != nil {
 Client Side Token
 
 ```go
-
 client, err := getstream.New("APIKey", "APISecret", "AppID", "Region")
 if err != nil {
   fmt.Println(err)
@@ -105,7 +104,7 @@ if err != nil {
 - `metadata` : Top-level key/value pairs
 
 You can/should use `data` to send golang structures through getstream. This will give you the benefit of golang's static type system.
-If you can't know the contents of an Activity you can use metadata which is a `map[string]string`, encoding to json will move these values to the top-level. This means that keys which conflict with standard getstream keys will be overwritten. The benefit of this structure is that these key/value pairs will be exposed to getstream internals such as ranking,...
+If you can't know the contents of an Activity you can use metadata which is a `map[string]interface{}`, encoding to json will move these values to the top-level. This means that keys which conflict with standard getstream keys will be overwritten. The benefit of this structure is that these key/value pairs will be exposed to getstream internals such as ranking,...
 
 ### Design Choices :
 
