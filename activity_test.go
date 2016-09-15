@@ -1,9 +1,15 @@
 package getstream
 
-import "github.com/pborman/uuid"
-import "time"
+import (
+	"encoding/json"
+	"reflect"
+	"time"
+
+	"github.com/pborman/uuid"
+)
+
 import "testing"
-import "encoding/json"
+
 import "fmt"
 
 func TestActivityMarshalling(t *testing.T) {
@@ -38,6 +44,7 @@ func TestActivityMarshalling(t *testing.T) {
 		MetaData: map[string]interface{}{
 			"stringKey": "stringValue",
 			"intKey":    1,
+			"floatKey":  1.235,
 			"boolKey":   true,
 		},
 	}
@@ -117,6 +124,7 @@ func TestActivityMarshalling(t *testing.T) {
 
 	vString, okString := resultActivity.MetaData["stringKey"].(string)
 	if !okString {
+		fmt.Println(reflect.TypeOf(resultActivity.MetaData["stringKey"]))
 		fmt.Println("Not a String")
 		t.Fail()
 		return
@@ -129,6 +137,7 @@ func TestActivityMarshalling(t *testing.T) {
 
 	vInt, okInt := resultActivity.MetaData["intKey"].(int)
 	if !okInt {
+		fmt.Println(reflect.TypeOf(resultActivity.MetaData["intKey"]))
 		fmt.Println("Not an Int")
 		t.Fail()
 		return
@@ -139,8 +148,22 @@ func TestActivityMarshalling(t *testing.T) {
 		return
 	}
 
+	vFloat, okFloat := resultActivity.MetaData["floatKey"].(float64)
+	if !okFloat {
+		fmt.Println(reflect.TypeOf(resultActivity.MetaData["floatKey"]))
+		fmt.Println("Not a Float")
+		t.Fail()
+		return
+	}
+	if vFloat != 1.235 {
+		fmt.Println("Not the correct value")
+		t.Fail()
+		return
+	}
+
 	vBool, okBool := resultActivity.MetaData["boolKey"].(bool)
 	if !okBool {
+		fmt.Println(reflect.TypeOf(resultActivity.MetaData["boolKey"]))
 		fmt.Println("Not a Bool")
 		t.Fail()
 		return
