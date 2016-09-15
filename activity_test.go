@@ -33,6 +33,11 @@ func TestActivityMarshalling(t *testing.T) {
 
 	raw := json.RawMessage(dataB)
 
+	var stringV string = "stringValue"
+	var intV int = 1
+	var floatV float64 = 1.235
+	var boolV bool = true
+
 	activity := Activity{
 		ForeignID: uuid.New(),
 		Actor:     FeedID("user:eric"),
@@ -42,10 +47,10 @@ func TestActivityMarshalling(t *testing.T) {
 		TimeStamp: &now,
 		Data:      &raw,
 		MetaData: map[string]interface{}{
-			"stringKey": "stringValue",
-			"intKey":    1,
-			"floatKey":  1.235,
-			"boolKey":   true,
+			"stringKey": stringV,
+			"intKey":    intV,
+			"floatKey":  floatV,
+			"boolKey":   boolV,
 		},
 	}
 
