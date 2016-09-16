@@ -1,11 +1,15 @@
 package getstream_test
 
-import "fmt"
-import "github.com/mrhenry/go-getstream"
+import (
+	"fmt"
+
+	getstream "github.com/mrhenry/go-getstream"
+)
 
 func ExampleClient() {
 
-	client, err := getstream.New("APIKey", "APISecret", "AppID", "Region")
+	opts := getstream.ServerOptions("APIKey", "APISecret", "AppID", "Region")
+	client, err := getstream.New(opts)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -17,7 +21,8 @@ func ExampleClient() {
 
 func ExampleClient_FlatFeed() {
 
-	client, err := getstream.New("APIKey", "APISecret", "AppID", "Region")
+	opts := getstream.ServerOptions("APIKey", "APISecret", "AppID", "Region")
+	client, err := getstream.New(opts)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -35,7 +40,8 @@ func ExampleClient_FlatFeed() {
 
 func ExampleClient_NotificationFeed() {
 
-	client, err := getstream.New("APIKey", "APISecret", "AppID", "Region")
+	opts := getstream.ServerOptions("APIKey", "APISecret", "AppID", "Region")
+	client, err := getstream.New(opts)
 	if err != nil {
 		fmt.Println(err)
 		return

@@ -8,7 +8,8 @@ import (
 
 func ExampleNotificationFeed_AddActivity() {
 
-	client, err := New("APIKey", "APISecret", "AppID", "Region")
+	opts := ServerOptions("APIKey", "APISecret", "AppID", "Region")
+	client, err := New(opts)
 	if err != nil {
 		fmt.Println(err)
 		return

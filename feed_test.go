@@ -7,7 +7,8 @@ import (
 
 func TestGeneralFeedBasic(t *testing.T) {
 
-	client, err := New("a key", "a secret", "11111", "us-east")
+	opts := ServerOptions("a key", "a secret", "11111", "us-east")
+	client, err := New(opts)
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -48,7 +49,8 @@ func TestGeneralFeedBasic(t *testing.T) {
 
 func TestFlatFeedBasic(t *testing.T) {
 
-	client, err := New("a key", "a secret", "11111", "us-east")
+	opts := ServerOptions("a key", "a secret", "11111", "us-east")
+	client, err := New(opts)
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -89,7 +91,8 @@ func TestFlatFeedBasic(t *testing.T) {
 
 func TestNotificationFeedBasic(t *testing.T) {
 
-	client, err := New("a key", "a secret", "11111", "us-east")
+	opts := ServerOptions("a key", "a secret", "11111", "us-east")
+	client, err := New(opts)
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
