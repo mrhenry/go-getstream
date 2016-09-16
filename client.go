@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"regexp"
 	"strings"
+	"time"
 )
 
 // Client is used to connect to getstream.io
@@ -45,6 +46,9 @@ func New(options ...Option) (*Client, error) {
 	c.baseURL = baseURL
 	c.Signer = &Signer{
 		Secret: c.Secret,
+	}
+	c.HTTP = &http.Client{
+		Timeout: time.Second * 3,
 	}
 
 	return &c, nil
