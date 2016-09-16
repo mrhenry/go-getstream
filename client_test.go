@@ -7,14 +7,9 @@ import (
 
 func TestFlatFeedInputValidation(t *testing.T) {
 
-	client, err := New("my_key", "my_secret", "111111", "us-east")
-	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
-	}
+	client := New("my_key", "my_secret", "111111", "us-east")
 
-	_, err = client.FlatFeed("user", "099978b6-3b72-4f5c-bc43-247ba6ae2dd9")
+	_, err := client.FlatFeed("user", "099978b6-3b72-4f5c-bc43-247ba6ae2dd9")
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -32,14 +27,9 @@ func TestFlatFeedInputValidation(t *testing.T) {
 
 func TestNotificationFeedInputValidation(t *testing.T) {
 
-	client, err := New("my_key", "my_secret", "111111", "us-east")
-	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
-	}
+	client := New("my_key", "my_secret", "111111", "us-east")
 
-	_, err = client.NotificationFeed("user", "099978b6-3b72-4f5c-bc43-247ba6ae2dd9")
+	_, err := client.NotificationFeed("user", "099978b6-3b72-4f5c-bc43-247ba6ae2dd9")
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -55,41 +45,18 @@ func TestNotificationFeedInputValidation(t *testing.T) {
 
 }
 
-func TestClientInit(t *testing.T) {
-
-	_, err := New("my_key", "my_secret", "111111", "!#@#$%ˆ&*((*=/*-+[]',.><")
-	if err == nil {
-		fmt.Println(err)
-		t.Fail()
-		return
-	}
-
-	_, err = New("my_key", "my_secret", "111111", "")
-	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
-	}
-
-	_, err = New("my_key", "my_secret", "111111", "us-east")
-	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
-	}
-
-}
-
 func TestClientBaseURL(t *testing.T) {
 
-	client, err := New("my_key", "my_secret", "111111", "us-east")
+	client := New("my_key", "my_secret", "111111", "us-east")
+
+	url, err := client.BaseURL()
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
 		return
 	}
 
-	if "https://us-east-api.getstream.io/api/v1.0/" != client.baseURL.String() {
+	if "https://us-east-api.getstream.io/api/v1.0/" != url.String() {
 		fmt.Println(err)
 		t.Fail()
 		return
@@ -98,12 +65,7 @@ func TestClientBaseURL(t *testing.T) {
 
 func TestClientAbsoluteURL(t *testing.T) {
 
-	client, err := New("my_key", "my_secret", "111111", "us-east")
-	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
-	}
+	client := New("my_key", "my_secret", "111111", "us-east")
 
 	url, err := client.absoluteURL("user")
 	if err != nil {
@@ -118,12 +80,7 @@ func TestClientAbsoluteURL(t *testing.T) {
 		return
 	}
 
-	client, err = New("my_key", "my_secret", "111111", "")
-	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
-	}
+	client = New("my_key", "my_secret", "111111", "")
 
 	url, err = client.absoluteURL("flat")
 	if err != nil {
@@ -138,12 +95,7 @@ func TestClientAbsoluteURL(t *testing.T) {
 		return
 	}
 
-	client, err = New("my_key", "my_secret", "111111", "")
-	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
-	}
+	client = New("my_key", "my_secret", "111111", "")
 
 	url, err = client.absoluteURL("!#@#$%ˆ&*((*=/*-+[]',.><")
 	if err == nil {

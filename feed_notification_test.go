@@ -8,11 +8,7 @@ import (
 
 func ExampleNotificationFeed_AddActivity() {
 
-	client, err := New("APIKey", "APISecret", "AppID", "Region")
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+	client := New("APIKey", "APISecret", "AppID", "Region")
 
 	feed, err := client.NotificationFeed("FeedSlug", "UserID")
 	if err != nil {

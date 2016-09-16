@@ -7,11 +7,7 @@ import (
 
 func ExampleAggregatedFeed_AddActivity() {
 
-	client, err := New("APIKey", "APISecret", "AppID", "Region")
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+	client := New("APIKey", "APISecret", "AppID", "Region")
 
 	feed, err := client.AggregatedFeed("FeedSlug", "UserID")
 	if err != nil {

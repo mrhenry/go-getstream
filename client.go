@@ -11,14 +11,14 @@ import (
 
 // Client is used to connect to getstream.io
 type Client struct {
-	HTTP    *http.Client
-	baseURL *url.URL // https://api.getstream.io/api/
-
+	ID       string
 	Key      string
+	Location string
 	Secret   string
-	AppID    string
-	Location string // https://location-api.getstream.io/api/
+	Token    string
+	Version  string
 
+	HTTP   *http.Client
 	Signer *Signer
 }
 
@@ -29,10 +29,31 @@ type Client struct {
 // - appID
 // - region
 // An http.Client with custom settings can be assigned after construction
-func New(key string, secret string, appID string, location string) (*Client, error) {
+func New(key string, secret string, appID string, location string) *Client {
+
+	return &Client{
+		HTTP: &http.Client{
+			Timeout: 3 * time.Second,
+		},
+
+		Key:      key,
+		Secret:   secret,
+		ID:       appID,
+		Location: location,
+
+		Signer: &Signer{
+			Secret: secret,
+		},
+	}
+}
+
+func (c *Client) BaseURL() (*url.URL, error) {
 	baseURLStr := "https://api.getstream.io/api/v1.0/"
-	if location != "" {
-		baseURLStr = "https://" + location + "-api.getstream.io/api/v1.0/"
+	if c.Location != "" && c.Version != "" {
+		baseURLStr = "https://" + c.Location + "-api.getstream.io/api/" + c.Version + "/"
+	}
+	if c.Location != "" {
+		baseURLStr = "https://" + c.Location + "-api.getstream.io/api/v1.0/"
 	}
 
 	baseURL, err := url.Parse(baseURLStr)
@@ -40,21 +61,7 @@ func New(key string, secret string, appID string, location string) (*Client, err
 		return nil, err
 	}
 
-	return &Client{
-		HTTP: &http.Client{
-			Timeout: 3 * time.Second,
-		},
-		baseURL: baseURL,
-
-		Key:      key,
-		Secret:   secret,
-		AppID:    appID,
-		Location: location,
-
-		Signer: &Signer{
-			Secret: secret,
-		},
-	}, nil
+	return baseURL, nil
 }
 
 // FlatFeed returns a getstream feed
@@ -175,7 +182,12 @@ func (c *Client) absoluteURL(path string) (*url.URL, error) {
 
 	// DEBUG: Use this line to send stuff to a proxy instead.
 	// c.baseURL, _ = url.Parse("http://0.0.0.0:8000/")
-	result = c.baseURL.ResolveReference(result)
+	url, err := c.BaseURL()
+	if err != nil {
+		return nil, err
+	}
+
+	result = url.ResolveReference(result)
 
 	qs := result.Query()
 	qs.Set("api_key", c.Key)
