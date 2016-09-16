@@ -56,6 +56,8 @@ func (s Signer) GenerateFeedScopeToken(context ScopeContext, action ScopeAction,
 
 	if feedIDWithoutColon != "" {
 		claims["feed_id"] = feedIDWithoutColon
+	} else {
+		claims["feed_id"] = "*"
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

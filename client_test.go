@@ -1,7 +1,6 @@
 package getstream_test
 
 import (
-	"fmt"
 	"os"
 	"testing"
 
@@ -9,94 +8,88 @@ import (
 )
 
 func TestFlatFeedInputValidation(t *testing.T) {
-
-	client, err := getstream.New("my_key", "my_secret", "111111", "us-east")
+	client, err := getstream.New(&getstream.Config{
+		APIKey:    "my_key",
+		APISecret: "my_secret",
+		AppID:     "111111",
+		Location:  "us-east"})
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 
 	_, err = client.FlatFeed("user", "099978b6-3b72-4f5c-bc43-247ba6ae2dd9")
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 
 	_, err = client.FlatFeed("user", "tester@mail.com")
 	if err == nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
-
 }
 
 func TestNotificationFeedInputValidation(t *testing.T) {
-
-	client, err := getstream.New("my_key", "my_secret", "111111", "us-east")
+	client, err := getstream.New(&getstream.Config{
+		APIKey:    "my_key",
+		APISecret: "my_secret",
+		AppID:     "111111",
+		Location:  "us-east"})
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 
 	_, err = client.NotificationFeed("user", "099978b6-3b72-4f5c-bc43-247ba6ae2dd9")
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 
 	_, err = client.NotificationFeed("user", "tester@mail.com")
 	if err == nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
-
 }
 
 func TestClientInit(t *testing.T) {
-
-	_, err := getstream.New("my_key", "my_secret", "111111", "!#@#$%ˆ&*((*=/*-+[]',.><")
+	_, err := getstream.New(&getstream.Config{
+		APIKey:    "my_key",
+		APISecret: "my_secret",
+		AppID:     "111111",
+		Location:  "!#@#$%ˆ&*((*=/*-+[]',.><"})
 	if err == nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 
-	_, err = getstream.New("my_key", "my_secret", "111111", "")
+	_, err = getstream.New(&getstream.Config{
+		APIKey:    "my_key",
+		APISecret: "my_secret",
+		AppID:     "111111",
+		Location:  ""})
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 
-	_, err = getstream.New("my_key", "my_secret", "111111", "us-east")
+	_, err = getstream.New(&getstream.Config{
+		APIKey:    "my_key",
+		APISecret: "my_secret",
+		AppID:     "111111",
+		Location:  "us-east"})
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
-
 }
 
 func TestClientInitWithToken(t *testing.T) {
-
-	serverClient, err := getstream.PreTestSetup()
+	serverClient, err := PreTestSetupWithToken()
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
+	}
+	if serverClient.Signer == nil {
+		t.Fatal("Required Signer is nil")
 	}
 
 	serverFeed, err := serverClient.FlatFeed("flat", "bob")
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 
 	token, err := serverClient.Signer.GenerateFeedScopeToken(
@@ -104,27 +97,26 @@ func TestClientInitWithToken(t *testing.T) {
 		getstream.ScopeActionAll,
 		serverFeed.FeedIDWithoutColon())
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
+	}
+	if token == "" {
+		t.Fatal("signer generated feed scope token is blank")
 	}
 
-	testAPIKey := os.Getenv("key")
-	testAppID := os.Getenv("app_id")
-	testRegion := os.Getenv("region")
+	// now we're going to pass that token from above into a new client instead of APISecret
 
-	clientClient, err := getstream.NewWithToken(testAPIKey, token, testAppID, testRegion)
+	clientClient, err := getstream.New(&getstream.Config{
+		APIKey:   os.Getenv("key"),
+		Token:    token, // pass token instead of API Secret
+		AppID:    os.Getenv("app_id"),
+		Location: os.Getenv("region")})
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 
 	feed, err := clientClient.FlatFeed("flat", "bob")
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 
 	activity, err := feed.AddActivity(&getstream.Activity{
@@ -134,95 +126,84 @@ func TestClientInitWithToken(t *testing.T) {
 		Actor:     getstream.FeedID("flat:john"),
 	})
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 
 	if activity.Verb != "post" && activity.ForeignID != "48d024fe-3752-467a-8489-23febd1dec4e" {
 		t.Fail()
-		return
 	}
 
-	err = getstream.PostTestCleanUp(serverClient, []*getstream.Activity{activity}, nil, nil)
+	// tests passed, do cleanup
+
+	err = PostTestCleanUp(clientClient, []*getstream.Activity{activity}, nil, nil)
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
-
 }
 
 func TestClientBaseURL(t *testing.T) {
-
-	client, err := getstream.New("my_key", "my_secret", "111111", "us-east")
+	client, err := getstream.New(&getstream.Config{
+		APIKey:    "my_key",
+		APISecret: "my_secret",
+		AppID:     "111111",
+		Location:  "us-east"})
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 
-	if client.BaseURL.String() != "https://us-east-api.getstream.io/api/v1.0/"{
-		fmt.Println(err)
-		t.Fail()
-		return
+	if string(client.BaseURL.String()) != "https://us-east-api.getstream.io/api/v1.0/" {
+		t.Fatal()
 	}
 }
 
 func TestClientAbsoluteURL(t *testing.T) {
-
-	client, err := getstream.New("my_key", "my_secret", "111111", "us-east")
+	client, err := getstream.New(&getstream.Config{
+		APIKey:    "my_key",
+		APISecret: "my_secret",
+		AppID:     "111111",
+		Location:  "us-east"})
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 
 	url, err := client.AbsoluteURL("user")
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 
-	if "https://us-east-api.getstream.io/api/v1.0/user?api_key=my_key&location=us-east" != url.String() {
-		fmt.Println(err)
-		t.Fail()
-		return
+	if url.String() != "https://us-east-api.getstream.io/api/v1.0/user?api_key=my_key&location=us-east" {
+		t.Fatal(err)
 	}
 
-	client, err = getstream.New("my_key", "my_secret", "111111", "")
+	client, err = getstream.New(&getstream.Config{
+		APIKey:    "my_key",
+		APISecret: "my_secret",
+		AppID:     "111111",
+		Location:  ""})
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 
 	url, err = client.AbsoluteURL("flat")
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 
-	if "https://api.getstream.io/api/v1.0/flat?api_key=my_key&location=unspecified" != url.String() {
-		fmt.Println(err)
-		t.Fail()
-		return
+	if url.String() != "https://api.getstream.io/api/v1.0/flat?api_key=my_key&location=unspecified" {
+		t.Fatal()
 	}
 
-	client, err = getstream.New("my_key", "my_secret", "111111", "")
+	client, err = getstream.New(&getstream.Config{
+		APIKey:    "my_key",
+		APISecret: "my_secret",
+		AppID:     "111111",
+		Location:  ""})
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 
 	url, err = client.AbsoluteURL("!#@#$%ˆ&*((*=/*-+[]',.><")
 	if err == nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
-
 }

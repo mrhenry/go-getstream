@@ -2,14 +2,17 @@ package getstream_test
 
 import (
 	"fmt"
+	"github.com/GetStream/stream-go"
 	"testing"
 	"time"
-	"github.com/GetStream/stream-go"
 )
 
 func ExampleNotificationFeed_AddActivity() {
-
-	client, err := getstream.New("APIKey", "APISecret", "AppID", "Region")
+	client, err := getstream.New(&getstream.Config{
+		APIKey:    "APIKey",
+		APISecret: "APISecret",
+		AppID:     "AppID",
+		Location:  "Region"})
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -36,19 +39,14 @@ func ExampleNotificationFeed_AddActivity() {
 }
 
 func TestNotificationFeedAddActivity(t *testing.T) {
-
-	client, err := getstream.PreTestSetup()
+	client, err := PreTestSetup()
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 
 	feed, err := client.NotificationFeed("notification", "bob")
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 
 	activity, err := feed.AddActivity(&getstream.Activity{
@@ -58,43 +56,33 @@ func TestNotificationFeedAddActivity(t *testing.T) {
 		Actor:     getstream.FeedID("flat:john"),
 	})
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
+		t.Error(err)
 	}
 
 	if activity.Verb != "post" && activity.ForeignID != "48d024fe-3752-467a-8489-23febd1dec4e" {
 		t.Fail()
 	}
 
-	err = getstream.PostTestCleanUp(client, nil, []*getstream.Activity{activity}, nil)
+	err = PostTestCleanUp(client, nil, []*getstream.Activity{activity}, nil)
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 }
 
 func TestNotificationFeedAddActivityWithTo(t *testing.T) {
-
-	client, err := getstream.PreTestSetup()
+	client, err := PreTestSetup()
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 
 	feed, err := client.NotificationFeed("notification", "bob")
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 
 	feedTo, err := client.NotificationFeed("notification", "barry")
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 
 	activity, err := feed.AddActivity(&getstream.Activity{
@@ -105,36 +93,28 @@ func TestNotificationFeedAddActivityWithTo(t *testing.T) {
 		To:        []getstream.Feed{feedTo},
 	})
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
+		t.Error(err)
 	}
 
 	if activity.Verb != "post" && activity.ForeignID != "48d024fe-3752-467a-8489-23febd1dec4e" {
 		t.Fail()
 	}
 
-	err = getstream.PostTestCleanUp(client, nil, []*getstream.Activity{activity}, nil)
+	err = PostTestCleanUp(client, nil, []*getstream.Activity{activity}, nil)
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 }
 
 func TestNotificationFeedRemoveActivity(t *testing.T) {
-
-	client, err := getstream.PreTestSetup()
+	client, err := PreTestSetup()
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 
 	feed, err := client.NotificationFeed("notification", "bob")
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 
 	activity, err := feed.AddActivity(&getstream.Activity{
@@ -143,8 +123,7 @@ func TestNotificationFeedRemoveActivity(t *testing.T) {
 		Actor:  getstream.FeedID("flat:john"),
 	})
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
+		t.Error(err)
 	}
 
 	if activity.Verb != "post" {
@@ -157,26 +136,19 @@ func TestNotificationFeedRemoveActivity(t *testing.T) {
 
 	err = feed.RemoveActivity(&rmActivity)
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 }
 
 func TestNotificationFeedRemoveByForeignIDActivity(t *testing.T) {
-
-	client, err := getstream.PreTestSetup()
+	client, err := PreTestSetup()
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 
 	feed, err := client.NotificationFeed("notification", "bob")
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 
 	activity, err := feed.AddActivity(&getstream.Activity{
@@ -186,8 +158,7 @@ func TestNotificationFeedRemoveByForeignIDActivity(t *testing.T) {
 		Actor:     getstream.FeedID("flat:john"),
 	})
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
+		t.Error(err)
 	}
 
 	if activity.Verb != "post" && activity.ForeignID != "08f01c47-014f-11e4-aa8f-0cc47a024be0" {
@@ -201,29 +172,21 @@ func TestNotificationFeedRemoveByForeignIDActivity(t *testing.T) {
 
 	err = feed.RemoveActivityByForeignID(activity)
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 
-	getstream.PostTestCleanUp(client, nil, []*getstream.Activity{activity}, nil)
-
+	PostTestCleanUp(client, nil, []*getstream.Activity{activity}, nil)
 }
 
 func TestNotificationFeedActivities(t *testing.T) {
-
-	client, err := getstream.PreTestSetup()
+	client, err := PreTestSetup()
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 
 	feed, err := client.NotificationFeed("notification", "bob")
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 
 	_, err = feed.AddActivity(&getstream.Activity{
@@ -233,40 +196,31 @@ func TestNotificationFeedActivities(t *testing.T) {
 		Actor:     getstream.FeedID("flat:john"),
 	})
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
+		t.Error(err)
 	}
 
 	activities, err := feed.Activities(&getstream.GetNotificationFeedInput{})
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
+		t.Error(err)
 	}
 
 	for _, result := range activities.Results {
-		err = getstream.PostTestCleanUp(client, nil, result.Activities, nil)
+		err = PostTestCleanUp(client, nil, result.Activities, nil)
 		if err != nil {
-			fmt.Println(err)
-			t.Fail()
-			return
+			t.Fatal(err)
 		}
 	}
 }
 
 func TestNotificationFeedAddActivities(t *testing.T) {
-
-	client, err := getstream.PreTestSetup()
+	client, err := PreTestSetup()
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 
 	feed, err := client.NotificationFeed("notification", "bob")
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 
 	activities, err := feed.AddActivities([]*getstream.Activity{
@@ -283,39 +237,29 @@ func TestNotificationFeedAddActivities(t *testing.T) {
 		},
 	})
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
+		t.Error(err)
 	}
 
-	err = getstream.PostTestCleanUp(client, nil, activities, nil)
+	err = PostTestCleanUp(client, nil, activities, nil)
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 }
 
 func TestNotificationFeedFollow(t *testing.T) {
-
-	client, err := getstream.PreTestSetup()
+	client, err := PreTestSetup()
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 
 	feedA, err := client.NotificationFeed("notification", "bob")
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 
 	feedB, err := client.FlatFeed("flat", "eric")
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 
 	err = feedA.FollowFeedWithCopyLimit(feedB, 20)
@@ -328,31 +272,23 @@ func TestNotificationFeedFollow(t *testing.T) {
 		t.Fail()
 	}
 
-	getstream.PostTestCleanUpFollows(client, []*getstream.FlatFeed{feedB})
-
+	PostTestCleanUpFollows(client, []*getstream.FlatFeed{feedB})
 }
 
 func TestNotificationFeedFollowKeepingHistory(t *testing.T) {
-
-	client, err := getstream.PreTestSetup()
+	client, err := PreTestSetup()
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 
 	feedA, err := client.NotificationFeed("notification", "bob")
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 
 	feedB, err := client.FlatFeed("flat", "eric")
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 
 	err = feedA.FollowFeedWithCopyLimit(feedB, 20)
@@ -365,38 +301,28 @@ func TestNotificationFeedFollowKeepingHistory(t *testing.T) {
 		t.Fail()
 	}
 
-	getstream.PostTestCleanUpFollows(client, []*getstream.FlatFeed{feedB})
-
+	PostTestCleanUpFollows(client, []*getstream.FlatFeed{feedB})
 }
 
 func TestNotificationFeedFollowingFollowers(t *testing.T) {
-
-	client, err := getstream.PreTestSetup()
+	client, err := PreTestSetup()
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 
 	feedA, err := client.NotificationFeed("notification", "bob")
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 
 	feedB, err := client.FlatFeed("flat", "eric")
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 
 	feedC, err := client.FlatFeed("flat", "barry")
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 
 	err = feedA.FollowFeedWithCopyLimit(feedB, 20)
@@ -414,24 +340,18 @@ func TestNotificationFeedFollowingFollowers(t *testing.T) {
 		t.Fail()
 	}
 
-	getstream.PostTestCleanUpFollows(client, []*getstream.FlatFeed{feedB, feedC})
-
+	PostTestCleanUpFollows(client, []*getstream.FlatFeed{feedB, feedC})
 }
 
 func TestMarkAsSeen(t *testing.T) {
-
-	client, err := getstream.PreTestSetup()
+	client, err := PreTestSetup()
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 
 	feed, err := client.NotificationFeed("notification", "larry")
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 
 	feed.AddActivities([]*getstream.Activity{
@@ -459,29 +379,22 @@ func TestMarkAsSeen(t *testing.T) {
 	}
 
 	for _, result := range output.Results {
-		err = getstream.PostTestCleanUp(client, nil, result.Activities, nil)
+		err = PostTestCleanUp(client, nil, result.Activities, nil)
 		if err != nil {
-			fmt.Println(err)
-			t.Fail()
-			return
+			t.Fatal(err)
 		}
 	}
 }
 
 func TestMarkAsRead(t *testing.T) {
-
-	client, err := getstream.PreTestSetup()
+	client, err := PreTestSetup()
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 
 	feed, err := client.NotificationFeed("notification", "larry")
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 
 	feed.AddActivities([]*getstream.Activity{
@@ -502,9 +415,7 @@ func TestMarkAsRead(t *testing.T) {
 	for _, result := range output.Results {
 		err = feed.MarkActivitiesAsRead(result.Activities)
 		if err != nil {
-			fmt.Println(err)
-			t.Fail()
-			return
+			t.Fatal(err)
 		}
 	}
 
@@ -516,11 +427,9 @@ func TestMarkAsRead(t *testing.T) {
 	}
 
 	for _, result := range output.Results {
-		err = getstream.PostTestCleanUp(client, nil, result.Activities, nil)
+		err = PostTestCleanUp(client, nil, result.Activities, nil)
 		if err != nil {
-			fmt.Println(err)
-			t.Fail()
-			return
+			t.Fatal(err)
 		}
 	}
 }

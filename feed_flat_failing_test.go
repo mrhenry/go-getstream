@@ -1,25 +1,20 @@
 package getstream_test
 
 import (
-	"fmt"
-	"testing"
 	"github.com/GetStream/stream-go"
+	"testing"
 )
 
 func TestFlatFeedAddActivityFail(t *testing.T) {
 
-	client, err := getstream.PreTestSetup()
+	client, err := PreTestSetup()
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 
 	feed, err := client.FlatFeed("flat", "bob")
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 
 	_, err = feed.AddActivity(&getstream.Activity{
@@ -29,14 +24,11 @@ func TestFlatFeedAddActivityFail(t *testing.T) {
 		Actor:     getstream.FeedID("flat:john"),
 	})
 	if err == nil {
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 
 	_, err = client.FlatFeed("flat&skinny", "bob@#awesome")
 	if err == nil {
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
-
 }

@@ -4,90 +4,85 @@ import (
 	"errors"
 	"net/http"
 	"net/url"
-	"regexp"
 	"strings"
-	"time"
 )
 
 // Client is used to connect to getstream.io
 type Client struct {
 	HTTP    *http.Client
 	BaseURL *url.URL // https://api.getstream.io/api/
-
-	Key      string
-	Secret   string
-	AppID    string
-	Location string // https://location-api.getstream.io/api/
-
-	Token string
-
-	Signer *Signer
+	Config  *Config
+	Signer  *Signer
 }
 
-// New returns a getstream client.
-// Params :
-// - api key
-// - api secret
-// - appID
-// - region
-// An http.Client with custom settings can be assigned after construction
-func New(key string, secret string, appID string, location string) (*Client, error) {
-	baseURLStr := "https://api.getstream.io/api/v1.0/"
-	if location != "" {
-		baseURLStr = "https://" + location + "-api.getstream.io/api/v1.0/"
+/**
+ * New returns a GetStream client.
+ *
+ * Params:
+ *   cfg, pointer to a Config structure which takes the API credentials, Location, etc
+ * Returns:
+ *   Client struct
+ */
+func New(cfg *Config) (*Client, error) {
+	var (
+		timeout int64
+	)
+
+	if cfg.APIKey == "" {
+		return nil, errors.New("Required API Key was not set")
 	}
 
-	baseURL, err := url.Parse(baseURLStr)
+	if cfg.APISecret == "" && cfg.Token == "" {
+		return nil, errors.New("API Secret or Token was not set, one or the other is required")
+	}
+
+	if cfg.TimeoutInt <= 0 {
+		timeout = 3
+	} else {
+		timeout = cfg.TimeoutInt
+	}
+	cfg.SetTimeout(timeout)
+
+	if cfg.Version == "" {
+		cfg.Version = "v1.0"
+	}
+
+	location := "api"
+	if cfg.Location != "" {
+		location = cfg.Location + "-api"
+	}
+
+	baseURL, err := url.Parse("https://" + location + ".getstream.io/api/" + cfg.Version + "/")
 	if err != nil {
 		return nil, err
 	}
+	cfg.SetBaseURL(baseURL)
 
-	return &Client{
-		HTTP: &http.Client{
-			Timeout: 3 * time.Second,
-		},
-		BaseURL: baseURL,
-
-		Key:      key,
-		Secret:   secret,
-		AppID:    appID,
-		Location: location,
-
-		Signer: &Signer{
-			Secret: secret,
-		},
-	}, nil
-}
-
-// NewWithToken returns a getstream client.
-// Params :
-// - api key
-// - token
-// - appID
-// - region
-// An http.Client with custom settings can be assigned after construction
-func NewWithToken(key string, token string, appID string, location string) (*Client, error) {
-	baseURLStr := "https://api.getstream.io/api/v1.0/"
-	if location != "" {
-		baseURLStr = "https://" + location + "-api.getstream.io/api/v1.0/"
+	var signer *Signer
+	if cfg.Token != "" {
+		// build the Signature mechanism based on a Token value passed to the client setup
+		cfg.SetAPISecret("")
+		signer = &Signer{
+			Secret: cfg.Token,
+		}
+	} else {
+		// build the Signature based on the API Secret
+		cfg.SetToken("")
+		signer = &Signer{
+			Secret: cfg.APISecret,
+		}
 	}
 
-	baseURL, err := url.Parse(baseURLStr)
-	if err != nil {
-		return nil, err
-	}
-
-	return &Client{
+	client := &Client{
 		HTTP: &http.Client{
-			Timeout: 3 * time.Second,
+			Timeout: cfg.TimeoutDuration,
 		},
 		BaseURL: baseURL,
+		Config:  cfg,
+		Signer:  signer,
+	}
 
-		Key:      key,
-		Token:    token,
-		AppID:    appID,
-		Location: location,
-	}, nil
+	return client, nil
 }
 
 // FlatFeed returns a getstream feed
@@ -95,17 +90,15 @@ func NewWithToken(key string, token string, appID string, location string) (*Cli
 // id is the Specific FlatFeed inside a FlatFeed Group
 // to get the feed for Bob you would pass something like "user" as slug and "bob" as the id
 func (c *Client) FlatFeed(feedSlug string, userID string) (*FlatFeed, error) {
+	var err error
 
-	r, err := regexp.Compile(`^\w+$`)
+	feedSlug, err = ValidateFeedSlug(feedSlug)
 	if err != nil {
 		return nil, err
 	}
-
-	feedSlug = strings.Replace(feedSlug, "-", "_", -1)
-	userID = strings.Replace(userID, "-", "_", -1)
-
-	if !r.MatchString(feedSlug) || !r.MatchString(userID) {
-		return nil, errors.New("invalid feedSlug or userID")
+	userID, err = ValidateUserID(userID)
+	if err != nil {
+		return nil, err
 	}
 
 	feed := &FlatFeed{
@@ -123,17 +116,15 @@ func (c *Client) FlatFeed(feedSlug string, userID string) (*FlatFeed, error) {
 // id is the Specific NotificationFeed inside a NotificationFeed Group
 // to get the feed for Bob you would pass something like "user" as slug and "bob" as the id
 func (c *Client) NotificationFeed(feedSlug string, userID string) (*NotificationFeed, error) {
+	var err error
 
-	r, err := regexp.Compile(`^\w+$`)
+	feedSlug, err = ValidateFeedSlug(feedSlug)
 	if err != nil {
 		return nil, err
 	}
-
-	feedSlug = strings.Replace(feedSlug, "-", "_", -1)
-	userID = strings.Replace(userID, "-", "_", -1)
-
-	if !r.MatchString(feedSlug) || !r.MatchString(userID) {
-		return nil, errors.New("invalid feedSlug or userID")
+	userID, err = ValidateUserID(userID)
+	if err != nil {
+		return nil, err
 	}
 
 	feed := &NotificationFeed{
@@ -151,17 +142,15 @@ func (c *Client) NotificationFeed(feedSlug string, userID string) (*Notification
 // id is the Specific AggregatedFeed inside a AggregatedFeed Group
 // to get the feed for Bob you would pass something like "user" as slug and "bob" as the id
 func (c *Client) AggregatedFeed(feedSlug string, userID string) (*AggregatedFeed, error) {
+	var err error
 
-	r, err := regexp.Compile(`^\w+$`)
+	feedSlug, err = ValidateFeedSlug(feedSlug)
 	if err != nil {
 		return nil, err
 	}
-
-	feedSlug = strings.Replace(feedSlug, "-", "_", -1)
-	userID = strings.Replace(userID, "-", "_", -1)
-
-	if !r.MatchString(feedSlug) || !r.MatchString(userID) {
-		return nil, errors.New("invalid feedSlug or userID")
+	userID, err = ValidateUserID(userID)
+	if err != nil {
+		return nil, err
 	}
 
 	feed := &AggregatedFeed{
@@ -211,11 +200,11 @@ func (c *Client) AbsoluteURL(path string) (*url.URL, error) {
 	result = c.BaseURL.ResolveReference(result)
 
 	qs := result.Query()
-	qs.Set("api_key", c.Key)
-	if c.Location == "" {
+	qs.Set("api_key", c.Config.APIKey)
+	if c.Config.Location == "" {
 		qs.Set("location", "unspecified")
 	} else {
-		qs.Set("location", c.Location)
+		qs.Set("location", c.Config.Location)
 	}
 	result.RawQuery = qs.Encode()
 

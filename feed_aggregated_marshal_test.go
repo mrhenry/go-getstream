@@ -5,8 +5,7 @@ import "time"
 import "testing"
 import "encoding/json"
 import "fmt"
-import 	getstream "github.com/GetStream/stream-go"
-
+import getstream "github.com/GetStream/stream-go"
 
 func TestAggregatedActivityMetaData(t *testing.T) {
 

@@ -14,6 +14,7 @@ type Config struct {
 	TimeoutInt      int64
 	TimeoutDuration time.Duration
 	Version         string
+	Token           string
 	BaseURL         *url.URL
 }
 
@@ -59,6 +60,12 @@ func (c *Config) SetTimeout(timeout int64) time.Duration {
 func (c *Config) SetVersion(version string) string {
 	c.Version = version
 	return c.Version
+}
+
+// SetBaseURL sets the core url of the GetStream API to use
+func (c *Config) SetToken(token string) string {
+	c.Token = token
+	return c.Token
 }
 
 // SetBaseURL sets the core url of the GetStream API to use

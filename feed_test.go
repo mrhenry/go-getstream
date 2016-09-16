@@ -1,17 +1,18 @@
 package getstream_test
 
 import (
-	"fmt"
-	"testing"
 	"github.com/GetStream/stream-go"
+	"testing"
 )
 
 func TestGeneralFeedBasic(t *testing.T) {
-
-	client, err := getstream.New("a key", "a secret", "11111", "us-east")
+	client, err := getstream.New(&getstream.Config{
+		APIKey:    "a key",
+		APISecret: "a secret",
+		AppID:     "11111",
+		Location:  "us-east"})
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
+		t.Fatal(err)
 	}
 
 	general := getstream.GeneralFeed{
@@ -21,38 +22,35 @@ func TestGeneralFeedBasic(t *testing.T) {
 	}
 
 	if "feedGroupfeedName" != general.Signature() {
-		t.Fail()
-		return
+		t.Fatal()
 	}
 
 	if "feedGroup:feedName" != string(general.FeedID()) {
-		t.Fail()
-		return
+		t.Fatal()
 	}
 
 	general.SignFeed(general.Client.Signer)
 	if "NWH8lcFHfHYEc2xdMs2kOhM-oII" != general.Token() {
-		t.Fail()
-		return
+		t.Fatal()
 	}
 
 	if "NWH8lcFHfHYEc2xdMs2kOhM-oII" != general.GenerateToken(general.Client.Signer) {
-		t.Fail()
-		return
+		t.Fatal()
 	}
 
 	if "feedGroupfeedName NWH8lcFHfHYEc2xdMs2kOhM-oII" != general.Signature() {
-		t.Fail()
-		return
+		t.Fatal()
 	}
 }
 
 func TestFlatFeedBasic(t *testing.T) {
-
-	client, err := getstream.New("a key", "a secret", "11111", "us-east")
+	client, err := getstream.New(&getstream.Config{
+		APIKey:    "a key",
+		APISecret: "a secret",
+		AppID:     "11111",
+		Location:  "us-east"})
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
+		t.Fatal(err)
 	}
 
 	flatFeed := getstream.FlatFeed{
@@ -62,38 +60,35 @@ func TestFlatFeedBasic(t *testing.T) {
 	}
 
 	if "feedGroupfeedName" != flatFeed.Signature() {
-		t.Fail()
-		return
+		t.Fatal()
 	}
 
 	if "feedGroup:feedName" != string(flatFeed.FeedID()) {
-		t.Fail()
-		return
+		t.Fatal()
 	}
 
 	flatFeed.SignFeed(flatFeed.Client.Signer)
 	if "NWH8lcFHfHYEc2xdMs2kOhM-oII" != flatFeed.Token() {
-		t.Fail()
-		return
+		t.Fatal()
 	}
 
 	if "NWH8lcFHfHYEc2xdMs2kOhM-oII" != flatFeed.GenerateToken(flatFeed.Client.Signer) {
-		t.Fail()
-		return
+		t.Fatal()
 	}
 
 	if "feedGroupfeedName NWH8lcFHfHYEc2xdMs2kOhM-oII" != flatFeed.Signature() {
-		t.Fail()
-		return
+		t.Fatal()
 	}
 }
 
 func TestNotificationFeedBasic(t *testing.T) {
-
-	client, err := getstream.New("a key", "a secret", "11111", "us-east")
+	client, err := getstream.New(&getstream.Config{
+		APIKey:    "a key",
+		APISecret: "a secret",
+		AppID:     "11111",
+		Location:  "us-east"})
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
+		t.Fatal(err)
 	}
 
 	notificationFeed := getstream.NotificationFeed{
@@ -103,28 +98,24 @@ func TestNotificationFeedBasic(t *testing.T) {
 	}
 
 	if "feedGroupfeedName" != notificationFeed.Signature() {
-		t.Fail()
-		return
+		t.Fatal()
 	}
 
 	if "feedGroup:feedName" != string(notificationFeed.FeedID()) {
-		t.Fail()
-		return
+		t.Fatal()
 	}
 
 	notificationFeed.SignFeed(notificationFeed.Client.Signer)
+
 	if "NWH8lcFHfHYEc2xdMs2kOhM-oII" != notificationFeed.Token() {
-		t.Fail()
-		return
+		t.Fatal()
 	}
 
 	if "NWH8lcFHfHYEc2xdMs2kOhM-oII" != notificationFeed.GenerateToken(notificationFeed.Client.Signer) {
-		t.Fail()
-		return
+		t.Fatal()
 	}
 
 	if "feedGroupfeedName NWH8lcFHfHYEc2xdMs2kOhM-oII" != notificationFeed.Signature() {
-		t.Fail()
-		return
+		t.Fatal()
 	}
 }

@@ -1,8 +1,8 @@
 package getstream_test
 
 import (
-	"testing"
 	"github.com/GetStream/stream-go"
+	"testing"
 )
 
 func TestGenerateToken(t *testing.T) {
@@ -10,8 +10,8 @@ func TestGenerateToken(t *testing.T) {
 	signer := getstream.Signer{
 		Secret: "test_secret",
 	}
-	token := signer.GenerateToken("some message")
 
+	token := signer.GenerateToken("some message")
 	if token != "8SZVOYgCH6gy-ZjBTq_9vydr7TQ" {
 		t.Fail()
 		return
@@ -23,7 +23,6 @@ func TestURLSafe(t *testing.T) {
 	signer := getstream.Signer{}
 
 	result := signer.UrlSafe("some+test/string=foo=")
-
 	if result != "some-test_string=foo" {
 		t.Fail()
 		return
@@ -32,9 +31,14 @@ func TestURLSafe(t *testing.T) {
 
 func TestFeedScopeToken(t *testing.T) {
 
-	client, err := getstream.New("a_key", "tfq2sdqpj9g446sbv653x3aqmgn33hsn8uzdc9jpskaw8mj6vsnhzswuwptuj9su", "123456", "us-east")
+	client, err := getstream.New(&getstream.Config{
+		APIKey:    "a_key",
+		APISecret: "tfq2sdqpj9g446sbv653x3aqmgn33hsn8uzdc9jpskaw8mj6vsnhzswuwptuj9su",
+		AppID:     "123456",
+		Location:  "us-east"})
 	if err != nil {
 		t.Fail()
+		return
 	}
 
 	feed, err := client.FlatFeed("flat", "bob")
@@ -82,9 +86,14 @@ func TestFeedScopeToken(t *testing.T) {
 
 func TestUserScopeToken(t *testing.T) {
 
-	client, err := getstream.New("a_key", "tfq2sdqpj9g446sbv653x3aqmgn33hsn8uzdc9jpskaw8mj6vsnhzswuwptuj9su", "123456", "us-east")
+	client, err := getstream.New(&getstream.Config{
+		APIKey:    "a_key",
+		APISecret: "tfq2sdqpj9g446sbv653x3aqmgn33hsn8uzdc9jpskaw8mj6vsnhzswuwptuj9su",
+		AppID:     "123456",
+		Location:  "us-east"})
 	if err != nil {
 		t.Fail()
+		return
 	}
 
 	user := "bob"

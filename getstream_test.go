@@ -1,24 +1,37 @@
-package getstream
+package getstream_test
 
-import "os"
+import (
+	getstream "github.com/GetStream/stream-go"
+	"os"
+)
 
-func PreTestSetup() (*Client, error) {
-
-	testAPIKey := os.Getenv("key")
-	testAPISecret := os.Getenv("secret")
-	testAppID := os.Getenv("app_id")
-	testRegion := os.Getenv("region")
-
-	client, err := New(testAPIKey, testAPISecret, testAppID, testRegion)
-	if err != nil {
-		return nil, err
-	}
-
-	return client, nil
-
+func PreTestSetup() (*getstream.Client, error) {
+	return doTestSetup(&getstream.Config{
+		APIKey:    os.Getenv("key"),
+		APISecret: os.Getenv("secret"),
+		AppID:     os.Getenv("app_id"),
+		Location:  os.Getenv("region"),
+	})
 }
 
-func PostTestCleanUp(client *Client, flats []*Activity, notifications []*Activity, aggregations []*Activity) error {
+func PreTestSetupWithToken() (*getstream.Client, error) {
+	return doTestSetup(&getstream.Config{
+		APIKey:   os.Getenv("key"),
+		Token:    os.Getenv("secret"), // instead of API Secret
+		AppID:    os.Getenv("app_id"),
+		Location: os.Getenv("region"),
+	})
+}
+
+func doTestSetup(cfg *getstream.Config) (*getstream.Client, error) {
+	return getstream.New(cfg)
+}
+
+func PostTestCleanUp(
+	client *getstream.Client,
+	flats []*getstream.Activity,
+	notifications []*getstream.Activity,
+	aggregations []*getstream.Activity) error {
 
 	if len(flats) > 0 {
 
@@ -68,7 +81,7 @@ func PostTestCleanUp(client *Client, flats []*Activity, notifications []*Activit
 	return nil
 }
 
-func PostTestCleanUpFollows(client *Client, flats []*FlatFeed) error {
+func PostTestCleanUpFollows(client *getstream.Client, flats []*getstream.FlatFeed) error {
 
 	for _, flat := range flats {
 

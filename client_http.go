@@ -29,21 +29,20 @@ func (c *Client) del(f Feed, path string, payload []byte, params map[string]stri
 
 // request helper
 func (c *Client) request(f Feed, method string, path string, payload []byte, params map[string]string) ([]byte, error) {
-
-	url, err := url.Parse(path)
+	apiUrl, err := url.Parse(path)
 	if err != nil {
 		return nil, err
 	}
 
-	url = c.BaseURL.ResolveReference(url)
+	apiUrl = c.BaseURL.ResolveReference(apiUrl)
 
-	query := url.Query()
+	query := apiUrl.Query()
 	query = c.setStandardParams(query)
 	query = c.setRequestParams(query, params)
-	url.RawQuery = query.Encode()
+	apiUrl.RawQuery = query.Encode()
 
 	// create a new http request
-	req, err := http.NewRequest(method, url.String(), bytes.NewBuffer(payload))
+	req, err := http.NewRequest(method, apiUrl.String(), bytes.NewBuffer(payload))
 	if err != nil {
 		return nil, err
 	}
@@ -79,11 +78,11 @@ func (c *Client) request(f Feed, method string, path string, payload []byte, par
 }
 
 func (c *Client) setStandardParams(query url.Values) url.Values {
-	query.Set("api_key", c.Key)
-	if c.Location == "" {
+	query.Set("api_key", c.Config.APIKey)
+	if c.Config.Location == "" {
 		query.Set("location", "unspecified")
 	} else {
-		query.Set("location", c.Location)
+		query.Set("location", c.Config.Location)
 	}
 
 	return query
@@ -97,22 +96,16 @@ func (c *Client) setRequestParams(query url.Values, params map[string]string) ur
 }
 
 func (c *Client) setHeaders(request *http.Request, f Feed) error {
-
-	if c.Secret != "" && f.Token() != "" {
-		request.Header.Set("Content-Type", "application/json")
+	request.Header.Set("Content-Type", "application/json")
+	if c.Config.APISecret != "" && f.Token() != "" {
 		request.Header.Set("Authorization", f.Signature())
-
 		return nil
-
-	} else if c.Token != "" {
-		request.Header.Set("Content-Type", "application/json")
+	} else if c.Config.Token != "" {
 		request.Header.Set("stream-auth-type", "jwt")
-		request.Header.Set("Authorization", c.Token)
-
+		request.Header.Set("Authorization", c.Config.Token)
 		return nil
-
 	}
 
-	return errors.New("No Secret or Token")
+	return errors.New("No API Secret or config/feed Token")
 
 }

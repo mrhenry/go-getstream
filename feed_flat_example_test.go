@@ -1,11 +1,17 @@
 package getstream_test
 
-import "fmt"
-import "github.com/GetStream/stream-go"
+import (
+	"fmt"
+	"github.com/GetStream/stream-go"
+)
 
 func ExampleFlatFeed_AddActivity() {
 
-	client, err := getstream.New("APIKey", "APISecret", "AppID", "Region")
+	client, err := getstream.New(&getstream.Config{
+		APIKey:    "APIKey",
+		APISecret: "APISecret",
+		AppID:     "AppID",
+		Location:  "Region"})
 	if err != nil {
 		fmt.Println(err)
 		return

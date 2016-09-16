@@ -1,9 +1,9 @@
 package getstream_test
 
 import (
-	"testing"
 	"fmt"
 	"github.com/GetStream/stream-go"
+	"testing"
 )
 
 func TestFeedSlug(t *testing.T) {
