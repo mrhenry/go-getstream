@@ -49,6 +49,11 @@ func TestAggregatedFeedAddActivity(t *testing.T) {
 		t.Fail()
 		return
 	}
+	if feed == nil {
+		fmt.Println("nil feed")
+		t.Fail()
+		return
+	}
 
 	activity, err := feed.AddActivity(&Activity{
 		Verb:      "post",
