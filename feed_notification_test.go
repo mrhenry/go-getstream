@@ -60,10 +60,12 @@ func TestNotificationFeedAddActivity(t *testing.T) {
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
+		return
 	}
 
 	if activity.Verb != "post" && activity.ForeignID != "48d024fe-3752-467a-8489-23febd1dec4e" {
 		t.Fail()
+		return
 	}
 
 	err = testCleanUp(client, nil, []*Activity{activity}, nil)
@@ -107,10 +109,12 @@ func TestNotificationFeedAddActivityWithTo(t *testing.T) {
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
+		return
 	}
 
 	if activity.Verb != "post" && activity.ForeignID != "48d024fe-3752-467a-8489-23febd1dec4e" {
 		t.Fail()
+		return
 	}
 
 	err = testCleanUp(client, nil, []*Activity{activity}, nil)
@@ -145,10 +149,12 @@ func TestNotificationFeedRemoveActivity(t *testing.T) {
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
+		return
 	}
 
 	if activity.Verb != "post" {
 		t.Fail()
+		return
 	}
 
 	rmActivity := Activity{
@@ -188,10 +194,12 @@ func TestNotificationFeedRemoveByForeignIDActivity(t *testing.T) {
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
+		return
 	}
 
 	if activity.Verb != "post" && activity.ForeignID != "08f01c47-014f-11e4-aa8f-0cc47a024be0" {
 		t.Fail()
+		return
 	}
 
 	rmActivity := Activity{
@@ -235,12 +243,14 @@ func TestNotificationFeedActivities(t *testing.T) {
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
+		return
 	}
 
 	activities, err := feed.Activities(&GetNotificationFeedInput{})
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
+		return
 	}
 
 	for _, result := range activities.Results {
@@ -285,6 +295,7 @@ func TestNotificationFeedAddActivities(t *testing.T) {
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
+		return
 	}
 
 	err = testCleanUp(client, nil, activities, nil)
@@ -321,11 +332,13 @@ func TestNotificationFeedFollow(t *testing.T) {
 	err = feedA.FollowFeedWithCopyLimit(feedB, 20)
 	if err != nil {
 		t.Fail()
+		return
 	}
 
 	err = feedA.Unfollow(feedB)
 	if err != nil {
 		t.Fail()
+		return
 	}
 
 	testCleanUpFollows(client, []*FlatFeed{feedB})
@@ -358,11 +371,13 @@ func TestNotificationFeedFollowKeepingHistory(t *testing.T) {
 	err = feedA.FollowFeedWithCopyLimit(feedB, 20)
 	if err != nil {
 		t.Fail()
+		return
 	}
 
 	err = feedA.UnfollowKeepingHistory(feedB)
 	if err != nil {
 		t.Fail()
+		return
 	}
 
 	testCleanUpFollows(client, []*FlatFeed{feedB})
@@ -402,16 +417,19 @@ func TestNotificationFeedFollowingFollowers(t *testing.T) {
 	err = feedA.FollowFeedWithCopyLimit(feedB, 20)
 	if err != nil {
 		t.Fail()
+		return
 	}
 
 	err = feedA.FollowFeedWithCopyLimit(feedC, 20)
 	if err != nil {
 		t.Fail()
+		return
 	}
 
 	_, err = feedA.FollowingWithLimitAndSkip(20, 0)
 	if err != nil {
 		t.Fail()
+		return
 	}
 
 	testCleanUpFollows(client, []*FlatFeed{feedB, feedC})
@@ -447,6 +465,7 @@ func TestMarkAsSeen(t *testing.T) {
 	output, _ := feed.Activities(nil)
 	if output.Unseen == 0 {
 		t.Fail()
+		return
 	}
 
 	feed.MarkActivitiesAsSeenWithLimit(15)
@@ -456,6 +475,7 @@ func TestMarkAsSeen(t *testing.T) {
 	output, _ = feed.Activities(nil)
 	if output.Unseen != 0 {
 		t.Fail()
+		return
 	}
 
 	for _, result := range output.Results {
@@ -497,6 +517,7 @@ func TestMarkAsRead(t *testing.T) {
 	output, _ := feed.Activities(nil)
 	if output.Unread == 0 {
 		t.Fail()
+		return
 	}
 
 	for _, result := range output.Results {
@@ -513,6 +534,7 @@ func TestMarkAsRead(t *testing.T) {
 	output, _ = feed.Activities(nil)
 	if output.Unread != 0 {
 		t.Fail()
+		return
 	}
 
 	for _, result := range output.Results {
