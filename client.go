@@ -43,6 +43,9 @@ func New(options ...Option) (*Client, error) {
 	}
 
 	c.baseURL = baseURL
+	c.Signer = &Signer{
+		Secret: c.Secret,
+	}
 
 	return &c, nil
 }
