@@ -24,15 +24,18 @@ type Client struct {
 
 // New returns a getstream client.
 // Params :
-// - api key
-// - api secret
-// - appID
-// - region
-// An http.Client with custom settings can be assigned after construction
-func New(key string, secret string, appID string, location string) (*Client, error) {
+// - options
+func New(options ...Option) (*Client, error) {
+
+	c := Client{}
+
+	for _, opt := range options {
+		opt(&c)
+	}
+
 	baseURLStr := "https://api.getstream.io/api/v1.0/"
-	if location != "" {
-		baseURLStr = "https://" + location + "-api.getstream.io/api/v1.0/"
+	if c.Location != "" {
+		baseURLStr = "https://" + c.Location + "-api.getstream.io/api/v1.0/"
 	}
 
 	baseURL, err := url.Parse(baseURLStr)
@@ -40,21 +43,15 @@ func New(key string, secret string, appID string, location string) (*Client, err
 		return nil, err
 	}
 
-	return &Client{
-		HTTP: &http.Client{
-			Timeout: 3 * time.Second,
-		},
-		baseURL: baseURL,
+	c.baseURL = baseURL
+	c.Signer = &Signer{
+		Secret: c.Secret,
+	}
+	c.HTTP = &http.Client{
+		Timeout: time.Second * 3,
+	}
 
-		Key:      key,
-		Secret:   secret,
-		AppID:    appID,
-		Location: location,
-
-		Signer: &Signer{
-			Secret: secret,
-		},
-	}, nil
+	return &c, nil
 }
 
 // FlatFeed returns a getstream feed

@@ -29,7 +29,8 @@ func TestURLSafe(t *testing.T) {
 
 func TestFeedScopeToken(t *testing.T) {
 
-	client, err := New("a_key", "tfq2sdqpj9g446sbv653x3aqmgn33hsn8uzdc9jpskaw8mj6vsnhzswuwptuj9su", "123456", "us-east")
+	opts := ServerOptions("a_key", "tfq2sdqpj9g446sbv653x3aqmgn33hsn8uzdc9jpskaw8mj6vsnhzswuwptuj9su", "123456", "us-east")
+	client, err := New(opts)
 	if err != nil {
 		t.Fail()
 	}
@@ -67,7 +68,8 @@ func TestFeedScopeToken(t *testing.T) {
 
 func TestUserScopeToken(t *testing.T) {
 
-	client, err := New("a_key", "tfq2sdqpj9g446sbv653x3aqmgn33hsn8uzdc9jpskaw8mj6vsnhzswuwptuj9su", "123456", "us-east")
+	opts := ServerOptions("a_key", "tfq2sdqpj9g446sbv653x3aqmgn33hsn8uzdc9jpskaw8mj6vsnhzswuwptuj9su", "123456", "us-east")
+	client, err := New(opts)
 	if err != nil {
 		t.Fail()
 	}

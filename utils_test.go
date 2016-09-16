@@ -9,7 +9,8 @@ func testSetup() (*Client, error) {
 	testAppID := os.Getenv("app_id")
 	testRegion := os.Getenv("region")
 
-	client, err := New(testAPIKey, testAPISecret, testAppID, testRegion)
+	opts := ServerOptions(testAPIKey, testAPISecret, testAppID, testRegion)
+	client, err := New(opts)
 	if err != nil {
 		return nil, err
 	}

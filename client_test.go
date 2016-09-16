@@ -7,7 +7,9 @@ import (
 
 func TestFlatFeedInputValidation(t *testing.T) {
 
-	client, err := New("my_key", "my_secret", "111111", "us-east")
+	opts := ServerOptions("my_key", "my_secret", "111111", "us-east")
+
+	client, err := New(opts)
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -32,7 +34,9 @@ func TestFlatFeedInputValidation(t *testing.T) {
 
 func TestNotificationFeedInputValidation(t *testing.T) {
 
-	client, err := New("my_key", "my_secret", "111111", "us-east")
+	opts := ServerOptions("my_key", "my_secret", "111111", "us-east")
+
+	client, err := New(opts)
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -57,21 +61,24 @@ func TestNotificationFeedInputValidation(t *testing.T) {
 
 func TestClientInit(t *testing.T) {
 
-	_, err := New("my_key", "my_secret", "111111", "!#@#$%ˆ&*((*=/*-+[]',.><")
+	opts := ServerOptions("my_key", "my_secret", "111111", "!#@#$%ˆ&*((*=/*-+[]',.><")
+	_, err := New(opts)
 	if err == nil {
 		fmt.Println(err)
 		t.Fail()
 		return
 	}
 
-	_, err = New("my_key", "my_secret", "111111", "")
+	opts = ServerOptions("my_key", "my_secret", "111111", "")
+	_, err = New(opts)
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
 		return
 	}
 
-	_, err = New("my_key", "my_secret", "111111", "us-east")
+	opts = ServerOptions("my_key", "my_secret", "111111", "us-east")
+	_, err = New(opts)
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -82,7 +89,8 @@ func TestClientInit(t *testing.T) {
 
 func TestClientBaseURL(t *testing.T) {
 
-	client, err := New("my_key", "my_secret", "111111", "us-east")
+	opts := ServerOptions("my_key", "my_secret", "111111", "us-east")
+	client, err := New(opts)
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -98,7 +106,8 @@ func TestClientBaseURL(t *testing.T) {
 
 func TestClientAbsoluteURL(t *testing.T) {
 
-	client, err := New("my_key", "my_secret", "111111", "us-east")
+	opts := ServerOptions("my_key", "my_secret", "111111", "us-east")
+	client, err := New(opts)
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -118,7 +127,8 @@ func TestClientAbsoluteURL(t *testing.T) {
 		return
 	}
 
-	client, err = New("my_key", "my_secret", "111111", "")
+	opts = ServerOptions("my_key", "my_secret", "111111", "")
+	client, err = New(opts)
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -138,7 +148,8 @@ func TestClientAbsoluteURL(t *testing.T) {
 		return
 	}
 
-	client, err = New("my_key", "my_secret", "111111", "")
+	opts = ServerOptions("my_key", "my_secret", "111111", "")
+	client, err = New(opts)
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
