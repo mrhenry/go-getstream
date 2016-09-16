@@ -7,6 +7,8 @@ import (
 	"strings"
 )
 
+const VERSION="v1.0.0"
+
 // Client is used to connect to getstream.io
 type Client struct {
 	HTTP    *http.Client

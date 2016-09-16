@@ -96,6 +96,7 @@ func (c *Client) setRequestParams(query url.Values, params map[string]string) ur
 }
 
 func (c *Client) setHeaders(request *http.Request, f Feed) error {
+	request.Header.Set("X-Stream-Client", "stream-go-client-" + VERSION)
 	request.Header.Set("Content-Type", "application/json")
 	if c.Config.APISecret != "" && f.Token() != "" {
 		request.Header.Set("Authorization", f.Signature())
