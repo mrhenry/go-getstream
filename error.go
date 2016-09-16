@@ -4,6 +4,8 @@ import (
 	"time"
 )
 
+// Credits to https://github.com/hyperworks/go-getstream for the error handling.
+
 // Error is a getstream error
 type Error struct {
 	Code       int `json:"code"`
@@ -17,25 +19,25 @@ type Error struct {
 var _ error = &Error{}
 
 // Duration is the time it took for the request to be handled
-func (err *Error) Duration() time.Duration {
-	result, e := time.ParseDuration(err.RawDuration)
-	if e != nil {
+func (e *Error) Duration() time.Duration {
+	result, err := time.ParseDuration(e.RawDuration)
+	if err != nil {
 		return time.Duration(0)
 	}
 
 	return result
 }
 
-func (err *Error) Error() string {
-	str := err.Exception
-	if err.RawDuration != "" {
-		if duration := err.Duration(); duration > 0 {
+func (e *Error) Error() string {
+	str := e.Exception
+	if e.RawDuration != "" {
+		if duration := e.Duration(); duration > 0 {
 			str += " (" + duration.String() + ")"
 		}
 	}
 
-	if err.Detail != "" {
-		str += ": " + err.Detail
+	if e.Detail != "" {
+		str += ": " + e.Detail
 	}
 
 	return str

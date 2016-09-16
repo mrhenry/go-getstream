@@ -10,15 +10,23 @@ import (
 // FlatFeed is a getstream FlatFeed
 // Use it to for CRUD on FlatFeed Groups
 type FlatFeed struct {
-	Client   *Client
+	client   *Client
 	FeedSlug string
 	UserID   string
 	token    string
 }
 
+// Client returns the Client associated with the FlatFeed
+func (f FlatFeed) Client() *Client {
+	return f.client
+}
+
 // Signature is used to sign Requests : "FeedSlugUserID Token"
 func (f *FlatFeed) Signature() string {
-	return f.FeedSlug + f.UserID + " " + f.Token()
+	if f.Token() == "" {
+		return f.feedIDWithoutColon()
+	}
+	return f.feedIDWithoutColon() + " " + f.Token()
 }
 
 // FeedID is the combo if the FeedSlug and UserID : "FeedSlug:UserID"
@@ -26,9 +34,13 @@ func (f *FlatFeed) FeedID() FeedID {
 	return FeedID(f.FeedSlug + ":" + f.UserID)
 }
 
+func (f *FlatFeed) feedIDWithoutColon() string {
+	return f.FeedSlug + f.UserID
+}
+
 // SignFeed sets the token on a Feed
 func (f *FlatFeed) SignFeed(signer *Signer) {
-	f.token = signer.generateToken(f.FeedSlug + f.UserID)
+	f.token = signer.generateToken(f.feedIDWithoutColon())
 }
 
 // Token returns the token of a Feed
@@ -41,50 +53,41 @@ func (f *FlatFeed) GenerateToken(signer *Signer) string {
 	return signer.generateToken(f.FeedSlug + f.UserID)
 }
 
-// AddActivity is Used to post an Activity to a FlatFeed
-func (f *FlatFeed) AddActivity(activity *FlatFeedActivity) (*FlatFeedActivity, error) {
+// AddActivity is used to add an Activity to a FlatFeed
+func (f *FlatFeed) AddActivity(activity *Activity) (*Activity, error) {
 
-	input, err := activity.input()
-	if err != nil {
-		return nil, err
-	}
+	activity.ID = ""
 
-	payload, err := json.Marshal(input)
+	payload, err := json.Marshal(activity)
 	if err != nil {
 		return nil, err
 	}
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/"
 
-	resultBytes, err := f.post(endpoint, f.Signature(), payload)
+	resultBytes, err := f.Client().post(f, endpoint, payload, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	output := &postFlatFeedOutputActivity{}
+	output := &Activity{}
 	err = json.Unmarshal(resultBytes, output)
 	if err != nil {
 		return nil, err
 	}
 
-	return output.Activity(), err
+	return output, err
 }
 
-// AddActivities is Used to post multiple Activities to a FlatFeed
-func (f *FlatFeed) AddActivities(activities []*FlatFeedActivity) ([]*FlatFeedActivity, error) {
-
-	var inputs []*postFlatFeedInputActivity
+// AddActivities is used to add multiple Activities to a FlatFeed
+func (f *FlatFeed) AddActivities(activities []*Activity) ([]*Activity, error) {
 
 	for _, activity := range activities {
-		activity, err := activity.input()
-		if err != nil {
-			return nil, err
-		}
-		inputs = append(inputs, activity)
+		activity.ID = ""
 	}
 
-	payload, err := json.Marshal(map[string][]*postFlatFeedInputActivity{
-		"activities": inputs,
+	payload, err := json.Marshal(map[string][]*Activity{
+		"activities": activities,
 	})
 	if err != nil {
 		return nil, err
@@ -92,7 +95,7 @@ func (f *FlatFeed) AddActivities(activities []*FlatFeedActivity) ([]*FlatFeedAct
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/"
 
-	resultBytes, err := f.post(endpoint, f.Signature(), payload)
+	resultBytes, err := f.Client().post(f, endpoint, payload, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -103,49 +106,52 @@ func (f *FlatFeed) AddActivities(activities []*FlatFeedActivity) ([]*FlatFeedAct
 		return nil, err
 	}
 
-	var outputActivities []*FlatFeedActivity
-	for _, outputActivity := range output.Activities {
-		activity := outputActivity.Activity()
-		outputActivities = append(outputActivities, activity)
-	}
-
-	return outputActivities, err
+	return output.Activities, err
 }
 
 // Activities returns a list of Activities for a FlatFeedGroup
 func (f *FlatFeed) Activities(input *GetFlatFeedInput) (*GetFlatFeedOutput, error) {
 
-	payload, err := json.Marshal(input)
-	if err != nil {
-		return nil, err
+	var payload []byte
+	var err error
+
+	if input != nil {
+		payload, err = json.Marshal(input)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/"
 
-	result, err := f.get(endpoint, f.Signature(), payload)
+	result, err := f.Client().get(f, endpoint, payload, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	output := &getFlatFeedOutput{}
+	output := &GetFlatFeedOutput{}
 	err = json.Unmarshal(result, output)
 	if err != nil {
 		return nil, err
 	}
 
-	return output.Output(), err
+	return output, err
 }
 
 // RemoveActivity removes an Activity from a FlatFeedGroup
-func (f *FlatFeed) RemoveActivity(input *FlatFeedActivity) error {
+func (f *FlatFeed) RemoveActivity(input *Activity) error {
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + input.ID + "/"
 
-	return f.del(endpoint, f.Signature(), nil)
+	return f.Client().del(f, endpoint, nil, nil)
 }
 
 // RemoveActivityByForeignID removes an Activity from a FlatFeedGroup by ForeignID
-func (f *FlatFeed) RemoveActivityByForeignID(input *FlatFeedActivity) error {
+func (f *FlatFeed) RemoveActivityByForeignID(input *Activity) error {
+
+	if input.ForeignID == "" {
+		return errors.New("no ForeignID")
+	}
 
 	r, err := regexp.Compile("^[a-z0-9]{8}-[a-z0-9]{4}-[1-5][a-z0-9]{3}-[a-z0-9]{4}-[a-z0-9]{12}$")
 	if err != nil {
@@ -155,29 +161,21 @@ func (f *FlatFeed) RemoveActivityByForeignID(input *FlatFeedActivity) error {
 		return errors.New("invalid ForeignID")
 	}
 
-	if input.ForeignID == "" {
-		return errors.New("no ForeignID")
-	}
-
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + input.ForeignID + "/"
 
-	payload, err := json.Marshal(map[string]string{
+	return f.Client().del(f, endpoint, nil, map[string]string{
 		"foreign_id": "1",
 	})
-	if err != nil {
-		return err
-	}
-
-	return f.del(endpoint, f.Signature(), payload)
 }
 
 // FollowFeedWithCopyLimit sets a Feed to follow another target Feed
 // CopyLimit is the maximum number of Activities to Copy from History
 func (f *FlatFeed) FollowFeedWithCopyLimit(target *FlatFeed, copyLimit int) error {
+
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/"
 
 	input := postFlatFeedFollowingInput{
-		Target:            string(target.FeedID()),
+		Target:            target.FeedID().Value(),
 		ActivityCopyLimit: copyLimit,
 	}
 
@@ -186,7 +184,7 @@ func (f *FlatFeed) FollowFeedWithCopyLimit(target *FlatFeed, copyLimit int) erro
 		return err
 	}
 
-	_, err = f.post(endpoint, f.Signature(), payload)
+	_, err = f.Client().post(f, endpoint, payload, nil)
 	return err
 
 }
@@ -194,9 +192,9 @@ func (f *FlatFeed) FollowFeedWithCopyLimit(target *FlatFeed, copyLimit int) erro
 // Unfollow is used to Unfollow a target Feed
 func (f *FlatFeed) Unfollow(target *FlatFeed) error {
 
-	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/" + string(target.FeedID()) + "/"
+	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/" + target.FeedID().Value() + "/"
 
-	return f.del(endpoint, f.Signature(), nil)
+	return f.Client().del(f, endpoint, nil, nil)
 
 }
 
@@ -204,7 +202,7 @@ func (f *FlatFeed) Unfollow(target *FlatFeed) error {
 // this means that Activities already visibile will remain
 func (f *FlatFeed) UnfollowKeepingHistory(target *FlatFeed) error {
 
-	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/" + string(target.FeedID()) + "/"
+	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/" + target.FeedID().Value() + "/"
 
 	payload, err := json.Marshal(map[string]string{
 		"keep_history": "1",
@@ -213,12 +211,14 @@ func (f *FlatFeed) UnfollowKeepingHistory(target *FlatFeed) error {
 		return err
 	}
 
-	return f.del(endpoint, f.Signature(), payload)
+	return f.Client().del(f, endpoint, payload, nil)
 
 }
 
 // FollowersWithLimitAndSkip returns a list of GeneralFeed following the current FlatFeed
 func (f *FlatFeed) FollowersWithLimitAndSkip(limit int, skip int) ([]*GeneralFeed, error) {
+
+	var err error
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "followers" + "/"
 
@@ -230,7 +230,7 @@ func (f *FlatFeed) FollowersWithLimitAndSkip(limit int, skip int) ([]*GeneralFee
 		return nil, err
 	}
 
-	resultBytes, err := f.get(endpoint, f.Signature(), payload)
+	resultBytes, err := f.Client().get(f, endpoint, payload, nil)
 
 	output := &getFlatFeedFollowersOutput{}
 	err = json.Unmarshal(resultBytes, output)
@@ -243,7 +243,8 @@ func (f *FlatFeed) FollowersWithLimitAndSkip(limit int, skip int) ([]*GeneralFee
 
 		feed := GeneralFeed{}
 
-		match, err := regexp.MatchString(`^.*?:.*?$`, result.FeedID)
+		var match bool
+		match, err = regexp.MatchString(`^.*?:.*?$`, result.FeedID)
 		if err != nil {
 			continue
 		}
@@ -265,6 +266,8 @@ func (f *FlatFeed) FollowersWithLimitAndSkip(limit int, skip int) ([]*GeneralFee
 // FollowingWithLimitAndSkip returns a list of GeneralFeed followed by the current FlatFeed
 func (f *FlatFeed) FollowingWithLimitAndSkip(limit int, skip int) ([]*GeneralFeed, error) {
 
+	var err error
+
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/"
 
 	payload, err := json.Marshal(&getFlatFeedFollowersInput{
@@ -275,7 +278,7 @@ func (f *FlatFeed) FollowingWithLimitAndSkip(limit int, skip int) ([]*GeneralFee
 		return nil, err
 	}
 
-	resultBytes, err := f.get(endpoint, f.Signature(), payload)
+	resultBytes, err := f.Client().get(f, endpoint, payload, nil)
 
 	output := &getFlatFeedFollowersOutput{}
 	err = json.Unmarshal(resultBytes, output)
@@ -288,7 +291,8 @@ func (f *FlatFeed) FollowingWithLimitAndSkip(limit int, skip int) ([]*GeneralFee
 
 		feed := GeneralFeed{}
 
-		match, err := regexp.MatchString(`^.*?:.*?$`, result.FeedID)
+		var match bool
+		match, err = regexp.MatchString(`^.*?:.*?$`, result.FeedID)
 		if err != nil {
 			continue
 		}

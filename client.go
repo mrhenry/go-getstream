@@ -5,12 +5,13 @@ import (
 	"net/http"
 	"net/url"
 	"regexp"
+	"strings"
 	"time"
 )
 
 // Client is used to connect to getstream.io
 type Client struct {
-	http    *http.Client
+	HTTP    *http.Client
 	baseURL *url.URL // https://api.getstream.io/api/
 
 	Key      string
@@ -18,7 +19,7 @@ type Client struct {
 	AppID    string
 	Location string // https://location-api.getstream.io/api/
 
-	signer *Signer
+	Signer *Signer
 }
 
 // New returns a getstream client.
@@ -27,7 +28,8 @@ type Client struct {
 // - api secret
 // - appID
 // - region
-func New(key, secret, appID, location string) (*Client, error) {
+// An http.Client with custom settings can be assigned after construction
+func New(key string, secret string, appID string, location string) (*Client, error) {
 	baseURLStr := "https://api.getstream.io/api/v1.0/"
 	if location != "" {
 		baseURLStr = "https://" + location + "-api.getstream.io/api/v1.0/"
@@ -39,7 +41,7 @@ func New(key, secret, appID, location string) (*Client, error) {
 	}
 
 	return &Client{
-		http: &http.Client{
+		HTTP: &http.Client{
 			Timeout: 3 * time.Second,
 		},
 		baseURL: baseURL,
@@ -49,15 +51,15 @@ func New(key, secret, appID, location string) (*Client, error) {
 		AppID:    appID,
 		Location: location,
 
-		signer: &Signer{
+		Signer: &Signer{
 			Secret: secret,
 		},
 	}, nil
 }
 
 // FlatFeed returns a getstream feed
-// Slug is the FlatFeedGroup name
-// id is the Specific FlatFeed inside a FlatFeedGroup
+// Slug is the FlatFeed Group name
+// id is the Specific FlatFeed inside a FlatFeed Group
 // to get the feed for Bob you would pass something like "user" as slug and "bob" as the id
 func (c *Client) FlatFeed(feedSlug string, userID string) (*FlatFeed, error) {
 
@@ -65,23 +67,27 @@ func (c *Client) FlatFeed(feedSlug string, userID string) (*FlatFeed, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	feedSlug = strings.Replace(feedSlug, "-", "_", -1)
+	userID = strings.Replace(userID, "-", "_", -1)
+
 	if !r.MatchString(feedSlug) || !r.MatchString(userID) {
-		return nil, errors.New("invalid ForeignID")
+		return nil, errors.New("invalid feedSlug or userID")
 	}
 
 	feed := &FlatFeed{
-		Client:   c,
+		client:   c,
 		FeedSlug: feedSlug,
 		UserID:   userID,
 	}
 
-	feed.SignFeed(c.signer)
+	feed.SignFeed(c.Signer)
 	return feed, nil
 }
 
 // NotificationFeed returns a getstream feed
-// Slug is the NotificationFeedGroup name
-// id is the Specific NotificationFeed inside a NotificationFeedGroup
+// Slug is the NotificationFeed Group name
+// id is the Specific NotificationFeed inside a NotificationFeed Group
 // to get the feed for Bob you would pass something like "user" as slug and "bob" as the id
 func (c *Client) NotificationFeed(feedSlug string, userID string) (*NotificationFeed, error) {
 
@@ -89,22 +95,75 @@ func (c *Client) NotificationFeed(feedSlug string, userID string) (*Notification
 	if err != nil {
 		return nil, err
 	}
+
+	feedSlug = strings.Replace(feedSlug, "-", "_", -1)
+	userID = strings.Replace(userID, "-", "_", -1)
+
 	if !r.MatchString(feedSlug) || !r.MatchString(userID) {
-		return nil, errors.New("invalid ForeignID")
+		return nil, errors.New("invalid feedSlug or userID")
 	}
 
 	feed := &NotificationFeed{
-		Client:   c,
+		client:   c,
 		FeedSlug: feedSlug,
 		UserID:   userID,
 	}
 
-	feed.SignFeed(c.signer)
+	feed.SignFeed(c.Signer)
 	return feed, nil
 }
 
-// BaseURL returns the getstream URL for your location
-func (c *Client) BaseURL() *url.URL { return c.baseURL }
+// AggregatedFeed returns a getstream feed
+// Slug is the AggregatedFeed Group name
+// id is the Specific AggregatedFeed inside a AggregatedFeed Group
+// to get the feed for Bob you would pass something like "user" as slug and "bob" as the id
+func (c *Client) AggregatedFeed(feedSlug string, userID string) (*AggregatedFeed, error) {
+
+	r, err := regexp.Compile(`^\w+$`)
+	if err != nil {
+		return nil, err
+	}
+
+	feedSlug = strings.Replace(feedSlug, "-", "_", -1)
+	userID = strings.Replace(userID, "-", "_", -1)
+
+	if !r.MatchString(feedSlug) || !r.MatchString(userID) {
+		return nil, errors.New("invalid feedSlug or userID")
+	}
+
+	feed := &AggregatedFeed{
+		client:   c,
+		FeedSlug: feedSlug,
+		UserID:   userID,
+	}
+
+	feed.SignFeed(c.Signer)
+	return feed, nil
+}
+
+// // UpdateActivities is used to update multiple Activities
+// func (c *Client) UpdateActivities(activities []interface{}) ([]*Activity, error) {
+//
+// 	payload, err := json.Marshal(activities)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+//
+// 	endpoint := "activities/"
+//
+// 	resultBytes, err := c.post(endpoint, payload, nil)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+//
+// 	output := &postFlatFeedOutputActivities{}
+// 	err = json.Unmarshal(resultBytes, output)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+//
+// 	return output.Activities, err
+// }
 
 // absoluteUrl create a url.URL instance and sets query params (bad!!!)
 func (c *Client) absoluteURL(path string) (*url.URL, error) {
@@ -128,4 +187,13 @@ func (c *Client) absoluteURL(path string) (*url.URL, error) {
 	result.RawQuery = qs.Encode()
 
 	return result, nil
+}
+
+// ConvertUUIDToWord replaces - with _
+// It is used by go-getstream to convert UUID to a string that matches the word regex
+// You can use it to convert UUID's to match go-getstream internals.
+func ConvertUUIDToWord(uuid string) string {
+
+	return strings.Replace(uuid, "-", "_", -1)
+
 }

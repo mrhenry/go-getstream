@@ -4,21 +4,30 @@ import (
 	"encoding/json"
 	"errors"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
 // NotificationFeed is a getstream NotificationFeed
 // Use it to for CRUD on NotificationFeed Groups
 type NotificationFeed struct {
-	Client   *Client
+	client   *Client
 	FeedSlug string
 	UserID   string
 	token    string
 }
 
+// Client returns the Client associated with the NotificationFeed
+func (f NotificationFeed) Client() *Client {
+	return f.client
+}
+
 // Signature is used to sign Requests : "FeedSlugUserID Token"
 func (f *NotificationFeed) Signature() string {
-	return f.FeedSlug + f.UserID + " " + f.Token()
+	if f.Token() == "" {
+		return f.feedIDWithoutColon()
+	}
+	return f.feedIDWithoutColon() + " " + f.Token()
 }
 
 // FeedID is the combo if the FeedSlug and UserID : "FeedSlug:UserID"
@@ -26,9 +35,13 @@ func (f *NotificationFeed) FeedID() FeedID {
 	return FeedID(f.FeedSlug + ":" + f.UserID)
 }
 
+func (f *NotificationFeed) feedIDWithoutColon() string {
+	return f.FeedSlug + f.UserID
+}
+
 // SignFeed sets the token on a Feed
 func (f *NotificationFeed) SignFeed(signer *Signer) {
-	f.token = signer.generateToken(f.FeedSlug + f.UserID)
+	f.token = signer.generateToken(f.feedIDWithoutColon())
 }
 
 // Token returns the token of a Feed
@@ -41,50 +54,35 @@ func (f *NotificationFeed) GenerateToken(signer *Signer) string {
 	return signer.generateToken(f.FeedSlug + f.UserID)
 }
 
-// AddActivity is Used to post an Activity to a NotificationFeed
-func (f *NotificationFeed) AddActivity(activity *NotificationFeedActivity) (*NotificationFeedActivity, error) {
+// AddActivity is used to add an Activity to a NotificationFeed
+func (f *NotificationFeed) AddActivity(activity *Activity) (*Activity, error) {
 
-	input, err := activity.input()
-	if err != nil {
-		return nil, err
-	}
-
-	payload, err := json.Marshal(input)
+	payload, err := json.Marshal(activity)
 	if err != nil {
 		return nil, err
 	}
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/"
 
-	resultBytes, err := f.post(endpoint, f.Signature(), payload)
+	resultBytes, err := f.Client().post(f, endpoint, payload, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	output := &postNotificationFeedOutputActivity{}
+	output := &Activity{}
 	err = json.Unmarshal(resultBytes, output)
 	if err != nil {
 		return nil, err
 	}
 
-	return output.Activity(), err
+	return output, err
 }
 
-// AddActivities is Used to post multiple Activities to a NotificationFeed
-func (f *NotificationFeed) AddActivities(activities []*NotificationFeedActivity) ([]*NotificationFeedActivity, error) {
+// AddActivities is used to add multiple Activities to a NotificationFeed
+func (f *NotificationFeed) AddActivities(activities []*Activity) ([]*Activity, error) {
 
-	var inputs []*postNotificationFeedInputActivity
-
-	for _, activity := range activities {
-		activity, err := activity.input()
-		if err != nil {
-			return nil, err
-		}
-		inputs = append(inputs, activity)
-	}
-
-	payload, err := json.Marshal(map[string][]*postNotificationFeedInputActivity{
-		"activities": inputs,
+	payload, err := json.Marshal(map[string][]*Activity{
+		"activities": activities,
 	})
 	if err != nil {
 		return nil, err
@@ -92,7 +90,7 @@ func (f *NotificationFeed) AddActivities(activities []*NotificationFeedActivity)
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/"
 
-	resultBytes, err := f.post(endpoint, f.Signature(), payload)
+	resultBytes, err := f.Client().post(f, endpoint, payload, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -103,26 +101,57 @@ func (f *NotificationFeed) AddActivities(activities []*NotificationFeedActivity)
 		return nil, err
 	}
 
-	var outputActivities []*NotificationFeedActivity
-	for _, outputActivity := range output.Activities {
-		activity := outputActivity.Activity()
-		outputActivities = append(outputActivities, activity)
+	return output.Activities, err
+}
+
+// MarkActivitiesAsRead marks activities as read for this feed
+func (f *NotificationFeed) MarkActivitiesAsRead(activities []*Activity) error {
+
+	var ids []string
+	for _, activity := range activities {
+		ids = append(ids, activity.ID)
 	}
 
-	return outputActivities, err
+	idStr := strings.Join(ids, ",")
+
+	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/"
+
+	_, err := f.Client().get(f, endpoint, nil, map[string]string{
+		"mark_read": idStr,
+	})
+
+	return err
+}
+
+// MarkActivitiesAsSeenWithLimit marks activities as seen for this feed
+func (f *NotificationFeed) MarkActivitiesAsSeenWithLimit(limit int) error {
+
+	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/"
+
+	_, err := f.Client().get(f, endpoint, nil, map[string]string{
+		"mark_seen": "true",
+		"limit":     strconv.Itoa(limit),
+	})
+
+	return err
 }
 
 // Activities returns a list of Activities for a NotificationFeedGroup
 func (f *NotificationFeed) Activities(input *GetNotificationFeedInput) (*GetNotificationFeedOutput, error) {
 
-	payload, err := json.Marshal(input)
-	if err != nil {
-		return nil, err
+	var payload []byte
+	var err error
+
+	if input != nil {
+		payload, err = json.Marshal(input)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/"
 
-	result, err := f.get(endpoint, f.Signature(), payload)
+	result, err := f.Client().get(f, endpoint, payload, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -133,19 +162,23 @@ func (f *NotificationFeed) Activities(input *GetNotificationFeedInput) (*GetNoti
 		return nil, err
 	}
 
-	return output.Output(), err
+	return output.output(), err
 }
 
 // RemoveActivity removes an Activity from a NotificationFeedGroup
-func (f *NotificationFeed) RemoveActivity(input *NotificationFeedActivity) error {
+func (f *NotificationFeed) RemoveActivity(input *Activity) error {
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + input.ID + "/"
 
-	return f.del(endpoint, f.Signature(), nil)
+	return f.Client().del(f, endpoint, nil, nil)
 }
 
 // RemoveActivityByForeignID removes an Activity from a NotificationFeedGroup by ForeignID
-func (f *NotificationFeed) RemoveActivityByForeignID(input *NotificationFeedActivity) error {
+func (f *NotificationFeed) RemoveActivityByForeignID(input *Activity) error {
+
+	if input.ForeignID == "" {
+		return errors.New("no ForeignID")
+	}
 
 	r, err := regexp.Compile("^[a-z0-9]{8}-[a-z0-9]{4}-[1-5][a-z0-9]{3}-[a-z0-9]{4}-[a-z0-9]{12}$")
 	if err != nil {
@@ -155,20 +188,11 @@ func (f *NotificationFeed) RemoveActivityByForeignID(input *NotificationFeedActi
 		return errors.New("invalid ForeignID")
 	}
 
-	if input.ForeignID == "" {
-		return errors.New("no ForeignID")
-	}
-
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + input.ForeignID + "/"
 
-	payload, err := json.Marshal(map[string]string{
+	return f.Client().del(f, endpoint, nil, map[string]string{
 		"foreign_id": "1",
 	})
-	if err != nil {
-		return err
-	}
-
-	return f.del(endpoint, f.Signature(), payload)
 }
 
 // FollowFeedWithCopyLimit sets a Feed to follow another target Feed
@@ -177,7 +201,7 @@ func (f *NotificationFeed) FollowFeedWithCopyLimit(target *FlatFeed, copyLimit i
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/"
 
 	input := postNotificationFeedFollowingInput{
-		Target:            string(target.FeedID()),
+		Target:            target.FeedID().Value(),
 		ActivityCopyLimit: copyLimit,
 	}
 
@@ -186,7 +210,7 @@ func (f *NotificationFeed) FollowFeedWithCopyLimit(target *FlatFeed, copyLimit i
 		return err
 	}
 
-	_, err = f.post(endpoint, f.Signature(), payload)
+	_, err = f.Client().post(f, endpoint, payload, nil)
 	return err
 
 }
@@ -194,9 +218,9 @@ func (f *NotificationFeed) FollowFeedWithCopyLimit(target *FlatFeed, copyLimit i
 // Unfollow is used to Unfollow a target Feed
 func (f *NotificationFeed) Unfollow(target *FlatFeed) error {
 
-	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/" + string(target.FeedID()) + "/"
+	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/" + target.FeedID().Value() + "/"
 
-	return f.del(endpoint, f.Signature(), nil)
+	return f.Client().del(f, endpoint, nil, nil)
 
 }
 
@@ -204,7 +228,7 @@ func (f *NotificationFeed) Unfollow(target *FlatFeed) error {
 // this means that Activities already visibile will remain
 func (f *NotificationFeed) UnfollowKeepingHistory(target *FlatFeed) error {
 
-	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/" + string(target.FeedID()) + "/"
+	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/" + target.FeedID().Value() + "/"
 
 	payload, err := json.Marshal(map[string]string{
 		"keep_history": "1",
@@ -213,14 +237,16 @@ func (f *NotificationFeed) UnfollowKeepingHistory(target *FlatFeed) error {
 		return err
 	}
 
-	return f.del(endpoint, f.Signature(), payload)
+	return f.Client().del(f, endpoint, payload, nil)
 
 }
 
-// FollowersWithLimitAndSkip returns a list of GeneralFeed following the current NotificationFeed
-func (f *NotificationFeed) FollowersWithLimitAndSkip(limit int, skip int) ([]*GeneralFeed, error) {
+// FollowingWithLimitAndSkip returns a list of GeneralFeed followed by the current FlatFeed
+func (f *NotificationFeed) FollowingWithLimitAndSkip(limit int, skip int) ([]*GeneralFeed, error) {
 
-	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "followers" + "/"
+	var err error
+
+	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/"
 
 	payload, err := json.Marshal(&getNotificationFeedFollowersInput{
 		Limit: limit,
@@ -230,7 +256,7 @@ func (f *NotificationFeed) FollowersWithLimitAndSkip(limit int, skip int) ([]*Ge
 		return nil, err
 	}
 
-	resultBytes, err := f.get(endpoint, f.Signature(), payload)
+	resultBytes, err := f.Client().get(f, endpoint, payload, nil)
 
 	output := &getNotificationFeedFollowersOutput{}
 	err = json.Unmarshal(resultBytes, output)
@@ -243,13 +269,14 @@ func (f *NotificationFeed) FollowersWithLimitAndSkip(limit int, skip int) ([]*Ge
 
 		feed := GeneralFeed{}
 
-		match, err := regexp.MatchString(`^.*?:.*?$`, result.FeedID)
+		var match bool
+		match, err = regexp.MatchString(`^.*?:.*?$`, result.FeedID)
 		if err != nil {
 			continue
 		}
 
 		if match {
-			firstSplit := strings.Split(result.FeedID, ":")
+			firstSplit := strings.Split(result.TargetID, ":")
 
 			feed.FeedSlug = firstSplit[0]
 			feed.UserID = firstSplit[1]
