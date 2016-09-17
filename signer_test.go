@@ -29,10 +29,7 @@ func TestURLSafe(t *testing.T) {
 
 func TestFeedScopeToken(t *testing.T) {
 
-	client, err := New("a_key", "tfq2sdqpj9g446sbv653x3aqmgn33hsn8uzdc9jpskaw8mj6vsnhzswuwptuj9su", "123456", "us-east")
-	if err != nil {
-		t.Fail()
-	}
+	client := New("a_key", "tfq2sdqpj9g446sbv653x3aqmgn33hsn8uzdc9jpskaw8mj6vsnhzswuwptuj9su", "123456", "us-east")
 
 	feed, err := client.FlatFeed("flat", "bob")
 	if err != nil {
@@ -67,14 +64,11 @@ func TestFeedScopeToken(t *testing.T) {
 
 func TestUserScopeToken(t *testing.T) {
 
-	client, err := New("a_key", "tfq2sdqpj9g446sbv653x3aqmgn33hsn8uzdc9jpskaw8mj6vsnhzswuwptuj9su", "123456", "us-east")
-	if err != nil {
-		t.Fail()
-	}
+	client := New("a_key", "tfq2sdqpj9g446sbv653x3aqmgn33hsn8uzdc9jpskaw8mj6vsnhzswuwptuj9su", "123456", "us-east")
 
 	user := "bob"
 
-	_, err = client.Signer.GenerateUserScopeToken(ScopeContextFeed, ScopeActionRead, user)
+	_, err := client.Signer.GenerateUserScopeToken(ScopeContextFeed, ScopeActionRead, user)
 	if err != nil {
 		t.Fail()
 	}

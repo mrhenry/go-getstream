@@ -5,11 +5,7 @@ import "github.com/mrhenry/go-getstream"
 
 func ExampleFlatFeed_AddActivity() {
 
-	client, err := getstream.New("APIKey", "APISecret", "AppID", "Region")
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+	client := getstream.New("APIKey", "APISecret", "AppID", "Region")
 
 	feed, err := client.FlatFeed("FeedSlug", "UserID")
 	if err != nil {

@@ -5,11 +5,7 @@ import "github.com/mrhenry/go-getstream"
 
 func ExampleClient() {
 
-	client, err := getstream.New("APIKey", "APISecret", "AppID", "Region")
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+	client := getstream.New("APIKey", "APISecret", "AppID", "Region")
 
 	_ = client
 
@@ -17,11 +13,7 @@ func ExampleClient() {
 
 func ExampleClient_FlatFeed() {
 
-	client, err := getstream.New("APIKey", "APISecret", "AppID", "Region")
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+	client := getstream.New("APIKey", "APISecret", "AppID", "Region")
 
 	feed, err := client.FlatFeed("FeedSlug", "UserID")
 	if err != nil {
@@ -35,11 +27,7 @@ func ExampleClient_FlatFeed() {
 
 func ExampleClient_NotificationFeed() {
 
-	client, err := getstream.New("APIKey", "APISecret", "AppID", "Region")
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+	client := getstream.New("APIKey", "APISecret", "AppID", "Region")
 
 	feed, err := client.NotificationFeed("FeedSlug", "UserID")
 	if err != nil {

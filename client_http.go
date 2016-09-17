@@ -29,12 +29,16 @@ func (c *Client) del(f Feed, path string, payload []byte, params map[string]stri
 // request helper
 func (c *Client) request(f Feed, method string, path string, payload []byte, params map[string]string) ([]byte, error) {
 
-	url, err := url.Parse(path)
+	endpoint, err := url.Parse(path)
 	if err != nil {
 		return nil, err
 	}
 
-	url = c.baseURL.ResolveReference(url)
+	url, err := c.BaseURL()
+	if err != nil {
+		return nil, err
+	}
+	url = url.ResolveReference(endpoint)
 
 	query := url.Query()
 	query = c.setStandardParams(query)
