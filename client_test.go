@@ -5,6 +5,73 @@ import (
 	"testing"
 )
 
+func TestClientInit(t *testing.T) {
+
+	_, err := New("my_key", "my_secret", "111111", "!#@#$%ˆ&*((*=/*-+[]',.><")
+	if err == nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	client, err := New("my_key", "my_secret", "111111", "")
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	if client.Key != "my_key" {
+		t.Fail()
+		return
+	}
+	if client.Secret != "my_secret" {
+		t.Fail()
+		return
+	}
+	if client.AppID != "111111" {
+		t.Fail()
+		return
+	}
+	if client.Location != "" {
+		t.Fail()
+		return
+	}
+	if client.baseURL.String() != "https://api.getstream.io/api/v1.0/" {
+		t.Fail()
+		return
+	}
+
+	_, err = New("my_key", "my_secret", "111111", "us-east")
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	if client.Key != "my_key" {
+		t.Fail()
+		return
+	}
+	if client.Secret != "my_secret" {
+		t.Fail()
+		return
+	}
+	if client.AppID != "111111" {
+		t.Fail()
+		return
+	}
+	if client.Location != "us-east" {
+		t.Fail()
+		return
+	}
+	if client.baseURL.String() != "https://us-east-api.getstream.io/api/v1.0/" {
+		t.Fail()
+		return
+	}
+
+}
+
 func TestFlatFeedInputValidation(t *testing.T) {
 
 	client, err := New("my_key", "my_secret", "111111", "us-east")
@@ -48,31 +115,6 @@ func TestNotificationFeedInputValidation(t *testing.T) {
 
 	_, err = client.NotificationFeed("user", "tester@mail.com")
 	if err == nil {
-		fmt.Println(err)
-		t.Fail()
-		return
-	}
-
-}
-
-func TestClientInit(t *testing.T) {
-
-	_, err := New("my_key", "my_secret", "111111", "!#@#$%ˆ&*((*=/*-+[]',.><")
-	if err == nil {
-		fmt.Println(err)
-		t.Fail()
-		return
-	}
-
-	_, err = New("my_key", "my_secret", "111111", "")
-	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
-	}
-
-	_, err = New("my_key", "my_secret", "111111", "us-east")
-	if err != nil {
 		fmt.Println(err)
 		t.Fail()
 		return
