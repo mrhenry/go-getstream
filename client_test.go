@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestClientInit(t *testing.T) {
+func TestClientInitFaing(t *testing.T) {
 
 	_, err := New("my_key", "my_secret", "111111", "!#@#$%ˆ&*((*=/*-+[]',.><")
 	if err == nil {
@@ -13,6 +13,10 @@ func TestClientInit(t *testing.T) {
 		t.Fail()
 		return
 	}
+
+}
+
+func TestClientInitWithoutLocation(t *testing.T) {
 
 	client, err := New("my_key", "my_secret", "111111", "")
 	if err != nil {
@@ -51,7 +55,11 @@ func TestClientInit(t *testing.T) {
 		return
 	}
 
-	client, err = New("my_key", "my_secret", "111111", "us-east")
+}
+
+func TestClientInitWithLocation(t *testing.T) {
+
+	client, err := New("my_key", "my_secret", "111111", "us-east")
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
