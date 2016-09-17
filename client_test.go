@@ -38,11 +38,20 @@ func TestClientInit(t *testing.T) {
 		return
 	}
 	if client.baseURL.String() != "https://api.getstream.io/api/v1.0/" {
+		fmt.Println(client.baseURL.String())
+		t.Fail()
+		return
+	}
+	if client.Signer == nil {
+		t.Fail()
+		return
+	}
+	if client.HTTP == nil {
 		t.Fail()
 		return
 	}
 
-	_, err = New("my_key", "my_secret", "111111", "us-east")
+	client, err = New("my_key", "my_secret", "111111", "us-east")
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -66,6 +75,15 @@ func TestClientInit(t *testing.T) {
 		return
 	}
 	if client.baseURL.String() != "https://us-east-api.getstream.io/api/v1.0/" {
+		fmt.Println(client.baseURL.String())
+		t.Fail()
+		return
+	}
+	if client.Signer == nil {
+		t.Fail()
+		return
+	}
+	if client.HTTP == nil {
 		t.Fail()
 		return
 	}
