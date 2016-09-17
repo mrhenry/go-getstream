@@ -2,12 +2,28 @@ package getstream
 
 import "os"
 
-func testSetup() (*Client, error) {
+func testSetupRealClient() (*Client, error) {
 
 	testAPIKey := os.Getenv("key")
 	testAPISecret := os.Getenv("secret")
 	testAppID := os.Getenv("app_id")
 	testRegion := os.Getenv("region")
+
+	client, err := New(testAPIKey, testAPISecret, testAppID, testRegion)
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
+
+}
+
+func testSetupFakeClient() (*Client, error) {
+
+	testAPIKey := "key"
+	testAPISecret := "secret"
+	testAppID := "123463423"
+	testRegion := "us-east"
 
 	client, err := New(testAPIKey, testAPISecret, testAppID, testRegion)
 	if err != nil {

@@ -36,7 +36,7 @@ func ExampleNotificationFeed_AddActivity() {
 
 func TestNotificationFeedAddActivity(t *testing.T) {
 
-	client, err := testSetup()
+	client, err := testSetupRealClient()
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -75,7 +75,7 @@ func TestNotificationFeedAddActivity(t *testing.T) {
 
 func TestNotificationFeedAddActivityWithTo(t *testing.T) {
 
-	client, err := testSetup()
+	client, err := testSetupRealClient()
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -122,7 +122,7 @@ func TestNotificationFeedAddActivityWithTo(t *testing.T) {
 
 func TestNotificationFeedRemoveActivity(t *testing.T) {
 
-	client, err := testSetup()
+	client, err := testSetupRealClient()
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -164,7 +164,7 @@ func TestNotificationFeedRemoveActivity(t *testing.T) {
 
 func TestNotificationFeedRemoveByForeignIDActivity(t *testing.T) {
 
-	client, err := testSetup()
+	client, err := testSetupRealClient()
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -211,7 +211,7 @@ func TestNotificationFeedRemoveByForeignIDActivity(t *testing.T) {
 
 func TestNotificationFeedActivities(t *testing.T) {
 
-	client, err := testSetup()
+	client, err := testSetupRealClient()
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -254,7 +254,7 @@ func TestNotificationFeedActivities(t *testing.T) {
 
 func TestNotificationFeedAddActivities(t *testing.T) {
 
-	client, err := testSetup()
+	client, err := testSetupRealClient()
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -296,7 +296,7 @@ func TestNotificationFeedAddActivities(t *testing.T) {
 
 func TestNotificationFeedFollow(t *testing.T) {
 
-	client, err := testSetup()
+	client, err := testSetupRealClient()
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -333,7 +333,7 @@ func TestNotificationFeedFollow(t *testing.T) {
 
 func TestNotificationFeedFollowKeepingHistory(t *testing.T) {
 
-	client, err := testSetup()
+	client, err := testSetupRealClient()
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -370,7 +370,7 @@ func TestNotificationFeedFollowKeepingHistory(t *testing.T) {
 
 func TestNotificationFeedFollowingFollowers(t *testing.T) {
 
-	client, err := testSetup()
+	client, err := testSetupRealClient()
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -419,7 +419,7 @@ func TestNotificationFeedFollowingFollowers(t *testing.T) {
 
 func TestMarkAsSeen(t *testing.T) {
 
-	client, err := testSetup()
+	client, err := testSetupRealClient()
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -469,7 +469,7 @@ func TestMarkAsSeen(t *testing.T) {
 
 func TestMarkAsRead(t *testing.T) {
 
-	client, err := testSetup()
+	client, err := testSetupRealClient()
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
