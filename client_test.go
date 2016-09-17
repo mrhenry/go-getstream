@@ -100,16 +100,25 @@ func TestClientInitWithLocation(t *testing.T) {
 
 func TestFlatFeedInputValidation(t *testing.T) {
 
-	client, err := New("my_key", "my_secret", "111111", "us-east")
+	client, err := testSetupFakeClient()
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
 		return
 	}
 
-	_, err = client.FlatFeed("user", "099978b6-3b72-4f5c-bc43-247ba6ae2dd9")
+	feed, err := client.FlatFeed("user", "099978b6-3b72-4f5c-bc43-247ba6ae2dd9")
 	if err != nil {
 		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	if feed.FeedSlug != "user" {
+		t.Fail()
+		return
+	}
+	if feed.UserID != "099978b6_3b72_4f5c_bc43_247ba6ae2dd9" {
 		t.Fail()
 		return
 	}

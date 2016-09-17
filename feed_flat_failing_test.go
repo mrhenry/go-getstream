@@ -7,7 +7,7 @@ import (
 
 func TestFlatFeedAddActivityFail(t *testing.T) {
 
-	client, err := testSetup()
+	client, err := testSetupRealClient()
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()

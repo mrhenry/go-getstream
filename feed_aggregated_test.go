@@ -35,7 +35,7 @@ func ExampleAggregatedFeed_AddActivity() {
 
 func TestAggregatedFeedAddActivity(t *testing.T) {
 
-	client, err := testSetup()
+	client, err := testSetupRealClient()
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -74,7 +74,7 @@ func TestAggregatedFeedAddActivity(t *testing.T) {
 
 func TestAggregatedFeedAddActivityWithTo(t *testing.T) {
 
-	client, err := testSetup()
+	client, err := testSetupRealClient()
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -121,7 +121,7 @@ func TestAggregatedFeedAddActivityWithTo(t *testing.T) {
 
 func TestAggregatedFeedRemoveActivity(t *testing.T) {
 
-	client, err := testSetup()
+	client, err := testSetupRealClient()
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -163,7 +163,7 @@ func TestAggregatedFeedRemoveActivity(t *testing.T) {
 
 func TestAggregatedFeedRemoveByForeignIDActivity(t *testing.T) {
 
-	client, err := testSetup()
+	client, err := testSetupRealClient()
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -210,7 +210,7 @@ func TestAggregatedFeedRemoveByForeignIDActivity(t *testing.T) {
 
 func TestAggregatedFeedActivities(t *testing.T) {
 
-	client, err := testSetup()
+	client, err := testSetupRealClient()
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -253,7 +253,7 @@ func TestAggregatedFeedActivities(t *testing.T) {
 
 func TestAggregatedFeedAddActivities(t *testing.T) {
 
-	client, err := testSetup()
+	client, err := testSetupRealClient()
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -295,7 +295,7 @@ func TestAggregatedFeedAddActivities(t *testing.T) {
 
 func TestAggregatedFeedFollow(t *testing.T) {
 
-	client, err := testSetup()
+	client, err := testSetupRealClient()
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -332,7 +332,7 @@ func TestAggregatedFeedFollow(t *testing.T) {
 
 func TestAggregatedFeedFollowKeepingHistory(t *testing.T) {
 
-	client, err := testSetup()
+	client, err := testSetupRealClient()
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -369,7 +369,7 @@ func TestAggregatedFeedFollowKeepingHistory(t *testing.T) {
 
 func TestAggregatedFeedFollowingFollowers(t *testing.T) {
 
-	client, err := testSetup()
+	client, err := testSetupRealClient()
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()

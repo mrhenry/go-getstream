@@ -9,7 +9,7 @@ import (
 
 func TestFlatFeedAddActivity(t *testing.T) {
 
-	client, err := testSetup()
+	client, err := testSetupRealClient()
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -48,7 +48,7 @@ func TestFlatFeedAddActivity(t *testing.T) {
 
 func TestFlatFeedAddActivityWithTo(t *testing.T) {
 
-	client, err := testSetup()
+	client, err := testSetupRealClient()
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -102,7 +102,7 @@ func TestFlatFeedAddActivityWithTo(t *testing.T) {
 
 func TestFlatFeedUUID(t *testing.T) {
 
-	client, err := testSetup()
+	client, err := testSetupRealClient()
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -148,7 +148,7 @@ func TestFlatFeedUUID(t *testing.T) {
 
 func TestFlatFeedRemoveActivity(t *testing.T) {
 
-	client, err := testSetup()
+	client, err := testSetupRealClient()
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -190,7 +190,7 @@ func TestFlatFeedRemoveActivity(t *testing.T) {
 
 func TestFlatFeedRemoveByForeignIDActivity(t *testing.T) {
 
-	client, err := testSetup()
+	client, err := testSetupRealClient()
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -236,7 +236,7 @@ func TestFlatFeedRemoveByForeignIDActivity(t *testing.T) {
 
 func TestFlatFeedActivities(t *testing.T) {
 
-	client, err := testSetup()
+	client, err := testSetupRealClient()
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -277,7 +277,7 @@ func TestFlatFeedActivities(t *testing.T) {
 
 func TestFlatFeedAddActivities(t *testing.T) {
 
-	client, err := testSetup()
+	client, err := testSetupRealClient()
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -319,7 +319,7 @@ func TestFlatFeedAddActivities(t *testing.T) {
 
 func TestFlatFeedFollow(t *testing.T) {
 
-	client, err := testSetup()
+	client, err := testSetupRealClient()
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -351,7 +351,7 @@ func TestFlatFeedFollow(t *testing.T) {
 
 func TestFlatFeedFollowingFollowers(t *testing.T) {
 
-	client, err := testSetup()
+	client, err := testSetupRealClient()
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -405,7 +405,7 @@ func TestFlatFeedFollowingFollowers(t *testing.T) {
 
 func TestFlatFeedUnFollow(t *testing.T) {
 
-	client, err := testSetup()
+	client, err := testSetupRealClient()
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -442,7 +442,7 @@ func TestFlatFeedUnFollow(t *testing.T) {
 
 func TestFlatFeedUnFollowKeepingHistory(t *testing.T) {
 
-	client, err := testSetup()
+	client, err := testSetupRealClient()
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
