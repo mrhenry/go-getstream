@@ -40,6 +40,7 @@ func New(key string, secret string, appID string, location string) *Client {
 		Secret:   secret,
 		ID:       appID,
 		Location: location,
+		Version:  "v1.0",
 
 		Signer: &Signer{
 			Secret: secret,
