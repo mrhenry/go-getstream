@@ -28,7 +28,7 @@ func (s Signer) UrlSafe(src string) string {
 	return src
 }
 
-// generateToken will user the Secret of the signer and the message passed as an argument to generate a Token
+// generateToken will use the Secret of the signer and the message passed as an argument to generate a Token
 func (s Signer) GenerateToken(message string) string {
 	hash := sha1.New()
 	hash.Write([]byte(s.Secret))

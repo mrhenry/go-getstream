@@ -5,7 +5,58 @@ import (
 	"testing"
 
 	getstream "github.com/GetStream/stream-go"
+	"fmt"
 )
+
+func TestExampleClient(t *testing.T) {
+	client, err := getstream.New(&getstream.Config{
+		APIKey:    "my_key",
+		APISecret: "my_secret",
+		AppID:     "111111",
+		Location:  "us-east"})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_ = client
+}
+
+func TestExampleClient_FlatFeed(t *testing.T) {
+
+	client, err := getstream.New(&getstream.Config{
+		APIKey:    "my_key",
+		APISecret: "my_secret",
+		AppID:     "111111",
+		Location:  "us-east"})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	feed, err := client.FlatFeed("flat", "UserID")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_ = feed
+}
+
+func TestExampleClient_NotificationFeed(t *testing.T) {
+	client, err := getstream.New(&getstream.Config{
+		APIKey:    "my_key",
+		APISecret: "my_secret",
+		AppID:     "111111",
+		Location:  "us-east"})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	feed, err := client.NotificationFeed("flat", "UserID")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_ = feed
+}
 
 func TestFlatFeedInputValidation(t *testing.T) {
 	client, err := getstream.New(&getstream.Config{
@@ -205,5 +256,49 @@ func TestClientAbsoluteURL(t *testing.T) {
 	url, err = client.AbsoluteURL("!#@#$%ˆ&*((*=/*-+[]',.><")
 	if err == nil {
 		t.Fatal(err)
+	}
+}
+
+func TestAddActivityToMany(t *testing.T) {
+	client, err := PreTestSetup()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	feeds := []string{}
+
+	bobFeed, err := client.FlatFeed("flat", "bob")
+	if err != nil {
+		t.Fatal(err)
+	}
+	feeds = append(feeds, string(bobFeed.FeedID()))
+
+	sallyFeed, err := client.FlatFeed("flat", "sally")
+	if err != nil {
+		t.Fatal(err)
+	}
+	feeds = append(feeds, string(sallyFeed.FeedID()))
+
+	activity := &getstream.Activity{
+		Verb:      "post",
+		ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
+		Object:    getstream.FeedID("flat:eric"),
+		Actor:     getstream.FeedID("flat:john"),
+	}
+
+	fmt.Println("------", feeds)
+	err = client.AddActivityToMany(*activity, feeds)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// cleanup
+	err = sallyFeed.RemoveActivityByForeignID(activity)
+	if err != nil {
+		t.Error(err)
+	}
+	err = bobFeed.RemoveActivityByForeignID(activity)
+	if err != nil {
+		t.Error(err)
 	}
 }

@@ -5,7 +5,55 @@ import (
 	"errors"
 	"regexp"
 	"strings"
+	"strconv"
+	"fmt"
 )
+
+type postFlatFeedOutputActivities struct {
+	Activities []*Activity `json:"activities"`
+}
+
+// GetFlatFeedInput is used to Get a list of Activities from a FlatFeed
+type GetFlatFeedInput struct {
+	Limit  int `json:"limit,omitempty"`
+	Offset int `json:"offset,omitempty"`
+
+	IDGTE string `json:"id_gte,omitempty"`
+	IDGT  string `json:"id_gt,omitempty"`
+	IDLTE string `json:"id_lte,omitempty"`
+	IDLT  string `json:"id_lt,omitempty"`
+
+	Ranking string `json:"ranking,omitempty"`
+}
+
+// GetFlatFeedOutput is the response from a FlatFeed Activities Get Request
+type GetFlatFeedOutput struct {
+	Duration   string      `json:"duration"`
+	Next       string      `json:"next"`
+	Activities []*Activity `json:"results"`
+}
+
+type getFlatFeedFollowersInput struct {
+	Limit int `json:"limit"`
+	Skip  int `json:"offset"`
+}
+
+type getFlatFeedFollowersOutput struct {
+	Duration string                              `json:"duration"`
+	Results  []*getFlatFeedFollowersOutputResult `json:"results"`
+}
+
+type getFlatFeedFollowersOutputResult struct {
+	CreatedAt string `json:"created_at"`
+	UpdatedAt string `json:"updated_at"`
+	FeedID    string `json:"feed_id"`
+	TargetID  string `json:"target_id"`
+}
+
+type postFlatFeedFollowingInput struct {
+	Target            string `json:"target"`
+	ActivityCopyLimit int    `json:"activity_copy_limit"`
+}
 
 // FlatFeed is a getstream FlatFeed
 // Use it to for CRUD on FlatFeed Groups
@@ -186,7 +234,6 @@ func (f *FlatFeed) FollowFeedWithCopyLimit(target *FlatFeed, copyLimit int) erro
 
 	_, err = f.Client.post(f, endpoint, payload, nil)
 	return err
-
 }
 
 // Unfollow is used to Unfollow a target Feed
@@ -195,7 +242,6 @@ func (f *FlatFeed) Unfollow(target *FlatFeed) error {
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/" + target.FeedID().Value() + "/"
 
 	return f.Client.del(f, endpoint, nil, nil)
-
 }
 
 // UnfollowKeepingHistory is used to Unfollow a target Feed while keeping the History
@@ -212,12 +258,10 @@ func (f *FlatFeed) UnfollowKeepingHistory(target *FlatFeed) error {
 	}
 
 	return f.Client.del(f, endpoint, payload, nil)
-
 }
 
 // FollowersWithLimitAndSkip returns a list of GeneralFeed following the current FlatFeed
 func (f *FlatFeed) FollowersWithLimitAndSkip(limit int, skip int) ([]*GeneralFeed, error) {
-
 	var err error
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "followers" + "/"
@@ -260,12 +304,10 @@ func (f *FlatFeed) FollowersWithLimitAndSkip(limit int, skip int) ([]*GeneralFee
 	}
 
 	return outputFeeds, err
-
 }
 
 // FollowingWithLimitAndSkip returns a list of GeneralFeed followed by the current FlatFeed
 func (f *FlatFeed) FollowingWithLimitAndSkip(limit int, skip int) ([]*GeneralFeed, error) {
-
 	var err error
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/"
@@ -308,5 +350,46 @@ func (f *FlatFeed) FollowingWithLimitAndSkip(limit int, skip int) ([]*GeneralFee
 	}
 
 	return outputFeeds, err
+}
 
+
+/** FollowFeedsWithCopyLimit sets a Feed to follow one or more other target Feeds
+	This method only exists within FlatFeed because only flat feeds can follow other feeds
+
+	Params:
+	sourceFeeds, a list of feeds this feed can follow
+	copyLimit, optional number of items to copy from history, defaults to 100
+
+ 	Returns:
+ 	error, if any
+  */
+func (f *FlatFeed) FollowManyFeeds(sourceFeeds []PostFlatFeedFollowingManyInput, copyLimit int) error {
+
+	final_payload, err := json.Marshal(sourceFeeds)
+	if err != nil {
+		return err
+	}
+
+	var params = map[string]string{}
+	if copyLimit < 0 {
+		copyLimit = 100
+	}
+	params = map[string]string{
+		"activity_copy_limit": strconv.Itoa(copyLimit),
+	}
+
+	endpoint := "follow_many/"
+
+	save_token := ""
+	if f.token != "" {
+		fmt.Println("saving token for later")
+		save_token = f.token
+		f.token = ""
+	}
+	_, err = f.Client.post(f, endpoint, final_payload, params)
+	if save_token != "" {
+		fmt.Println("restoring token")
+		f.token = save_token
+	}
+	return err
 }
