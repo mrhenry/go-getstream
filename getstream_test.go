@@ -1,25 +1,28 @@
 package getstream_test
 
 import (
+	"fmt"
 	getstream "github.com/GetStream/stream-go"
 	"os"
 )
 
 func PreTestSetup() (*getstream.Client, error) {
 	return doTestSetup(&getstream.Config{
-		APIKey:    os.Getenv("key"),
-		APISecret: os.Getenv("secret"),
-		AppID:     os.Getenv("app_id"),
-		Location:  os.Getenv("region"),
+		APIKey:     os.Getenv("key"),
+		APISecret:  os.Getenv("secret"),
+		AppID:      os.Getenv("app_id"),
+		Location:   os.Getenv("region"),
+		TimeoutInt: 1000,
 	})
 }
 
 func PreTestSetupWithToken() (*getstream.Client, error) {
 	return doTestSetup(&getstream.Config{
-		APIKey:   os.Getenv("key"),
-		Token:    os.Getenv("secret"), // instead of API Secret
-		AppID:    os.Getenv("app_id"),
-		Location: os.Getenv("region"),
+		APIKey:     os.Getenv("key"),
+		Token:      os.Getenv("secret"), // instead of APISecret
+		AppID:      os.Getenv("app_id"),
+		Location:   os.Getenv("region"),
+		TimeoutInt: 1000,
 	})
 }
 
@@ -32,6 +35,8 @@ func PostTestCleanUp(
 	flats []*getstream.Activity,
 	notifications []*getstream.Activity,
 	aggregations []*getstream.Activity) error {
+
+	fmt.Println("Cleanup, aisle 1")
 
 	if len(flats) > 0 {
 
@@ -82,7 +87,7 @@ func PostTestCleanUp(
 }
 
 func PostTestCleanUpFollows(client *getstream.Client, flats []*getstream.FlatFeed) error {
-
+	fmt.Println("Cleanup, aisle 2")
 	for _, flat := range flats {
 
 		followers, _ := flat.FollowersWithLimitAndSkip(300, 0)

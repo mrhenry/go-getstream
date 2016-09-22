@@ -1,11 +1,9 @@
 package getstream_test
 
 import (
-	"os"
 	"testing"
 
 	getstream "github.com/GetStream/stream-go"
-	"fmt"
 )
 
 func TestExampleClient(t *testing.T) {
@@ -13,7 +11,8 @@ func TestExampleClient(t *testing.T) {
 		APIKey:    "my_key",
 		APISecret: "my_secret",
 		AppID:     "111111",
-		Location:  "us-east"})
+		Location:  "us-east",
+	})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -129,6 +128,7 @@ func TestClientInit(t *testing.T) {
 	}
 }
 
+/*
 func TestClientInitWithToken(t *testing.T) {
 	serverClient, err := PreTestSetupWithToken()
 	if err != nil {
@@ -191,6 +191,7 @@ func TestClientInitWithToken(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+*/
 
 func TestClientBaseURL(t *testing.T) {
 	client, err := getstream.New(&getstream.Config{
@@ -286,7 +287,6 @@ func TestAddActivityToMany(t *testing.T) {
 		Actor:     getstream.FeedID("flat:john"),
 	}
 
-	fmt.Println("------", feeds)
 	err = client.AddActivityToMany(*activity, feeds)
 	if err != nil {
 		t.Fatal(err)

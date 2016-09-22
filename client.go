@@ -4,15 +4,14 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
+	"gopkg.in/LeisureLink/httpsig.v1"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
-	"fmt"
 	"time"
-	"gopkg.in/LeisureLink/httpsig.v1"
 )
-
 
 // Client is used to connect to getstream.io
 type Client struct {
@@ -176,30 +175,6 @@ func (c *Client) AggregatedFeed(feedSlug string, userID string) (*AggregatedFeed
 	return feed, nil
 }
 
-// // UpdateActivities is used to update multiple Activities
-// func (c *Client) UpdateActivities(activities []interface{}) ([]*Activity, error) {
-//
-// 	payload, err := json.Marshal(activities)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-//
-// 	endpoint := "activities/"
-//
-// 	resultBytes, err := c.post(endpoint, payload, nil)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-//
-// 	output := &postFlatFeedOutputActivities{}
-// 	err = json.Unmarshal(resultBytes, output)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-//
-// 	return output.Activities, err
-// }
-
 // absoluteUrl create a url.URL instance and sets query params (bad!!!)
 func (c *Client) AbsoluteURL(path string) (*url.URL, error) {
 	result, err := url.Parse(path)
@@ -270,7 +245,45 @@ func (c *Client) request(f Feed, method string, path string, payload []byte, par
 	}
 
 	// set the Auth headers for the http request
-	c.setHeaders(req, f)
+	c.setBaseHeaders(req)
+
+	auth := ""
+	sig := ""
+	switch {
+	case path == "follow_many/": // one feed follows many feeds
+		auth = "app"
+		sig = "sig"
+	case path == "activities/": // batch activities methods
+		// feed auth
+		auth = "feed"
+		sig = "sig"
+	case path == "feed/add_to_many/": // add activity to many feeds
+		// application auth
+		auth = "app"
+		sig = "sig"
+	case path[:5] == "feed": // add activity to many feeds
+		// feed auth
+		auth = "feed"
+		sig = "jwt"
+	default: // everything else sig/httpsig and feed auth
+		auth = "feed"
+		sig = "sig"
+	}
+
+	// fallback: if we were going to use jwt and we don't have a client token, use regular sig instead
+	//if sig == "jwt" && c.Config.Token == "" {
+	//	if f == nil {
+	//		sig = "httpsig"
+	//	} else {
+	//		auth = "feed"
+	//		f.GenerateToken(c.Signer)
+	//		sig = "sig"
+	//	}
+	//}
+
+	fmt.Println("final auth/sig:", auth+"/"+sig)
+
+	c.setAuthHeaders(req, f, auth, sig)
 
 	fmt.Println("req.Body", req.Body)
 	fmt.Println("req.Header", req.Header)
@@ -296,9 +309,9 @@ func (c *Client) request(f Feed, method string, path string, payload []byte, par
 		return body, nil
 	default:
 		var respErr Error
+		fmt.Println("client.request non-200 success, body:", string(body))
 		err = json.Unmarshal(body, &respErr)
 		if err != nil {
-			fmt.Println("client.request non-200 success, error unmarshalling json response, body:", body)
 			return nil, err
 		}
 		return nil, &respErr
@@ -323,55 +336,78 @@ func (c *Client) setRequestParams(query url.Values, params map[string]string) ur
 	return query
 }
 
-func (c *Client) setHeaders(request *http.Request, f Feed) error {
-	request.Header.Set("X-Stream-Client", "stream-go-client-" + VERSION)
+/* setBaseHeaders - set common headers for every request
+ * params:
+ *    request, pointer to http.Request
+ */
+func (c *Client) setBaseHeaders(request *http.Request) {
+	request.Header.Set("X-Stream-Client", "stream-go-client-"+VERSION)
 	request.Header.Set("Content-Type", "application/json")
 	request.Header.Set("X-Api-Key", c.Config.APIKey)
 
 	t := time.Now()
 	request.Header.Set("Date", t.Format("Mon, 2 Jan 2006 15:04:05 MST"))
+}
 
-	fmt.Println("is feed nil?", f)
-	fmt.Println("c.Config.APISecret:", c.Config.APISecret)
-	fmt.Println("c.Config.Token:", c.Config.Token)
-	if f != nil {
-		fmt.Println("f.Token:", f.Token())
-		fmt.Println("f.Signature:", f.Signature())
+func (c *Client) setAuthHeaders(request *http.Request, f Feed, auth string, sig string) error {
+	// debugging
+	//fmt.Println("is feed nil?", f)
+	//fmt.Println("c.Config.APISecret:", c.Config.APISecret)
+	//fmt.Println("c.Config.Token:", c.Config.Token)
+	//if f != nil {
+	//	fmt.Println("f.Token:", f.Token())
+	//	fmt.Println("f.Signature:", f.Signature())
+	//}
+
+	//fmt.Println(auth)
+
+	if sig == "jwt" {
+		fmt.Println("--[ setAuthHeader: JWT ]---")
+		request.Header.Set("stream-auth-type", "jwt")
+		if f == nil {
+			request.Header.Set("Authorization", c.Config.Token)
+		} else {
+		}
+		return nil
 	}
 
-	if f != nil && c.Config.APISecret != "" && f.Token() != "" {
-		fmt.Println(1)
-		request.Header.Set("Authorization", f.Signature())
-		return nil
-	} else if c.Config.APISecret != "" && (f == nil || f.Token() == "") {
-		fmt.Println(2)
-		signer, _ := httpsig.NewRequestSigner(c.Config.APIKey, c.Config.APISecret, "hmac-sha256")
-		signer.SignRequest(request, []string{}, nil)
-		return nil
-	} else if c.Config.Token != "" {
-		fmt.Println(3)
-		request.Header.Set("stream-auth-type", "jwt")
-		request.Header.Set("Authorization", c.Config.Token)
+	if sig == "sig" {
+		fmt.Println("--[ setAuthHeader: sig ]---")
+		if auth == "feed" {
+			fmt.Println("-- feed auth")
+			if f.Token() == "" {
+				fmt.Println("-- generating new token")
+				f.GenerateToken(c.Signer)
+			}
+			fmt.Println("-- feed signature:", f.Signature())
+			request.Header.Set("Authorization", f.Signature())
+		} else if auth == "app" {
+			fmt.Println("-- app auth, doing httpsig")
+			signer, _ := httpsig.NewRequestSigner(c.Config.APIKey, c.Config.APISecret, "hmac-sha256")
+			signer.SignRequest(request, []string{}, nil)
+		} else {
+			fmt.Println("****** we should not be here!")
+		}
 		return nil
 	}
 
 	return errors.New("No API Secret or config/feed Token")
-
 }
 
 type PostFlatFeedFollowingManyInput struct {
-	Source   string `json:"source"`
-	Target   string `json:"target"`
+	Source string `json:"source"`
+	Target string `json:"target"`
 }
+
 /** PrepFollowFlatFeed - prepares JSON needed for one feed to follow another
 
-	Params:
-	targetFeed, FlatFeed which wants to follow another
-	sourceFeed, FlatFeed which is to be followed
+Params:
+targetFeed, FlatFeed which wants to follow another
+sourceFeed, FlatFeed which is to be followed
 
-	Returns:
-	[]byte, array of bytes of JSON suitable for API consumption
- */
+Returns:
+[]byte, array of bytes of JSON suitable for API consumption
+*/
 func (c *Client) PrepFollowFlatFeed(targetFeed *FlatFeed, sourceFeed *FlatFeed) *PostFlatFeedFollowingManyInput {
 	return &PostFlatFeedFollowingManyInput{
 		Source: sourceFeed.FeedSlug + ":" + sourceFeed.UserID,
@@ -392,17 +428,14 @@ func (c *Client) PrepFollowNotifcationFeed(targetFeed *FlatFeed, sourceFeed *Not
 }
 
 type PostActivityToManyInput struct {
-	Activity   Activity `json:"activity"`
-	FeedIDs   []string `json:"feeds"`
+	Activity Activity `json:"activity"`
+	FeedIDs  []string `json:"feeds"`
 }
 
 func (c *Client) AddActivityToMany(activity Activity, feeds []string) error {
-	endpoint := "feed/add_to_many/"
-	params := map[string]string{}
-
 	payload := &PostActivityToManyInput{
 		Activity: activity,
-		FeedIDs: feeds,
+		FeedIDs:  feeds,
 	}
 
 	final_payload, err := json.Marshal(payload)
@@ -410,6 +443,8 @@ func (c *Client) AddActivityToMany(activity Activity, feeds []string) error {
 		return err
 	}
 
+	endpoint := "feed/add_to_many/"
+	params := map[string]string{}
 	_, err = c.post(nil, endpoint, final_payload, params)
 	return err
 }

@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/GetStream/stream-go"
-	"testing"
 	"github.com/pborman/uuid"
+	"testing"
 	"time"
 )
 

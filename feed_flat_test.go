@@ -348,7 +348,7 @@ func TestFlatFeedFollow(t *testing.T) {
 	}
 
 	// get things that feedA follows, ensure feedB is in there
-	following, err := feedA.FollowingWithLimitAndSkip(5,0)
+	following, err := feedA.FollowingWithLimitAndSkip(5, 0)
 	if err != nil {
 		t.Error(err)
 	}
@@ -634,3 +634,65 @@ func TestFlatFeedMultiFollow(t *testing.T) {
 	PostTestCleanUpFollows(client, []*getstream.FlatFeed{bobFeed, joshFeed})
 }
 
+func TestFlatFeedUpdateActivities(t *testing.T) {
+	client, err := PreTestSetup()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// make a feed for bob
+	fmt.Println("-----[ feed for bob ]-----")
+	bobFeed, err := client.FlatFeed("flat", "bob")
+	if err != nil {
+		t.Fatal(err)
+	}
+	fmt.Println("feedIDwithoutColon: ", bobFeed.FeedIDWithoutColon())
+	fmt.Println("feed token: ", bobFeed.Token())
+
+	// make one activity
+	fmt.Println("-----[ create activity 1 ]-----")
+	activity1 := &getstream.Activity{
+		Verb:      "post",
+		ForeignID: uuid.New(),
+		Object:    getstream.FeedID("flat:1"),
+		Actor:     getstream.FeedID("flat:2"),
+	}
+	activity1, err = bobFeed.AddActivity(activity1)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// make a second activity
+	fmt.Println("-----[ create activity 2 ]-----")
+	activity2 := &getstream.Activity{
+		Verb:      "post",
+		ForeignID: uuid.New(),
+		Object:    getstream.FeedID("flat:1"),
+		Actor:     getstream.FeedID("flat:2"),
+	}
+	activity2, err = bobFeed.AddActivity(activity2)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// now update those activities to have a different 'actor' value
+	activity1.Actor = getstream.FeedID("flat:123")
+	activity2.Actor = getstream.FeedID("flat:123")
+
+	// push those activities to Stream
+	// unlike the AddActivities method, the UpdateActivities call only returns an error value
+	activities := []*getstream.Activity{activity1, activity2}
+	fmt.Println("-----[ update activities ]-----")
+	err = bobFeed.UpdateActivities(activities)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// cleanup
+	for _, activity := range activities {
+		err = bobFeed.RemoveActivityByForeignID(activity)
+		if err != nil {
+			t.Error(err)
+		}
+	}
+}

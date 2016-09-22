@@ -226,14 +226,14 @@ func TestAggregatedFeedAddActivities(t *testing.T) {
 	}
 
 	activities, err := feed.AddActivities([]*getstream.Activity{
-		&getstream.Activity{
+		{
 			Verb:      "post",
-			ForeignID: "099978b6-3b72-4f5c-bc43-247ba6ae2dd9",
+			ForeignID: uuid.New(),
 			Object:    getstream.FeedID("flat:eric"),
 			Actor:     getstream.FeedID("flat:john"),
-		}, &getstream.Activity{
+		}, {
 			Verb:      "walk",
-			ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
+			ForeignID: uuid.New(),
 			Object:    getstream.FeedID("flat:john"),
 			Actor:     getstream.FeedID("flat:eric"),
 		},
@@ -279,7 +279,7 @@ func TestAggregatedFeedFollowUnfollow(t *testing.T) {
 	}
 
 	// get things that feedA follows, ensure feedB is in there
-	following, err := feedA.FollowingWithLimitAndSkip(5,0)
+	following, err := feedA.FollowingWithLimitAndSkip(5, 0)
 	if err != nil {
 		t.Error(err)
 	}

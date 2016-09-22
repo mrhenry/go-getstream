@@ -3,10 +3,10 @@ package getstream
 import (
 	"encoding/json"
 	"errors"
-	"regexp"
-	"strings"
-	"strconv"
 	"fmt"
+	"regexp"
+	"strconv"
+	"strings"
 )
 
 type postFlatFeedOutputActivities struct {
@@ -129,7 +129,6 @@ func (f *FlatFeed) AddActivity(activity *Activity) (*Activity, error) {
 
 // AddActivities is used to add multiple Activities to a FlatFeed
 func (f *FlatFeed) AddActivities(activities []*Activity) ([]*Activity, error) {
-
 	for _, activity := range activities {
 		activity.ID = ""
 	}
@@ -352,7 +351,6 @@ func (f *FlatFeed) FollowingWithLimitAndSkip(limit int, skip int) ([]*GeneralFee
 	return outputFeeds, err
 }
 
-
 /** FollowFeedsWithCopyLimit sets a Feed to follow one or more other target Feeds
 	This method only exists within FlatFeed because only flat feeds can follow other feeds
 
@@ -362,7 +360,7 @@ func (f *FlatFeed) FollowingWithLimitAndSkip(limit int, skip int) ([]*GeneralFee
 
  	Returns:
  	error, if any
-  */
+*/
 func (f *FlatFeed) FollowManyFeeds(sourceFeeds []PostFlatFeedFollowingManyInput, copyLimit int) error {
 
 	final_payload, err := json.Marshal(sourceFeeds)
@@ -392,4 +390,51 @@ func (f *FlatFeed) FollowManyFeeds(sourceFeeds []PostFlatFeedFollowingManyInput,
 		f.token = save_token
 	}
 	return err
+}
+
+type postMultipleActivities struct {
+	Activities []*Activity `json:"activities"`
+}
+
+func (f *FlatFeed) UpdateActivities(activities []*Activity) error {
+	if len(activities) == 0 {
+		return errors.New("No activities to update")
+	}
+
+	// verify/exclude by foreign id
+	var verifiedActivities []*Activity
+	for _, activity := range activities {
+		if activity.ForeignID != "" {
+			verifiedActivities = append(verifiedActivities, activity)
+		}
+	}
+
+	// verify that there are no more than 100 to update
+	if len(verifiedActivities) > 100 {
+		return errors.New("Cannot update more than 100 activities at a time")
+	}
+	if len(verifiedActivities) == 0 {
+		return errors.New("No activities to update (no ForeignID values)")
+	}
+
+	final_payload, err := json.Marshal(&postMultipleActivities{
+		Activities: verifiedActivities,
+	})
+	if err != nil {
+		return err
+	}
+
+	endpoint := "activities/"
+	params := map[string]string{}
+
+	_, err = f.Client.post(f, endpoint, final_payload, params)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (f *FlatFeed) UpdateActivity(activity *Activity) error {
+	return f.UpdateActivities([]*Activity{activity})
 }
