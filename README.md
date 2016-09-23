@@ -1,6 +1,8 @@
 # stream-go
 
-[![Build Status](https://travis-ci.org/GetStream/stream-go.svg?branch=master)](https://travis-ci.org/GetStream/stream-go)
+Master Branch: [![Build Status](https://travis-ci.org/GetStream/stream-go.svg?branch=master)](https://travis-ci.org/GetStream/stream-go)
+Dev Branch: [![Build Status](https://travis-ci.org/GetStream/stream-go.svg?branch=dev)](https://travis-ci.org/GetStream/stream-go)
+
 [![godoc](https://godoc.org/github.com/GetStream/stream-go?status.svg)](https://godoc.org/github.com/GetStream/stream-go)
 [![codecov](https://codecov.io/gh/GetStream/stream-go/branch/master/graph/badge.svg)](https://codecov.io/gh/GetStream/stream-go)
 
