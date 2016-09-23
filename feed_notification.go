@@ -473,4 +473,3 @@ func (f *NotificationFeed) FollowersWithLimitAndSkip(limit int, skip int) ([]*Ge
 
 	return outputFeeds, err
 }
-

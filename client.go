@@ -14,10 +14,10 @@ import (
 )
 
 var GETSTREAM_TRANSPORT = &http.Transport{
-	MaxIdleConns: 5,
+	MaxIdleConns:        5,
 	MaxIdleConnsPerHost: 5,
-	IdleConnTimeout: 60,
-	DisableKeepAlives: false,
+	IdleConnTimeout:     60,
+	DisableKeepAlives:   false,
 }
 
 // Client is used to connect to getstream.io
@@ -95,7 +95,7 @@ func New(cfg *Config) (*Client, error) {
 	client := &Client{
 		HTTP: &http.Client{
 			Transport: GETSTREAM_TRANSPORT,
-			Timeout: cfg.TimeoutDuration,
+			Timeout:   cfg.TimeoutDuration,
 		},
 		BaseURL: baseURL,
 		Config:  cfg,

@@ -3,8 +3,8 @@ package getstream_test
 import (
 	"testing"
 
-	"github.com/pborman/uuid"
 	getstream "github.com/GetStream/stream-go"
+	"github.com/pborman/uuid"
 )
 
 func TestClient(t *testing.T) {
@@ -35,9 +35,9 @@ func TestClientMissingAPIKey(t *testing.T) {
 
 func TestClientMissingAPISecretAndToken(t *testing.T) {
 	_, err := getstream.New(&getstream.Config{
-		APIKey: "my_secret",
-		AppID:     "111111",
-		Location:  "us-east",
+		APIKey:   "my_secret",
+		AppID:    "111111",
+		Location: "us-east",
 	})
 	if err == nil {
 		t.Fatal(err)
@@ -459,7 +459,7 @@ func TestConvertUUIDToWord(t *testing.T) {
 	expected := "f_o_o"
 	foo := getstream.ConvertUUIDToWord("f-o-o")
 
-	if  foo!= expected {
+	if foo != expected {
 		t.Fatal("ConvertUUIDToWord mismatch, expected '", expected, "', got:", foo)
 	}
 }

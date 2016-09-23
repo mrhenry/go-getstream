@@ -392,14 +392,14 @@ func (f *FlatFeed) FollowManyFeeds(sourceFeeds []PostFlatFeedFollowingManyInput,
 
 	//save_token := ""
 	//if f.token != "" {
-		//fmt.Println("saving token for later")
-		//save_token = f.token
-		//f.token = ""
+	//fmt.Println("saving token for later")
+	//save_token = f.token
+	//f.token = ""
 	//}
 	_, err = f.Client.post(f, endpoint, final_payload, params)
 	//if save_token != "" {
-		//fmt.Println("restoring token")
-		//f.token = save_token
+	//fmt.Println("restoring token")
+	//f.token = save_token
 	//}
 	return err
 }

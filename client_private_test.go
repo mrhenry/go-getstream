@@ -1,8 +1,8 @@
 package getstream
 
 import (
-	"testing"
 	"net/url"
+	"testing"
 )
 
 func TestClientRequestBadPath(t *testing.T) {
@@ -77,7 +77,7 @@ func TestClientSetRequestParams(t *testing.T) {
 	}
 
 	values = client.setRequestParams(query, map[string]string{
-		"foo":"bar",
+		"foo": "bar",
 	})
 	if values == nil {
 		t.Fatal("Expected urlValues, got nil")
