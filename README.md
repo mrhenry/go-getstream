@@ -10,7 +10,7 @@ Beta client library for [GetStream.io](//getstream.io).
 
 This library could not exist without the efforts of several open-source community members, 
 including the awesome folks at [MrHenry](//github.com/mrhenry) and 
-[HyperWorks](//github.com/hyperworks)(HyperWorks). Thank you so much for contributing
+[HyperWorks](//github.com/hyperworks). Thank you so much for contributing
 to our community!
 
 The code provided by the MrHenry team is used with written permission; we are working 
@@ -24,6 +24,12 @@ We are releasing this as our v0.9.0 beta since there may be bugs, and inevitable
 will happen along the way. Please do not hesitate to [contact us](mailto:support@getstream.io)
 if you see something strange happening. We'd be happy to consider any and all pull 
 requests from the community as well!
+
+### Roadmap
+
+- Improved test coverage (currently around 84%)
+- Refactoring to make some methods and attributes private which don't need exposure
+- Ensuring Go best practices
 
 ### Example Usage
 

@@ -1,11 +1,11 @@
 package getstream_test
 
 import (
-	"testing"
 	"errors"
+	"testing"
 
-	"github.com/pborman/uuid"
 	getstream "github.com/GetStream/stream-go"
+	"github.com/pborman/uuid"
 )
 
 func TestActivityMarshallJson(t *testing.T) {
@@ -130,4 +130,3 @@ func TestActivityUnmarshallBadPayloadTo(t *testing.T) {
 		t.Fatal("To payload was not a value feedslug:userid format, expected To to be nil afterward, got:", activity.To)
 	}
 }
-

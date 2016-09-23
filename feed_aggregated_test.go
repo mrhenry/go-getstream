@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/pborman/uuid"
 	getstream "github.com/GetStream/stream-go"
+	"github.com/pborman/uuid"
 )
 
 func TestExampleAggregatedFeed_AddActivity(t *testing.T) {
