@@ -41,6 +41,18 @@ import (
 )
 
 // we recommend getting your API credentials using os.Getenv()
+client, err := getstream.New(&getstream.Config{
+    APIKey:      os.Getenv("STREAM_APIKEY"),
+    APISecret:   os.Getenv("STREAM_APISECRET"),
+    AppID:       os.Getenv("STREAM_APPID"),
+    Location:    os.Getenv("STREAM_LOCATION"),
+    TimeoutInt:  os.Getenv("STREAM_TIMEOUT"),
+})
+if err != nil {
+    return err
+}
+
+// but you can define the variables in code as well, of course
 APIKey string = "your-api-key"
 APISecret string = "your-api-secret"
 
@@ -60,23 +72,33 @@ Location string = "us-east"
 TimeoutInt: 3
 
 client, err := getstream.New(&getstream.Config{
-    APIKey:    os.Getenv("STREAM_APIKEY"),
-    APISecret: os.Getenv("STREAM_APISECRET"),
-    AppID:     os.Getenv("STREAM_APPID"),
-    Location:  os.Getenv("STREAM_LOCATION"),
+    APIKey:      APIKey,
+    APISecret:   APISecret,
+    AppID:       AppID,
+    Location:    Location,
+    TimeoutInt:  TimeoutInt,
 })
-if err != nil {
-    return err
-}
+
 ```
 
 Creating a Feed object for a user:
 
 ```go
 // this code assumes you've created a flat feed named "flat-feed-name" for your app
+// and similarly-named feeds for aggregated feeds and notification feeds
 // we also recommend using UUID values for users
 
-bobFeed, err := client.FlatFeed("flat-feed-name", "bob-uuid")
+bobFlatFeed, err := client.FlatFeed("flat-feed-name", "bob-uuid")
+if err != nil {
+    return err
+}
+
+bobAggregatedFeed, err := client.AggregatedFeed("aggregated-feed-name", "bob-uuid")
+if err != nil {
+    return err
+}
+
+bobNotificationFeed, err := client.NotificationFeed("notification-feed-name", "bob-uuid")
 if err != nil {
     return err
 }
@@ -101,6 +123,7 @@ The library is gradually introducing JWT support. You can generate a client toke
 for a feed using the following example:
 
 ```go
+// create a client using your API key and secret
 client, err := getstream.New(&getstream.Config{
     APIKey:    os.Getenv("STREAM_APIKEY"),
     APISecret: os.Getenv("STREAM_APISECRET"),
@@ -108,11 +131,13 @@ client, err := getstream.New(&getstream.Config{
     Location:  os.Getenv("STREAM_LOCATION"),
 })
 
+// create a feed
 feed, err := client.FlatFeed("flat-feed-name", "bob-uuid")
 if err != nil {
     return err
 }
 
+// create a JWT token for the feed
 token, err := client.Signer.GenerateFeedScopeToken(
     getstream.ScopeContextFeed, 
     getstream.ScopeActionRead, 
@@ -121,9 +146,10 @@ if err != nil {
     fmt.Println(err)
 }
 
-// note in the struct below that we're not setting APISecret
+// create a new client using the token
+// note in the struct below that we're not setting "APISecret"
 // but setting "Token" instead:
-clientSideClient, err := getstream.NewWithToken(&getstream.Config{
+bobFlatFeedJWTClient, err := getstream.NewWithToken(&getstream.Config{
     APIKey:    os.Getenv("STREAM_APIKEY"),
     Token:     token, // not setting APISecret
     AppID:     os.Getenv("STREAM_APPID"),
@@ -135,7 +161,7 @@ if err != nil {
 ```
 
 JWT support is not yet fully tested on the library, but we'd love to 
-hear any feedback you have if you try it out.
+hear any feedback you have as you try it out.
 
 ### API Support
 
