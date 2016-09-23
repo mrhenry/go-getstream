@@ -4,13 +4,21 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"gopkg.in/LeisureLink/httpsig.v1"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
+
+	"gopkg.in/LeisureLink/httpsig.v1"
 )
+
+var GETSTREAM_TRANSPORT = &http.Transport{
+	MaxIdleConns: 5,
+	MaxIdleConnsPerHost: 5,
+	IdleConnTimeout: 60,
+	DisableKeepAlives: false,
+}
 
 // Client is used to connect to getstream.io
 type Client struct {
@@ -86,6 +94,7 @@ func New(cfg *Config) (*Client, error) {
 
 	client := &Client{
 		HTTP: &http.Client{
+			Transport: GETSTREAM_TRANSPORT,
 			Timeout: cfg.TimeoutDuration,
 		},
 		BaseURL: baseURL,
