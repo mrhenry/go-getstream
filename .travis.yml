@@ -4,6 +4,10 @@ go:
   - 1.7
   - tip
 
+notifications:
+  email:
+    - ian@getstream.io
+
 branches:
   only:
   - master
