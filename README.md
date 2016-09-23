@@ -186,7 +186,6 @@ Aggregated Feed
 - [x] UnFollow another Feed (Unfollow, UnfollowKeepingHistory)
 - [x] Get Followers of this Feed (FollowersWithLimitAndSkip)
 - [x] Get list of Feeds this Feed is Following (FollowingWithLimitAndSkip)
-- [ ] Update one or more Activities
 
 Notification Feed
 
@@ -199,7 +198,6 @@ Notification Feed
 - [x] Mark Read (MarkActivitiesAsRead)
 - [x] Mark Seen (MarkActivitiesAsSeenWithLimit)
 - [x] Get Followers of this Feed (FollowersWithLimitAndSkip)
-- [ ] Update one or more Activities
 
 ### Activity Payload Structure
 
