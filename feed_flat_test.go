@@ -2,7 +2,6 @@ package getstream_test
 
 import (
 	"encoding/json"
-	"fmt"
 	"testing"
 	"time"
 
@@ -24,7 +23,7 @@ func TestExampleFlatFeedAddActivity(t *testing.T) {
 
 	activity, err := feed.AddActivity(&getstream.Activity{
 		Verb:      "post",
-		ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
+		ForeignID: uuid.New(),
 		Object:    getstream.FeedID("flat:eric"),
 		Actor:     getstream.FeedID("flat:john"),
 	})
@@ -76,7 +75,7 @@ func TestFlatFeedAddActivity(t *testing.T) {
 
 	activity, err := feed.AddActivity(&getstream.Activity{
 		Verb:      "post",
-		ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
+		ForeignID: uuid.New(),
 		Object:    getstream.FeedID("flat:eric"),
 		Actor:     getstream.FeedID("flat:john"),
 	})
@@ -117,7 +116,7 @@ func TestFlatFeedAddActivityWithTo(t *testing.T) {
 
 	activity, err := feed.AddActivity(&getstream.Activity{
 		Verb:      "post",
-		ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
+		ForeignID: uuid.New(),
 		Object:    getstream.FeedID("flat:eric"),
 		Actor:     getstream.FeedID("flat:john"),
 		To:        []getstream.Feed{feedTo, feedToB},
@@ -150,12 +149,9 @@ func TestFlatFeedUUID(t *testing.T) {
 	var activities []*getstream.Activity
 
 	for i := 0; i < 10; i++ {
-
-		foreignID := uuid.New()
-
 		activity, err := feed.AddActivity(&getstream.Activity{
 			Verb:      "post",
-			ForeignID: foreignID,
+			ForeignID: uuid.New(),
 			Object:    getstream.FeedID("flat:eric"),
 			Actor:     getstream.FeedID("flat:john"),
 		})
@@ -222,7 +218,7 @@ func TestFlatFeedRemoveByForeignIDActivity(t *testing.T) {
 
 	activity, err := feed.AddActivity(&getstream.Activity{
 		Verb:      "post",
-		ForeignID: "08f01c47-014f-11e4-aa8f-0cc47a024be0",
+		ForeignID: uuid.New(),
 		Object:    getstream.FeedID("flat:eric"),
 		Actor:     getstream.FeedID("flat:john"),
 	})
@@ -260,7 +256,7 @@ func TestFlatFeedGetActivities(t *testing.T) {
 
 	_, err = feed.AddActivity(&getstream.Activity{
 		Verb:      "post",
-		ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
+		ForeignID: uuid.New(),
 		Object:    getstream.FeedID("flat:eric"),
 		Actor:     getstream.FeedID("flat:john"),
 	})
@@ -297,12 +293,12 @@ func TestFlatFeedAddActivities(t *testing.T) {
 	activities, err := feed.AddActivities([]*getstream.Activity{
 		&getstream.Activity{
 			Verb:      "post",
-			ForeignID: "099978b6-3b72-4f5c-bc43-247ba6ae2dd9",
+			ForeignID: uuid.New(),
 			Object:    getstream.FeedID("flat:eric"),
 			Actor:     getstream.FeedID("flat:john"),
 		}, &getstream.Activity{
 			Verb:      "walk",
-			ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
+			ForeignID: uuid.New(),
 			Object:    getstream.FeedID("flat:john"),
 			Actor:     getstream.FeedID("flat:eric"),
 		},
@@ -515,55 +511,29 @@ func TestFlatActivityMetaData(t *testing.T) {
 	}
 
 	if resultActivity.ForeignID != activity.ForeignID {
-		fmt.Println(activity.ForeignID)
-		fmt.Println(resultActivity.ForeignID)
-		t.Fail()
+		t.Error(activity.ForeignID, resultActivity.ForeignID)
 	}
 	if resultActivity.Actor != activity.Actor {
-		fmt.Println(activity.Actor)
-		fmt.Println(resultActivity.Actor)
-		t.Fail()
+		t.Error(activity.Actor, resultActivity.Actor)
 	}
 	if resultActivity.Verb != activity.Verb {
-		fmt.Println(activity.Verb)
-		fmt.Println(resultActivity.Verb)
-		t.Fail()
+		t.Error(activity.Verb, resultActivity.Verb)
 	}
 	if resultActivity.Object != activity.Object {
-		fmt.Println(activity.Object)
-		fmt.Println(resultActivity.Object)
-		t.Fail()
+		t.Error(activity.Object, resultActivity.Object)
 	}
 	if resultActivity.Target != activity.Target {
-		fmt.Println(activity.Target)
-		fmt.Println(resultActivity.Target)
-		t.Fail()
+		t.Error(activity.Target, resultActivity.Target)
 	}
 	if resultActivity.TimeStamp.Format("2006-01-02T15:04:05.999999") != activity.TimeStamp.Format("2006-01-02T15:04:05.999999") {
-		fmt.Println(activity.TimeStamp)
-		fmt.Println(resultActivity.TimeStamp)
-		t.Fail()
+		t.Error(activity.TimeStamp, resultActivity.TimeStamp)
 	}
 	if resultActivity.MetaData["meta"] != activity.MetaData["meta"] {
-		fmt.Println(activity.MetaData)
-		fmt.Println(resultActivity.MetaData)
-		t.Fail()
+		t.Error(activity.MetaData, resultActivity.MetaData)
 	}
 	if string(*resultActivity.Data) != string(*activity.Data) {
-		fmt.Println(string(*activity.Data))
-		fmt.Println(string(*resultActivity.Data))
-		t.Fail()
+		t.Error(string(*activity.Data), string(*resultActivity.Data))
 	}
-
-	// fmt.Println(resultActivity)
-	// fmt.Println(resultActivity.ForeignID)
-	// fmt.Println(string(resultActivity.Data))
-	// fmt.Println(resultActivity.MetaData)
-	//
-	// fmt.Println(resultActivity2)
-	// fmt.Println(resultActivity2.ForeignID)
-	// fmt.Println(string(resultActivity2.Data))
-	// fmt.Println(resultActivity2.MetaData)
 }
 
 func TestFlatFeedMultiFollow(t *testing.T) {
@@ -576,7 +546,6 @@ func TestFlatFeedMultiFollow(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	//bobFeed.Client.Signer.SignFeed(bobFeed.FeedIDWithoutColon())
 
 	sallyFeed, err := client.FlatFeed("flat", "sally")
 	if err != nil {
@@ -598,6 +567,7 @@ func TestFlatFeedMultiFollow(t *testing.T) {
 	}
 
 	// the tests below will verify that this multi-follow has succeeded
+	// need to verify functionality on our API before uncommenting and keeping these
 
 	//followers, err := sallyFeed.FollowersWithLimitAndSkip(5, 0)
 	//if err != nil {
@@ -640,17 +610,11 @@ func TestFlatFeedUpdateActivities(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// make a feed for bob
-	fmt.Println("-----[ feed for bob ]-----")
 	bobFeed, err := client.FlatFeed("flat", "bob")
 	if err != nil {
 		t.Fatal(err)
 	}
-	fmt.Println("feedIDwithoutColon: ", bobFeed.FeedIDWithoutColon())
-	fmt.Println("feed token: ", bobFeed.Token())
 
-	// make one activity
-	fmt.Println("-----[ create activity 1 ]-----")
 	activity1 := &getstream.Activity{
 		Verb:      "post",
 		ForeignID: uuid.New(),
@@ -662,8 +626,6 @@ func TestFlatFeedUpdateActivities(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// make a second activity
-	fmt.Println("-----[ create activity 2 ]-----")
 	activity2 := &getstream.Activity{
 		Verb:      "post",
 		ForeignID: uuid.New(),
@@ -675,14 +637,12 @@ func TestFlatFeedUpdateActivities(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// now update those activities to have a different 'actor' value
 	activity1.Actor = getstream.FeedID("flat:123")
 	activity2.Actor = getstream.FeedID("flat:123")
 
 	// push those activities to Stream
 	// unlike the AddActivities method, the UpdateActivities call only returns an error value
 	activities := []*getstream.Activity{activity1, activity2}
-	fmt.Println("-----[ update activities ]-----")
 	err = bobFeed.UpdateActivities(activities)
 	if err != nil {
 		t.Fatal(err)

@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"gopkg.in/LeisureLink/httpsig.v1"
 	"io/ioutil"
 	"net/http"
@@ -207,15 +206,12 @@ func ConvertUUIDToWord(uuid string) string {
 
 // get request helper
 func (c *Client) get(f Feed, path string, payload []byte, params map[string]string) ([]byte, error) {
-	res, err := c.request(f, "GET", path, payload, params)
-	return res, err
+	return c.request(f, "GET", path, payload, params)
 }
 
 // post request helper
 func (c *Client) post(f Feed, path string, payload []byte, params map[string]string) ([]byte, error) {
-	fmt.Println(f, "POST", path, string(payload), params)
-	res, err := c.request(f, "POST", path, payload, params)
-	return res, err
+	return c.request(f, "POST", path, payload, params)
 }
 
 // delete request helper
@@ -281,13 +277,7 @@ func (c *Client) request(f Feed, method string, path string, payload []byte, par
 	//	}
 	//}
 
-	fmt.Println("final auth/sig:", auth+"/"+sig)
-
-	c.setAuthHeaders(req, f, auth, sig)
-
-	fmt.Println("req.Body", req.Body)
-	fmt.Println("req.Header", req.Header)
-	fmt.Println("req.URL", req.URL)
+	c.setAuthSigAndHeaders(req, f, auth, sig)
 
 	// perform the http request
 	resp, err := c.HTTP.Do(req)
@@ -305,11 +295,9 @@ func (c *Client) request(f Feed, method string, path string, payload []byte, par
 	// handle the response
 	switch {
 	case resp.StatusCode/100 == 2: // SUCCESS
-		fmt.Println("200 success:", string(body))
 		return body, nil
 	default:
 		var respErr Error
-		fmt.Println("client.request non-200 success, body:", string(body))
 		err = json.Unmarshal(body, &respErr)
 		if err != nil {
 			return nil, err
@@ -349,44 +337,24 @@ func (c *Client) setBaseHeaders(request *http.Request) {
 	request.Header.Set("Date", t.Format("Mon, 2 Jan 2006 15:04:05 MST"))
 }
 
-func (c *Client) setAuthHeaders(request *http.Request, f Feed, auth string, sig string) error {
-	// debugging
-	//fmt.Println("is feed nil?", f)
-	//fmt.Println("c.Config.APISecret:", c.Config.APISecret)
-	//fmt.Println("c.Config.Token:", c.Config.Token)
-	//if f != nil {
-	//	fmt.Println("f.Token:", f.Token())
-	//	fmt.Println("f.Signature:", f.Signature())
-	//}
-
-	//fmt.Println(auth)
-
+func (c *Client) setAuthSigAndHeaders(request *http.Request, f Feed, auth string, sig string) error {
 	if sig == "jwt" {
-		fmt.Println("--[ setAuthHeader: JWT ]---")
 		request.Header.Set("stream-auth-type", "jwt")
 		if f == nil {
 			request.Header.Set("Authorization", c.Config.Token)
-		} else {
 		}
 		return nil
 	}
 
 	if sig == "sig" {
-		fmt.Println("--[ setAuthHeader: sig ]---")
 		if auth == "feed" {
-			fmt.Println("-- feed auth")
 			if f.Token() == "" {
-				fmt.Println("-- generating new token")
 				f.GenerateToken(c.Signer)
 			}
-			fmt.Println("-- feed signature:", f.Signature())
 			request.Header.Set("Authorization", f.Signature())
 		} else if auth == "app" {
-			fmt.Println("-- app auth, doing httpsig")
 			signer, _ := httpsig.NewRequestSigner(c.Config.APIKey, c.Config.APISecret, "hmac-sha256")
 			signer.SignRequest(request, []string{}, nil)
-		} else {
-			fmt.Println("****** we should not be here!")
 		}
 		return nil
 	}

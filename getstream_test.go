@@ -1,9 +1,9 @@
 package getstream_test
 
 import (
-	"fmt"
-	getstream "github.com/GetStream/stream-go"
 	"os"
+
+	getstream "github.com/GetStream/stream-go"
 )
 
 func PreTestSetup() (*getstream.Client, error) {
@@ -36,8 +36,6 @@ func PostTestCleanUp(
 	notifications []*getstream.Activity,
 	aggregations []*getstream.Activity) error {
 
-	fmt.Println("Cleanup, aisle 1")
-
 	if len(flats) > 0 {
 
 		feed, err := client.FlatFeed("flat", "bob")
@@ -54,7 +52,6 @@ func PostTestCleanUp(
 	}
 
 	if len(notifications) > 0 {
-
 		feed, err := client.NotificationFeed("notification", "bob")
 		if err != nil {
 			return err
@@ -69,7 +66,6 @@ func PostTestCleanUp(
 	}
 
 	if len(aggregations) > 0 {
-
 		feed, err := client.AggregatedFeed("aggregated", "bob")
 		if err != nil {
 			return err
@@ -87,9 +83,7 @@ func PostTestCleanUp(
 }
 
 func PostTestCleanUpFollows(client *getstream.Client, flats []*getstream.FlatFeed) error {
-	fmt.Println("Cleanup, aisle 2")
 	for _, flat := range flats {
-
 		followers, _ := flat.FollowersWithLimitAndSkip(300, 0)
 
 		for _, follower := range followers {

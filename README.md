@@ -25,7 +25,7 @@ if err != nil {
 
 activity, err := feed.AddActivity(&Activity{
   Verb:      "post",
-  ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
+  ForeignID: uuid.New(),
   Object:    FeedID("flat:eric"),
   Actor:     FeedID("flat:john"),
 })

@@ -3,6 +3,7 @@ package getstream_test
 import (
 	"testing"
 
+	"github.com/pborman/uuid"
 	getstream "github.com/GetStream/stream-go"
 )
 
@@ -67,7 +68,7 @@ func TestFlatFeedInputValidation(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	_, err = client.FlatFeed("user", "099978b6-3b72-4f5c-bc43-247ba6ae2dd9")
+	_, err = client.FlatFeed("user", uuid.New())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -88,7 +89,7 @@ func TestNotificationFeedInputValidation(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	_, err = client.NotificationFeed("user", "099978b6-3b72-4f5c-bc43-247ba6ae2dd9")
+	_, err = client.NotificationFeed("user", uuid.New())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -172,7 +173,7 @@ func TestClientInitWithToken(t *testing.T) {
 
 	activity, err := feed.AddActivity(&getstream.Activity{
 		Verb:      "post",
-		ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
+		ForeignID: uuid.New(),
 		Object:    getstream.FeedID("flat:eric"),
 		Actor:     getstream.FeedID("flat:john"),
 	})
@@ -282,7 +283,7 @@ func TestAddActivityToMany(t *testing.T) {
 
 	activity := &getstream.Activity{
 		Verb:      "post",
-		ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
+		ForeignID: uuid.New(),
 		Object:    getstream.FeedID("flat:eric"),
 		Actor:     getstream.FeedID("flat:john"),
 	}

@@ -1,3 +1,3 @@
 package getstream
 
-const VERSION = "v1.0.0"
+const VERSION = "v0.9.0"

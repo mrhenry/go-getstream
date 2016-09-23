@@ -2,39 +2,32 @@ package getstream_test
 
 import (
 	"encoding/json"
-	"fmt"
-	getstream "github.com/GetStream/stream-go"
-	"github.com/pborman/uuid"
 	"testing"
 	"time"
+
+	"github.com/pborman/uuid"
+	getstream "github.com/GetStream/stream-go"
 )
 
-func ExampleAggregatedFeed_AddActivity() {
-	client, err := getstream.New(&getstream.Config{
-		APIKey:    "APIKey",
-		APISecret: "APISecret",
-		AppID:     "AppID",
-		Location:  "Region"})
+func TestExampleAggregatedFeed_AddActivity(t *testing.T) {
+	client, err := PreTestSetup()
 	if err != nil {
-		fmt.Println(err)
-		return
+		t.Fatal(err)
 	}
 
-	feed, err := client.AggregatedFeed("FeedSlug", "UserID")
+	feed, err := client.AggregatedFeed("flat", "UserID")
 	if err != nil {
-		fmt.Println(err)
-		return
+		t.Fatal(err)
 	}
 
 	activity, err := feed.AddActivity(&getstream.Activity{
 		Verb:      "post",
-		ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
+		ForeignID: uuid.New(),
 		Object:    getstream.FeedID("flat:eric"),
 		Actor:     getstream.FeedID("flat:john"),
 	})
 	if err != nil {
-		fmt.Println(err)
-		return
+		t.Fatal(err)
 	}
 
 	_ = activity
@@ -53,7 +46,7 @@ func TestAggregatedFeedAddActivity(t *testing.T) {
 
 	activity, err := feed.AddActivity(&getstream.Activity{
 		Verb:      "post",
-		ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
+		ForeignID: uuid.New(),
 		Object:    getstream.FeedID("flat:eric"),
 		Actor:     getstream.FeedID("flat:john"),
 	})
@@ -89,7 +82,7 @@ func TestAggregatedFeedAddActivityWithTo(t *testing.T) {
 
 	activity, err := feed.AddActivity(&getstream.Activity{
 		Verb:      "post",
-		ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
+		ForeignID: uuid.New(),
 		Object:    getstream.FeedID("flat:eric"),
 		Actor:     getstream.FeedID("flat:john"),
 		To:        []getstream.Feed{toFeed},
@@ -155,7 +148,7 @@ func TestAggregatedFeedRemoveByForeignIDActivity(t *testing.T) {
 
 	activity, err := feed.AddActivity(&getstream.Activity{
 		Verb:      "post",
-		ForeignID: "08f01c47-014f-11e4-aa8f-0cc47a024be0",
+		ForeignID: uuid.New(),
 		Object:    getstream.FeedID("flat:eric"),
 		Actor:     getstream.FeedID("flat:john"),
 	})
@@ -193,7 +186,7 @@ func TestAggregatedFeedActivities(t *testing.T) {
 
 	_, err = feed.AddActivity(&getstream.Activity{
 		Verb:      "post",
-		ForeignID: "48d024fe-3752-467a-8489-23febd1dec4e",
+		ForeignID: uuid.New(),
 		Object:    getstream.FeedID("flat:eric"),
 		Actor:     getstream.FeedID("flat:john"),
 	})
@@ -376,9 +369,7 @@ func TestAggregatedActivityMetaData(t *testing.T) {
 
 	dataB, err := json.Marshal(data)
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 
 	raw := json.RawMessage(dataB)
@@ -399,86 +390,51 @@ func TestAggregatedActivityMetaData(t *testing.T) {
 
 	b, err := json.Marshal(&activity)
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 
 	b2, err := json.Marshal(activity)
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-		return
+		t.Fatal(err)
 	}
 
 	resultActivity := getstream.Activity{}
 	err = json.Unmarshal(b, &resultActivity)
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
+		t.Error(err)
 	}
 
 	resultActivity2 := getstream.Activity{}
 	err = json.Unmarshal(b2, &resultActivity2)
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
+		t.Error(err)
 	}
 
 	if resultActivity.ForeignID != activity.ForeignID {
-		fmt.Println(activity.ForeignID)
-		fmt.Println(resultActivity.ForeignID)
-		t.Fail()
+		t.Error(activity.ForeignID, resultActivity.ForeignID)
 	}
 	if resultActivity.Actor != activity.Actor {
-		fmt.Println(activity.Actor)
-		fmt.Println(resultActivity.Actor)
-		t.Fail()
+		t.Error(activity.Actor, resultActivity.Actor)
 	}
 	if resultActivity.Origin != activity.Origin {
-		fmt.Println(activity.Origin)
-		fmt.Println(resultActivity.Origin)
-		t.Fail()
+		t.Error(activity.Origin, resultActivity.Origin)
 	}
 	if resultActivity.Verb != activity.Verb {
-		fmt.Println(activity.Verb)
-		fmt.Println(resultActivity.Verb)
-		t.Fail()
+		t.Error(activity.Verb, resultActivity.Verb)
 	}
 	if resultActivity.Object != activity.Object {
-		fmt.Println(activity.Object)
-		fmt.Println(resultActivity.Object)
-		t.Fail()
+		t.Error(activity.Object, resultActivity.Object)
 	}
 	if resultActivity.Target != activity.Target {
-		fmt.Println(activity.Target)
-		fmt.Println(resultActivity.Target)
-		t.Fail()
+		t.Error(activity.Target, resultActivity.Target)
 	}
 	if resultActivity.TimeStamp.Format("2006-01-02T15:04:05.999999") != activity.TimeStamp.Format("2006-01-02T15:04:05.999999") {
-		fmt.Println(activity.TimeStamp)
-		fmt.Println(resultActivity.TimeStamp)
-		t.Fail()
+		t.Error(activity.TimeStamp, resultActivity.TimeStamp)
 	}
 	if resultActivity.MetaData["meta"] != activity.MetaData["meta"] {
-		fmt.Println(activity.MetaData)
-		fmt.Println(resultActivity.MetaData)
-		t.Fail()
+		t.Error(activity.MetaData, resultActivity.MetaData)
 	}
 	if string(*resultActivity.Data) != string(*activity.Data) {
-		fmt.Println(string(*activity.Data))
-		fmt.Println(string(*resultActivity.Data))
-		t.Fail()
+		t.Error(string(*activity.Data), string(*resultActivity.Data))
 	}
-
-	// fmt.Println(resultActivity)
-	// fmt.Println(resultActivity.ForeignID)
-	// fmt.Println(string(resultActivity.Data))
-	// fmt.Println(resultActivity.MetaData)
-	//
-	// fmt.Println(resultActivity2)
-	// fmt.Println(resultActivity2.ForeignID)
-	// fmt.Println(string(resultActivity2.Data))
-	// fmt.Println(resultActivity2.MetaData)
-
 }
