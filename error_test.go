@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	getstream "github.com/GetStream/stream-go"
+	getstream "github.com/mrhenry/go-getstream"
 )
 
 func TestError(t *testing.T) {

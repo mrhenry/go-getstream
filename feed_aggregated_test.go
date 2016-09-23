@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	getstream "github.com/GetStream/stream-go"
+	getstream "github.com/mrhenry/go-getstream"
 	"github.com/pborman/uuid"
 )
 

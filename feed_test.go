@@ -1,8 +1,9 @@
 package getstream_test
 
 import (
-	"github.com/GetStream/stream-go"
 	"testing"
+
+	"github.com/mrhenry/go-getstream"
 )
 
 func TestGeneralFeedBasic(t *testing.T) {

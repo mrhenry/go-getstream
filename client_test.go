@@ -3,7 +3,7 @@ package getstream_test
 import (
 	"testing"
 
-	getstream "github.com/GetStream/stream-go"
+	getstream "github.com/mrhenry/go-getstream"
 	"github.com/pborman/uuid"
 )
 
