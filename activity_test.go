@@ -1,132 +1,182 @@
-package getstream_test
+package getstream
 
 import (
-	"errors"
-	"testing"
+	"encoding/json"
+	"reflect"
+	"time"
 
-	getstream "github.com/GetStream/stream-go"
 	"github.com/pborman/uuid"
 )
 
-func TestActivityMarshallJson(t *testing.T) {
-	activity := &getstream.Activity{
-		Verb:      "post",
+import "testing"
+
+import "fmt"
+
+func TestActivityMarshalling(t *testing.T) {
+
+	now := time.Now()
+
+	data := struct {
+		Foo  string
+		Fooz string
+	}{
+		Foo:  "foo",
+		Fooz: "fooz",
+	}
+
+	dataB, err := json.Marshal(data)
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+		return
+	}
+
+	raw := json.RawMessage(dataB)
+
+	var stringV string = "stringValue"
+	var intV int = 1
+	var floatV float64 = 1.235
+	var boolV bool = true
+
+	activity := Activity{
 		ForeignID: uuid.New(),
-		Object:    getstream.FeedID("flat:eric"),
-		Actor:     getstream.FeedID("flat:john"),
-	}
-
-	_, err := activity.MarshalJSON()
-	if err != nil {
-		t.Fatal(err)
-	}
-}
-
-func TestActivityBadForeignKeyMarshall(t *testing.T) {
-	activity := &getstream.Activity{
+		Actor:     FeedID("user:eric"),
+		Object:    FeedID("user:bob"),
+		Target:    FeedID("user:john"),
 		Verb:      "post",
-		ForeignID: "not a real foreign id",
-		Object:    getstream.FeedID("flat:eric"),
-		Actor:     getstream.FeedID("flat:john"),
+		TimeStamp: &now,
+		Data:      &raw,
+		MetaData: map[string]interface{}{
+			"stringKey": stringV,
+			"intKey":    intV,
+			"floatKey":  floatV,
+			"boolKey":   boolV,
+		},
 	}
 
-	_, err := activity.MarshalJSON()
-	if err == nil {
-		t.Fatal(err)
-	}
-	if err.Error() != "invalid ForeignID" {
-		t.Fatal(errors.New("Expected activity.MarshalJSON() to fail on non-UUID ForeignID, it failed because of this:" + err.Error()))
-	}
-}
-
-func TestActivityUnmarshall(t *testing.T) {
-	activity := &getstream.Activity{}
-	payload := []byte("{\"actor\":\"flat:john\",\"foreign_id\":\"82d2bb81-069d-427b-9238-8d822012e6d7\",\"object\":\"flat:eric\",\"origin\":\"\",\"time\":\"2016-09-22T21:44:58.821577\",\"verb\":\"post\"}")
-
-	err := activity.UnmarshalJSON(payload)
+	b, err := json.Marshal(&activity)
 	if err != nil {
-		t.Fatal(err)
+		fmt.Println(err)
+		t.Fail()
+		return
 	}
-}
 
-func TestActivityUnmarshallEmptyPayload(t *testing.T) {
-	activity := &getstream.Activity{}
-
-	err := activity.UnmarshalJSON([]byte{})
-	if err == nil {
-		t.Fatal(err)
-	}
-	if err.Error() != "unexpected end of JSON input" {
-		t.Fatal(errors.New("Expected activity.UnmarshalJSON method to fail on a bad payload, it failed because of this:" + err.Error()))
-	}
-}
-
-func TestActivityUnmarshallBadPayloadTime(t *testing.T) {
-	var err error
-	activity := &getstream.Activity{}
-	payload := []byte("{\"actor\":\"flat:john\",\"foreign_id\":\"82d2bb81-069d-427b-9238-8d822012e6d7\",\"object\":\"flat:eric\",\"origin\":\"\",\"time\":\"2016-09-22T21:44:58.821577\",\"verb\":\"post\"}")
-
-	// empty json value for "time" should still set "time" to nil
-	payload = []byte("{\"actor\":\"flat:john\",\"foreign_id\":\"82d2bb81-069d-427b-9238-8d822012e6d7\",\"object\":\"flat:eric\",\"origin\":\"\",\"time\":{},\"verb\":\"post\"}")
-	err = activity.UnmarshalJSON(payload)
+	b2, err := json.Marshal(activity)
 	if err != nil {
-		t.Fatal(err)
-	}
-	if activity.TimeStamp != nil {
-		t.Fatal("Expected TimeStamp to be nil if it was empty JSON {}")
-	}
-	// non-Time value should still parse fine and set "time" to nil
-	payload = []byte("{\"actor\":\"flat:john\",\"foreign_id\":\"82d2bb81-069d-427b-9238-8d822012e6d7\",\"object\":\"flat:eric\",\"origin\":\"\",\"time\":\"abc\",\"verb\":\"post\"}")
-	err = activity.UnmarshalJSON(payload)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if activity.TimeStamp != nil {
-		t.Fatal("Expected TimeStamp to be nil if it was an unparseable time")
-	}
-}
-
-func TestActivityUnmarshallBadPayloadTo(t *testing.T) {
-	var err error
-	activity := &getstream.Activity{}
-	payload := []byte("{\"actor\":\"flat:john\",\"foreign_id\":\"82d2bb81-069d-427b-9238-8d822012e6d7\",\"object\":\"flat:eric\",\"origin\":\"\",\"time\":\"2016-09-22T21:44:58.821577\",\"verb\":\"post\"}")
-	// empty json value for "to" should set "to" to nil
-	payload = []byte("{\"to\":null,\"actor\":\"flat:john\",\"foreign_id\":\"82d2bb81-069d-427b-9238-8d822012e6d7\",\"object\":\"flat:eric\",\"origin\":\"\",\"time\":\"2016-09-22T21:44:58.821577\",\"verb\":\"post\"}")
-	err = activity.UnmarshalJSON(payload)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if activity.To != nil {
-		t.Fatal("To JSON was null, expected To to be nil afterward, got:", activity.To)
+		fmt.Println(err)
+		t.Fail()
+		return
 	}
 
-	// empty json value for "to" should set "to" to nil
-	payload = []byte("{\"to\":{},\"actor\":\"flat:john\",\"foreign_id\":\"82d2bb81-069d-427b-9238-8d822012e6d7\",\"object\":\"flat:eric\",\"origin\":\"\",\"time\":\"2016-09-22T21:44:58.821577\",\"verb\":\"post\"}")
-	err = activity.UnmarshalJSON(payload)
+	resultActivity := Activity{}
+	err = json.Unmarshal(b, &resultActivity)
 	if err != nil {
-		t.Fatal(err)
-	}
-	if activity.To != nil {
-		t.Fatal("To payload was bad JSON, expected To to be nil afterward, got:", activity.To)
+		fmt.Println(err)
+		t.Fail()
 	}
 
-	// two-dimensional To should set To to ... something?
-	payload = []byte("{\"to\":[\"bob\"],\"actor\":\"flat:john\",\"foreign_id\":\"82d2bb81-069d-427b-9238-8d822012e6d7\",\"object\":\"flat:eric\",\"origin\":\"\",\"time\":\"2016-09-22T21:44:58.821577\",\"verb\":\"post\"}")
-	err = activity.UnmarshalJSON(payload)
+	resultActivity2 := Activity{}
+	err = json.Unmarshal(b2, &resultActivity2)
 	if err != nil {
-		t.Fatal(err)
-	}
-	if len(activity.To) != 0 {
-		t.Fatal("To payload was bad JSON, expected To to be nil afterward, got:", activity.To)
+		fmt.Println(err)
+		t.Fail()
+		return
 	}
 
-	// malformed To userID should null out To
-	payload = []byte("{\"to\":[{\"bob\"}],\"actor\":\"flat:john\",\"foreign_id\":\"82d2bb81-069d-427b-9238-8d822012e6d7\",\"object\":\"flat:eric\",\"origin\":\"\",\"time\":\"2016-09-22T21:44:58.821577\",\"verb\":\"post\"}")
-	err = activity.UnmarshalJSON(payload)
-	if err == nil {
-		t.Fatal(err)
+	if resultActivity.ForeignID != activity.ForeignID {
+		fmt.Println(activity.ForeignID)
+		fmt.Println(resultActivity.ForeignID)
+		t.Fail()
+		return
 	}
-	if activity.To != nil {
-		t.Fatal("To payload was not a value feedslug:userid format, expected To to be nil afterward, got:", activity.To)
+	if resultActivity.Actor != activity.Actor {
+		fmt.Println(activity.Actor)
+		fmt.Println(resultActivity.Actor)
+		t.Fail()
+		return
 	}
+	if resultActivity.Verb != activity.Verb {
+		fmt.Println(activity.Verb)
+		fmt.Println(resultActivity.Verb)
+		t.Fail()
+		return
+	}
+	if resultActivity.Object != activity.Object {
+		fmt.Println(activity.Object)
+		fmt.Println(resultActivity.Object)
+		t.Fail()
+		return
+	}
+	if resultActivity.Target != activity.Target {
+		fmt.Println(activity.Target)
+		fmt.Println(resultActivity.Target)
+		t.Fail()
+		return
+	}
+	if resultActivity.TimeStamp.Format("2006-01-02T15:04:05.999999") != activity.TimeStamp.Format("2006-01-02T15:04:05.999999") {
+		fmt.Println(activity.TimeStamp)
+		fmt.Println(resultActivity.TimeStamp)
+		t.Fail()
+		return
+	}
+
+	if string(*resultActivity.Data) != string(*activity.Data) {
+		fmt.Println(string(*activity.Data))
+		fmt.Println(string(*resultActivity.Data))
+		t.Fail()
+		return
+	}
+
+	vString, okString := resultActivity.MetaData["stringKey"].(string)
+	if !okString {
+		fmt.Println(reflect.TypeOf(resultActivity.MetaData["stringKey"]))
+		fmt.Println("Not a String")
+		t.Fail()
+		return
+	}
+	if vString != "stringValue" {
+		fmt.Println("Not the correct value")
+		t.Fail()
+		return
+	}
+
+	vInt, okInt := resultActivity.MetaData["intKey"].(float64)
+	if !okInt {
+		fmt.Println(reflect.TypeOf(resultActivity.MetaData["intKey"]))
+		fmt.Println("Not an Int")
+		t.Fail()
+		return
+	}
+	if vInt != 1 {
+		fmt.Println("Not the correct value")
+		t.Fail()
+		return
+	}
+
+	vFloat, okFloat := resultActivity.MetaData["floatKey"].(float64)
+	if !okFloat {
+		fmt.Println(reflect.TypeOf(resultActivity.MetaData["floatKey"]))
+		fmt.Println("Not a Float")
+		t.Fail()
+		return
+	}
+	if vFloat != 1.235 {
+		fmt.Println("Not the correct value")
+		t.Fail()
+		return
+	}
+
+	vBool, okBool := resultActivity.MetaData["boolKey"].(bool)
+	if !okBool {
+		fmt.Println(reflect.TypeOf(resultActivity.MetaData["boolKey"]))
+		fmt.Println("Not a Bool")
+		t.Fail()
+		return
+	}
+	if vBool != true {
+		fmt.Println("Not the correct value")
+		t.Fail()
+		return
+	}
+
 }

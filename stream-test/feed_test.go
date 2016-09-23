@@ -3,7 +3,7 @@ package getstream_test
 import (
 	"testing"
 
-	getstream "./"
+	getstream "../"
 )
 
 func TestGeneralFeedBasic(t *testing.T) {

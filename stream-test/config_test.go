@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	getstream "./"
+	getstream "../"
 )
 
 func TestWerckerConfig(t *testing.T) {

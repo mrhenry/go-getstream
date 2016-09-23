@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	getstream "./"
+	getstream "../"
 	"github.com/pborman/uuid"
 )
 
@@ -457,7 +457,7 @@ func TestNotificationActivityMetaData(t *testing.T) {
 		Verb:      "post",
 		TimeStamp: &now,
 		Data:      &raw,
-		MetaData: map[string]string{
+		MetaData: map[string]interface{}{
 			"meta": "data",
 		},
 	}
