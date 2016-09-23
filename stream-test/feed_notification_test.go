@@ -5,17 +5,17 @@ import (
 	"testing"
 	"time"
 
-	getstream "github.com/mrhenry/go-getstream"
+	getstream "./"
 	"github.com/pborman/uuid"
 )
 
-func TestExampleAggregatedFeed_AddActivity(t *testing.T) {
+func TestExampleNotificationFeed_AddActivity(t *testing.T) {
 	client, err := PreTestSetup()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	feed, err := client.AggregatedFeed("flat", "UserID")
+	feed, err := client.NotificationFeed("flat", "UserID")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -33,13 +33,13 @@ func TestExampleAggregatedFeed_AddActivity(t *testing.T) {
 	_ = activity
 }
 
-func TestAggregatedFeedAddActivity(t *testing.T) {
+func TestNotificationFeedAddActivity(t *testing.T) {
 	client, err := PreTestSetup()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	feed, err := client.AggregatedFeed("aggregated", "bob")
+	feed, err := client.NotificationFeed("notification", "bob")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -51,63 +51,63 @@ func TestAggregatedFeedAddActivity(t *testing.T) {
 		Actor:     getstream.FeedID("flat:john"),
 	})
 	if err != nil {
-		t.Fatal(err)
-	}
-
-	if activity.Verb != "post" && activity.ForeignID != "48d024fe-3752-467a-8489-23febd1dec4e" {
 		t.Error(err)
-	}
-
-	err = PostTestCleanUp(client, nil, nil, []*getstream.Activity{activity})
-	if err != nil {
-		t.Fatal(err)
-	}
-}
-
-func TestAggregatedFeedAddActivityWithTo(t *testing.T) {
-	client, err := PreTestSetup()
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	feed, err := client.AggregatedFeed("aggregated", "bob")
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	toFeed, err := client.AggregatedFeed("aggregated", "barry")
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	activity, err := feed.AddActivity(&getstream.Activity{
-		Verb:      "post",
-		ForeignID: uuid.New(),
-		Object:    getstream.FeedID("flat:eric"),
-		Actor:     getstream.FeedID("flat:john"),
-		To:        []getstream.Feed{toFeed},
-	})
-	if err != nil {
-		t.Fatal(err)
 	}
 
 	if activity.Verb != "post" && activity.ForeignID != "48d024fe-3752-467a-8489-23febd1dec4e" {
 		t.Fail()
 	}
 
-	err = PostTestCleanUp(client, nil, nil, []*getstream.Activity{activity})
+	err = PostTestCleanUp(client, nil, []*getstream.Activity{activity}, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 }
 
-func TestAggregatedFeedRemoveActivity(t *testing.T) {
+func TestNotificationFeedAddActivityWithTo(t *testing.T) {
 	client, err := PreTestSetup()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	feed, err := client.AggregatedFeed("aggregated", "bob")
+	feed, err := client.NotificationFeed("notification", "bob")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	feedTo, err := client.NotificationFeed("notification", "barry")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	activity, err := feed.AddActivity(&getstream.Activity{
+		Verb:      "post",
+		ForeignID: uuid.New(),
+		Object:    getstream.FeedID("flat:eric"),
+		Actor:     getstream.FeedID("flat:john"),
+		To:        []getstream.Feed{feedTo},
+	})
+	if err != nil {
+		t.Error(err)
+	}
+
+	if activity.Verb != "post" && activity.ForeignID != "48d024fe-3752-467a-8489-23febd1dec4e" {
+		t.Fail()
+	}
+
+	err = PostTestCleanUp(client, nil, []*getstream.Activity{activity}, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestNotificationFeedRemoveActivity(t *testing.T) {
+	client, err := PreTestSetup()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	feed, err := client.NotificationFeed("notification", "bob")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -118,7 +118,7 @@ func TestAggregatedFeedRemoveActivity(t *testing.T) {
 		Actor:  getstream.FeedID("flat:john"),
 	})
 	if err != nil {
-		t.Fatal(err)
+		t.Error(err)
 	}
 
 	if activity.Verb != "post" {
@@ -135,13 +135,13 @@ func TestAggregatedFeedRemoveActivity(t *testing.T) {
 	}
 }
 
-func TestAggregatedFeedRemoveByForeignIDActivity(t *testing.T) {
+func TestNotificationFeedRemoveByForeignIDActivity(t *testing.T) {
 	client, err := PreTestSetup()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	feed, err := client.AggregatedFeed("aggregated", "bob")
+	feed, err := client.NotificationFeed("notification", "bob")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -153,7 +153,7 @@ func TestAggregatedFeedRemoveByForeignIDActivity(t *testing.T) {
 		Actor:     getstream.FeedID("flat:john"),
 	})
 	if err != nil {
-		t.Fatal(err)
+		t.Error(err)
 	}
 
 	if activity.Verb != "post" && activity.ForeignID != "08f01c47-014f-11e4-aa8f-0cc47a024be0" {
@@ -170,16 +170,16 @@ func TestAggregatedFeedRemoveByForeignIDActivity(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	PostTestCleanUp(client, nil, nil, []*getstream.Activity{activity})
+	PostTestCleanUp(client, nil, []*getstream.Activity{activity}, nil)
 }
 
-func TestAggregatedFeedActivities(t *testing.T) {
+func TestNotificationFeedActivities(t *testing.T) {
 	client, err := PreTestSetup()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	feed, err := client.AggregatedFeed("aggregated", "bob")
+	feed, err := client.NotificationFeed("notification", "bob")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -194,37 +194,37 @@ func TestAggregatedFeedActivities(t *testing.T) {
 		t.Error(err)
 	}
 
-	activities, err := feed.Activities(&getstream.GetAggregatedFeedInput{})
+	activities, err := feed.Activities(&getstream.GetNotificationFeedInput{})
 	if err != nil {
-		t.Fatal(err)
+		t.Error(err)
 	}
 
 	for _, result := range activities.Results {
-		err = PostTestCleanUp(client, nil, nil, result.Activities)
+		err = PostTestCleanUp(client, nil, result.Activities, nil)
 		if err != nil {
 			t.Fatal(err)
 		}
 	}
 }
 
-func TestAggregatedFeedAddActivities(t *testing.T) {
+func TestNotificationFeedAddActivities(t *testing.T) {
 	client, err := PreTestSetup()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	feed, err := client.AggregatedFeed("aggregated", "bob")
+	feed, err := client.NotificationFeed("notification", "bob")
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	activities, err := feed.AddActivities([]*getstream.Activity{
-		{
+		&getstream.Activity{
 			Verb:      "post",
 			ForeignID: uuid.New(),
 			Object:    getstream.FeedID("flat:eric"),
 			Actor:     getstream.FeedID("flat:john"),
-		}, {
+		}, &getstream.Activity{
 			Verb:      "walk",
 			ForeignID: uuid.New(),
 			Object:    getstream.FeedID("flat:john"),
@@ -235,19 +235,19 @@ func TestAggregatedFeedAddActivities(t *testing.T) {
 		t.Error(err)
 	}
 
-	err = PostTestCleanUp(client, nil, nil, activities)
+	err = PostTestCleanUp(client, nil, activities, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 }
 
-func TestAggregatedFeedFollowUnfollow(t *testing.T) {
+func TestNotificationFeedFollow(t *testing.T) {
 	client, err := PreTestSetup()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	feedA, err := client.AggregatedFeed("aggregated", "bob")
+	feedA, err := client.NotificationFeed("notification", "bob")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -262,24 +262,6 @@ func TestAggregatedFeedFollowUnfollow(t *testing.T) {
 		t.Fail()
 	}
 
-	// get feedB's followers, ensure feedA is there
-	followers, err := feedB.FollowersWithLimitAndSkip(5, 0)
-	if err != nil {
-		t.Error(err)
-	}
-	if followers[0].UserID != "bob" {
-		t.Error("Bob's aggregated feed is not a follower of FeedB")
-	}
-
-	// get things that feedA follows, ensure feedB is in there
-	following, err := feedA.FollowingWithLimitAndSkip(5, 0)
-	if err != nil {
-		t.Error(err)
-	}
-	if following[0].UserID != "eric" {
-		t.Error("Eric's FeedB is not a follower of FeedA")
-	}
-
 	err = feedA.Unfollow(feedB)
 	if err != nil {
 		t.Fail()
@@ -288,13 +270,13 @@ func TestAggregatedFeedFollowUnfollow(t *testing.T) {
 	PostTestCleanUpFlatFeedFollows(client, []*getstream.FlatFeed{feedB})
 }
 
-func TestAggregatedFeedFollowKeepingHistory(t *testing.T) {
+func TestNotificationFeedFollowKeepingHistory(t *testing.T) {
 	client, err := PreTestSetup()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	feedA, err := client.AggregatedFeed("aggregated", "bob")
+	feedA, err := client.NotificationFeed("notification", "bob")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -317,13 +299,13 @@ func TestAggregatedFeedFollowKeepingHistory(t *testing.T) {
 	PostTestCleanUpFlatFeedFollows(client, []*getstream.FlatFeed{feedB})
 }
 
-func TestAggregatedFeedFollowingFollowers(t *testing.T) {
+func TestNotificationFeedFollowingFollowers(t *testing.T) {
 	client, err := PreTestSetup()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	feedA, err := client.AggregatedFeed("aggregated", "bob")
+	feedA, err := client.NotificationFeed("notification", "bob")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -356,7 +338,99 @@ func TestAggregatedFeedFollowingFollowers(t *testing.T) {
 	PostTestCleanUpFlatFeedFollows(client, []*getstream.FlatFeed{feedB, feedC})
 }
 
-func TestAggregatedActivityMetaData(t *testing.T) {
+func TestMarkAsSeen(t *testing.T) {
+	client, err := PreTestSetup()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	feed, err := client.NotificationFeed("notification", "larry")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	feed.AddActivities([]*getstream.Activity{
+		&getstream.Activity{
+			Actor:  getstream.FeedID("flat:larry"),
+			Object: getstream.FeedID("notification:larry"),
+			Verb:   "post",
+		},
+	})
+
+	time.Sleep(time.Second * 2)
+
+	output, _ := feed.Activities(nil)
+	if output.Unseen == 0 {
+		t.Fail()
+	}
+
+	feed.MarkActivitiesAsSeenWithLimit(15)
+
+	time.Sleep(time.Second * 2)
+
+	output, _ = feed.Activities(nil)
+	if output.Unseen != 0 {
+		t.Fail()
+	}
+
+	for _, result := range output.Results {
+		err = PostTestCleanUp(client, nil, result.Activities, nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+}
+
+func TestMarkAsRead(t *testing.T) {
+	client, err := PreTestSetup()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	feed, err := client.NotificationFeed("notification", "larry")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	feed.AddActivities([]*getstream.Activity{
+		&getstream.Activity{
+			Actor:  getstream.FeedID("flat:larry"),
+			Object: getstream.FeedID("notification:larry"),
+			Verb:   "post",
+		},
+	})
+
+	time.Sleep(time.Second * 2)
+
+	output, _ := feed.Activities(nil)
+	if output.Unread == 0 {
+		t.Fail()
+	}
+
+	for _, result := range output.Results {
+		err = feed.MarkActivitiesAsRead(result.Activities)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	time.Sleep(time.Second * 2)
+
+	output, _ = feed.Activities(nil)
+	if output.Unread != 0 {
+		t.Fail()
+	}
+
+	for _, result := range output.Results {
+		err = PostTestCleanUp(client, nil, result.Activities, nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+}
+
+func TestNotificationActivityMetaData(t *testing.T) {
+
 	now := time.Now()
 
 	data := struct {
@@ -401,13 +475,13 @@ func TestAggregatedActivityMetaData(t *testing.T) {
 	resultActivity := getstream.Activity{}
 	err = json.Unmarshal(b, &resultActivity)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	resultActivity2 := getstream.Activity{}
 	err = json.Unmarshal(b2, &resultActivity2)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	if resultActivity.ForeignID != activity.ForeignID {

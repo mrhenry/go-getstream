@@ -3,7 +3,7 @@ package getstream_test
 import (
 	"testing"
 
-	"github.com/mrhenry/go-getstream"
+	getstream "./"
 )
 
 func TestGenerateToken(t *testing.T) {

@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	getstream "github.com/mrhenry/go-getstream"
+	getstream "./"
 )
 
 func TestWerckerConfig(t *testing.T) {
