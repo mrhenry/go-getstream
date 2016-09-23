@@ -82,12 +82,32 @@ func PostTestCleanUp(
 	return nil
 }
 
-func PostTestCleanUpFollows(client *getstream.Client, flats []*getstream.FlatFeed) error {
-	for _, flat := range flats {
-		followers, _ := flat.FollowersWithLimitAndSkip(300, 0)
+func PostTestCleanUpFlatFeedFollows(client *getstream.Client, feeds []*getstream.FlatFeed) error {
+	for _, feed := range feeds {
+		followers, _ := feed.FollowersWithLimitAndSkip(300, 0)
 
 		for _, follower := range followers {
-			follower.Unfollow(client, flat)
+			follower.Unfollow(client, feed)
+		}
+	}
+	return nil
+}
+func PostTestCleanUpAggregatedFeedFollows(client *getstream.Client, feeds []*getstream.AggregatedFeed) error {
+	for _, feed := range feeds {
+		followers, _ := feed.FollowersWithLimitAndSkip(300, 0)
+
+		for _, follower := range followers {
+			follower.UnfollowAggregated(client, feed)
+		}
+	}
+	return nil
+}
+func PostTestCleanUpNotificationFeedFollows(client *getstream.Client, feeds []*getstream.NotificationFeed) error {
+	for _, feed := range feeds {
+		followers, _ := feed.FollowersWithLimitAndSkip(300, 0)
+
+		for _, follower := range followers {
+			follower.UnfollowNotification(client, feed)
 		}
 	}
 	return nil

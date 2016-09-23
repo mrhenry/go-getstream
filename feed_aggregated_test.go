@@ -285,7 +285,7 @@ func TestAggregatedFeedFollowUnfollow(t *testing.T) {
 		t.Fail()
 	}
 
-	PostTestCleanUpFollows(client, []*getstream.FlatFeed{feedB})
+	PostTestCleanUpFlatFeedFollows(client, []*getstream.FlatFeed{feedB})
 }
 
 func TestAggregatedFeedFollowKeepingHistory(t *testing.T) {
@@ -314,7 +314,7 @@ func TestAggregatedFeedFollowKeepingHistory(t *testing.T) {
 		t.Fail()
 	}
 
-	PostTestCleanUpFollows(client, []*getstream.FlatFeed{feedB})
+	PostTestCleanUpFlatFeedFollows(client, []*getstream.FlatFeed{feedB})
 }
 
 func TestAggregatedFeedFollowingFollowers(t *testing.T) {
@@ -353,7 +353,7 @@ func TestAggregatedFeedFollowingFollowers(t *testing.T) {
 		t.Fail()
 	}
 
-	PostTestCleanUpFollows(client, []*getstream.FlatFeed{feedB, feedC})
+	PostTestCleanUpFlatFeedFollows(client, []*getstream.FlatFeed{feedB, feedC})
 }
 
 func TestAggregatedActivityMetaData(t *testing.T) {

@@ -267,7 +267,7 @@ func TestNotificationFeedFollow(t *testing.T) {
 		t.Fail()
 	}
 
-	PostTestCleanUpFollows(client, []*getstream.FlatFeed{feedB})
+	PostTestCleanUpFlatFeedFollows(client, []*getstream.FlatFeed{feedB})
 }
 
 func TestNotificationFeedFollowKeepingHistory(t *testing.T) {
@@ -296,7 +296,7 @@ func TestNotificationFeedFollowKeepingHistory(t *testing.T) {
 		t.Fail()
 	}
 
-	PostTestCleanUpFollows(client, []*getstream.FlatFeed{feedB})
+	PostTestCleanUpFlatFeedFollows(client, []*getstream.FlatFeed{feedB})
 }
 
 func TestNotificationFeedFollowingFollowers(t *testing.T) {
@@ -335,7 +335,7 @@ func TestNotificationFeedFollowingFollowers(t *testing.T) {
 		t.Fail()
 	}
 
-	PostTestCleanUpFollows(client, []*getstream.FlatFeed{feedB, feedC})
+	PostTestCleanUpFlatFeedFollows(client, []*getstream.FlatFeed{feedB, feedC})
 }
 
 func TestMarkAsSeen(t *testing.T) {

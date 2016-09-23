@@ -397,7 +397,7 @@ func (c *Client) PrepFollowAggregatedFeed(targetFeed *FlatFeed, sourceFeed *Aggr
 		Target: targetFeed.FeedSlug + ":" + targetFeed.UserID,
 	}
 }
-func (c *Client) PrepFollowNotifcationFeed(targetFeed *FlatFeed, sourceFeed *NotificationFeed) *PostFlatFeedFollowingManyInput {
+func (c *Client) PrepFollowNotificationFeed(targetFeed *FlatFeed, sourceFeed *NotificationFeed) *PostFlatFeedFollowingManyInput {
 	return &PostFlatFeedFollowingManyInput{
 		Source: sourceFeed.FeedSlug + ":" + sourceFeed.UserID,
 		Target: targetFeed.FeedSlug + ":" + targetFeed.UserID,

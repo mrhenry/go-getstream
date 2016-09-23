@@ -7,8 +7,8 @@ import (
 	getstream "github.com/GetStream/stream-go"
 )
 
-func TestExampleClient(t *testing.T) {
-	client, err := getstream.New(&getstream.Config{
+func TestClient(t *testing.T) {
+	_, err := getstream.New(&getstream.Config{
 		APIKey:    "my_key",
 		APISecret: "my_secret",
 		AppID:     "111111",
@@ -17,11 +17,67 @@ func TestExampleClient(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	_ = client
 }
 
-func TestExampleClient_FlatFeed(t *testing.T) {
+func TestClientMissingAPIKey(t *testing.T) {
+	_, err := getstream.New(&getstream.Config{
+		APISecret: "my_secret",
+		AppID:     "111111",
+		Location:  "us-east",
+	})
+	if err == nil {
+		t.Fatal(err)
+	}
+	if err.Error() != "Required API Key was not set" {
+		t.Fatal("Expected to get an error about missing APIKey")
+	}
+}
+
+func TestClientMissingAPISecretAndToken(t *testing.T) {
+	_, err := getstream.New(&getstream.Config{
+		APIKey: "my_secret",
+		AppID:     "111111",
+		Location:  "us-east",
+	})
+	if err == nil {
+		t.Fatal(err)
+	}
+	if err.Error() != "API Secret or Token was not set, one or the other is required" {
+		t.Fatal("Expected to get an error about missing APISecret or Token")
+	}
+}
+
+func TestClientLocalhost(t *testing.T) {
+	client, err := getstream.New(&getstream.Config{
+		APIKey:    "my_key",
+		APISecret: "my_secret",
+		AppID:     "111111",
+		Location:  "localhost",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if client.BaseURL.String() != "http://localhost-api.getstream.io:8000/api/v1.0/" {
+		t.Fatal("Location=localhost should be represented in non-SSL URL on port 8000, got", client.BaseURL.String())
+	}
+}
+
+func TestClientToken(t *testing.T) {
+	client, err := getstream.New(&getstream.Config{
+		APIKey:    "my_key",
+		APISecret: "my_secret",
+		AppID:     "111111",
+		Location:  "localhost",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if client.BaseURL.String() != "http://localhost-api.getstream.io:8000/api/v1.0/" {
+		t.Fatal("Location=localhost should be represented in non-SSL URL on port 8000, got", client.BaseURL.String())
+	}
+}
+
+func TestClient_FlatFeed(t *testing.T) {
 
 	client, err := getstream.New(&getstream.Config{
 		APIKey:    "my_key",
@@ -40,7 +96,27 @@ func TestExampleClient_FlatFeed(t *testing.T) {
 	_ = feed
 }
 
-func TestExampleClient_NotificationFeed(t *testing.T) {
+func TestClient_FlatFeedBadSlug(t *testing.T) {
+
+	client, err := getstream.New(&getstream.Config{
+		APIKey:    "my_key",
+		APISecret: "my_secret",
+		AppID:     "111111",
+		Location:  "us-east"})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = client.FlatFeed("", "UserID")
+	if err == nil {
+		t.Fatal("Expected a slug validation error")
+	}
+	if err.Error() != "invalid feedSlug" {
+		t.Fatal("Expected error about bad FlatFeed slug mismatch, got:", err.Error())
+	}
+}
+
+func TestClient_NotificationFeed(t *testing.T) {
 	client, err := getstream.New(&getstream.Config{
 		APIKey:    "my_key",
 		APISecret: "my_secret",
@@ -56,6 +132,81 @@ func TestExampleClient_NotificationFeed(t *testing.T) {
 	}
 
 	_ = feed
+}
+
+func TestClient_NotificationFeedBadSlug(t *testing.T) {
+	client, err := getstream.New(&getstream.Config{
+		APIKey:    "my_key",
+		APISecret: "my_secret",
+		AppID:     "111111",
+		Location:  "us-east"})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = client.NotificationFeed("", "UserID")
+	if err == nil {
+		t.Fatal("Expected a slug validation error")
+	}
+	if err.Error() != "invalid feedSlug" {
+		t.Fatal("Expected error about bad NotificationFeed slug mismatch, got:", err.Error())
+	}
+}
+
+func TestClient_AggregatedFeed(t *testing.T) {
+	client, err := getstream.New(&getstream.Config{
+		APIKey:    "my_key",
+		APISecret: "my_secret",
+		AppID:     "111111",
+		Location:  "us-east"})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	feed, err := client.AggregatedFeed("aggregated", "UserID")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_ = feed
+}
+
+func TestClient_AggregatedFeedBadSlug(t *testing.T) {
+	client, err := getstream.New(&getstream.Config{
+		APIKey:    "my_key",
+		APISecret: "my_secret",
+		AppID:     "111111",
+		Location:  "us-east"})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = client.AggregatedFeed("", "UserID")
+	if err == nil {
+		t.Fatal("Expected a slug validation error")
+	}
+	if err.Error() != "invalid feedSlug" {
+		t.Fatal("Expected error about bad AggregatedFeed slug mismatch, got:", err.Error())
+	}
+}
+
+func TestClient_AggregatedFeedBadUserID(t *testing.T) {
+	client, err := getstream.New(&getstream.Config{
+		APIKey:    "my_key",
+		APISecret: "my_secret",
+		AppID:     "111111",
+		Location:  "us-east"})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = client.AggregatedFeed("aggregated", "")
+	if err == nil {
+		t.Fatal("Expected a userId validation error")
+	}
+	if err.Error() != "invalid userID" {
+		t.Fatal("Expected error about bad AggregatedFeed userId mismatch, got:", err.Error())
+	}
 }
 
 func TestFlatFeedInputValidation(t *testing.T) {
@@ -301,5 +452,14 @@ func TestAddActivityToMany(t *testing.T) {
 	err = bobFeed.RemoveActivityByForeignID(activity)
 	if err != nil {
 		t.Error(err)
+	}
+}
+
+func TestConvertUUIDToWord(t *testing.T) {
+	expected := "f_o_o"
+	foo := getstream.ConvertUUIDToWord("f-o-o")
+
+	if  foo!= expected {
+		t.Fatal("ConvertUUIDToWord mismatch, expected '", expected, "', got:", foo)
 	}
 }

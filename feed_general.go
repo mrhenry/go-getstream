@@ -48,12 +48,30 @@ func (f *GeneralFeed) GenerateToken(signer *Signer) string {
 
 // Unfollow is used to Unfollow a target Feed
 func (f *GeneralFeed) Unfollow(client *Client, target *FlatFeed) error {
-
 	f.Client = client
 	f.SignFeed(f.Client.Signer)
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/" + target.FeedID().Value() + "/"
 
 	return f.Client.del(f, endpoint, nil, nil)
+}
 
+// UnfollowAggregated is used to Unfollow a target Aggregated Feed
+func (f *GeneralFeed) UnfollowAggregated(client *Client, target *AggregatedFeed) error {
+	f.Client = client
+	f.SignFeed(f.Client.Signer)
+
+	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/" + target.FeedID().Value() + "/"
+
+	return f.Client.del(f, endpoint, nil, nil)
+}
+
+// UnfollowNotification is used to Unfollow a target Notification Feed
+func (f *GeneralFeed) UnfollowNotification(client *Client, target *NotificationFeed) error {
+	f.Client = client
+	f.SignFeed(f.Client.Signer)
+
+	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/" + target.FeedID().Value() + "/"
+
+	return f.Client.del(f, endpoint, nil, nil)
 }

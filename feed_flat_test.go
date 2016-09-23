@@ -35,7 +35,6 @@ func TestExampleFlatFeedAddActivity(t *testing.T) {
 }
 
 func TestFlatFeedAddActivityFail(t *testing.T) {
-
 	client, err := PreTestSetup()
 	if err != nil {
 		t.Fatal(err)
@@ -352,7 +351,7 @@ func TestFlatFeedFollow(t *testing.T) {
 		t.Error("Eric's FeedB is not a follower of FeedA")
 	}
 
-	PostTestCleanUpFollows(client, []*getstream.FlatFeed{feedA, feedB})
+	PostTestCleanUpFlatFeedFollows(client, []*getstream.FlatFeed{feedA, feedB})
 }
 
 func TestFlatFeedFollowingFollowers(t *testing.T) {
@@ -396,7 +395,7 @@ func TestFlatFeedFollowingFollowers(t *testing.T) {
 		t.Fail()
 	}
 
-	PostTestCleanUpFollows(client, []*getstream.FlatFeed{feedA, feedB, feedC})
+	PostTestCleanUpFlatFeedFollows(client, []*getstream.FlatFeed{feedA, feedB, feedC})
 }
 
 func TestFlatFeedUnFollow(t *testing.T) {
@@ -425,7 +424,7 @@ func TestFlatFeedUnFollow(t *testing.T) {
 		t.Fail()
 	}
 
-	PostTestCleanUpFollows(client, []*getstream.FlatFeed{feedA, feedB})
+	PostTestCleanUpFlatFeedFollows(client, []*getstream.FlatFeed{feedA, feedB})
 }
 
 func TestFlatFeedUnFollowKeepingHistory(t *testing.T) {
@@ -454,7 +453,7 @@ func TestFlatFeedUnFollowKeepingHistory(t *testing.T) {
 		t.Fail()
 	}
 
-	PostTestCleanUpFollows(client, []*getstream.FlatFeed{feedA, feedB})
+	PostTestCleanUpFlatFeedFollows(client, []*getstream.FlatFeed{feedA, feedB})
 }
 
 func TestFlatActivityMetaData(t *testing.T) {
@@ -552,14 +551,20 @@ func TestFlatFeedMultiFollow(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	joshFeed, err := client.FlatFeed("flat", "josh")
+	joshFeed, err := client.AggregatedFeed("aggregated", "josh")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	ianFeed, err := client.NotificationFeed("notification", "josh")
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	var follows []getstream.PostFlatFeedFollowingManyInput
 	follows = append(follows, *client.PrepFollowFlatFeed(bobFeed, sallyFeed))
-	follows = append(follows, *client.PrepFollowFlatFeed(bobFeed, joshFeed))
+	follows = append(follows, *client.PrepFollowAggregatedFeed(bobFeed, joshFeed))
+	follows = append(follows, *client.PrepFollowNotificationFeed(bobFeed, ianFeed))
 
 	err = bobFeed.FollowManyFeeds(follows, 20)
 	if err != nil {
@@ -600,8 +605,9 @@ func TestFlatFeedMultiFollow(t *testing.T) {
 	//	t.Error("Josh's FeedC is not a follower of FeedA")
 	//}
 
-	PostTestCleanUpFollows(client, []*getstream.FlatFeed{bobFeed, sallyFeed})
-	PostTestCleanUpFollows(client, []*getstream.FlatFeed{bobFeed, joshFeed})
+	PostTestCleanUpFlatFeedFollows(client, []*getstream.FlatFeed{bobFeed, sallyFeed})
+	PostTestCleanUpAggregatedFeedFollows(client, []*getstream.AggregatedFeed{joshFeed})
+	PostTestCleanUpNotificationFeedFollows(client, []*getstream.NotificationFeed{ianFeed})
 }
 
 func TestFlatFeedUpdateActivities(t *testing.T) {

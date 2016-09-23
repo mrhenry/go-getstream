@@ -427,3 +427,50 @@ func (f *NotificationFeed) FollowingWithLimitAndSkip(limit int, skip int) ([]*Ge
 	return outputFeeds, err
 
 }
+
+// FollowersWithLimitAndSkip returns a list of GeneralFeed following the current FlatFeed
+func (f *NotificationFeed) FollowersWithLimitAndSkip(limit int, skip int) ([]*GeneralFeed, error) {
+	var err error
+
+	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "followers" + "/"
+
+	payload, err := json.Marshal(&getFlatFeedFollowersInput{
+		Limit: limit,
+		Skip:  skip,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	resultBytes, err := f.Client.get(f, endpoint, payload, nil)
+
+	output := &getFlatFeedFollowersOutput{}
+	err = json.Unmarshal(resultBytes, output)
+	if err != nil {
+		return nil, err
+	}
+
+	var outputFeeds []*GeneralFeed
+	for _, result := range output.Results {
+
+		feed := GeneralFeed{}
+
+		var match bool
+		match, err = regexp.MatchString(`^.*?:.*?$`, result.FeedID)
+		if err != nil {
+			continue
+		}
+
+		if match {
+			firstSplit := strings.Split(result.FeedID, ":")
+
+			feed.FeedSlug = firstSplit[0]
+			feed.UserID = firstSplit[1]
+		}
+
+		outputFeeds = append(outputFeeds, &feed)
+	}
+
+	return outputFeeds, err
+}
+
