@@ -34,8 +34,8 @@ requests from the community as well!
 Creating a client:
 ```go
 import (
-	"fmt"
-	"github.com/GetStream/stream-go"
+  "fmt"
+  "github.com/GetStream/stream-go"
 )
 
 // we recommend getting your API credentials using os.Getenv()
