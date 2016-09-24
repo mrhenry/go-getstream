@@ -21,14 +21,15 @@ func (s Signer) SignFeed(feedID string) string {
 	return s.GenerateToken(feedID)
 }
 
-func (s Signer) UrlSafe(src string) string {
+// URLSafe does limited url encoding
+func (s Signer) URLSafe(src string) string {
 	src = strings.Replace(src, "+", "-", -1)
 	src = strings.Replace(src, "/", "_", -1)
 	src = strings.Trim(src, "=")
 	return src
 }
 
-// generateToken will use the Secret of the signer and the message passed as an argument to generate a Token
+// GenerateToken will use the Secret of the signer and the message passed as an argument to generate a Token
 func (s Signer) GenerateToken(message string) string {
 	hash := sha1.New()
 	hash.Write([]byte(s.Secret))
@@ -36,7 +37,7 @@ func (s Signer) GenerateToken(message string) string {
 	mac := hmac.New(sha1.New, key)
 	mac.Write([]byte(message))
 	digest := base64.StdEncoding.EncodeToString(mac.Sum(nil))
-	return s.UrlSafe(digest)
+	return s.URLSafe(digest)
 }
 
 // GenerateFeedScopeToken returns a jwt

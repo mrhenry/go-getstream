@@ -19,7 +19,7 @@ func TestURLSafe(t *testing.T) {
 
 	signer := Signer{}
 
-	result := signer.UrlSafe("some+test/string=foo=")
+	result := signer.URLSafe("some+test/string=foo=")
 	if result != "some-test_string=foo" {
 		t.Fail()
 		return

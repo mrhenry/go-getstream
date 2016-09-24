@@ -14,7 +14,13 @@ type Feed interface {
 	Signature() string
 	FeedID() FeedID
 	FeedIDWithoutColon() string
+	FeedIDWithColon() string
 	Token() string
 	SignFeed(signer *Signer)
 	GenerateToken(signer *Signer) string
+}
+
+type postFeedFollowingManyInput struct {
+	Source string `json:"source"`
+	Target string `json:"target"`
 }

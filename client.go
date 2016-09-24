@@ -13,6 +13,7 @@ import (
 	"gopkg.in/LeisureLink/httpsig.v1"
 )
 
+// DefaultTransport is the http.Client transport used by default.
 var DefaultTransport = &http.Transport{
 	MaxIdleConns:        5,
 	MaxIdleConnsPerHost: 5,
@@ -28,14 +29,12 @@ type Client struct {
 	Signer  *Signer
 }
 
-/**
- * New returns a GetStream client.
- *
- * Params:
- *   cfg, pointer to a Config structure which takes the API credentials, Location, etc
- * Returns:
- *   Client struct
- */
+// New returns a GetStream client.
+//
+// Params:
+//   cfg, pointer to a Config structure which takes the API credentials, Location, etc
+// Returns:
+//   Client struct
 func New(cfg *Config) (*Client, error) {
 	var (
 		timeout int64
@@ -183,7 +182,7 @@ func (c *Client) AggregatedFeed(feedSlug string, userID string) (*AggregatedFeed
 	return feed, nil
 }
 
-// absoluteUrl create a url.URL instance and sets query params (bad!!!)
+// AbsoluteURL create a url.URL instance and sets query params (bad!!!)
 func (c *Client) AbsoluteURL(path string) (*url.URL, error) {
 	result, err := url.Parse(path)
 	if err != nil {
@@ -231,20 +230,20 @@ func (c *Client) del(f Feed, path string, payload []byte, params map[string]stri
 
 // request helper
 func (c *Client) request(f Feed, method string, path string, payload []byte, params map[string]string) ([]byte, error) {
-	apiUrl, err := url.Parse(path)
+	apiURL, err := url.Parse(path)
 	if err != nil {
 		return nil, err
 	}
 
-	apiUrl = c.BaseURL.ResolveReference(apiUrl)
+	apiURL = c.BaseURL.ResolveReference(apiURL)
 
-	query := apiUrl.Query()
+	query := apiURL.Query()
 	query = c.setStandardParams(query)
 	query = c.setRequestParams(query, params)
-	apiUrl.RawQuery = query.Encode()
+	apiURL.RawQuery = query.Encode()
 
 	// create a new http request
-	req, err := http.NewRequest(method, apiUrl.String(), bytes.NewBuffer(payload))
+	req, err := http.NewRequest(method, apiURL.String(), bytes.NewBuffer(payload))
 	if err != nil {
 		return nil, err
 	}
@@ -252,27 +251,27 @@ func (c *Client) request(f Feed, method string, path string, payload []byte, par
 	// set the Auth headers for the http request
 	c.setBaseHeaders(req)
 
-	auth := ""
-	sig := ""
+	var auth authenticationKind
+	var sig authenticationMethod
 	switch {
 	case path == "follow_many/": // one feed follows many feeds
-		auth = "app"
-		sig = "sig"
+		auth = appAuthentication
+		sig = signatureAuthentication
 	case path == "activities/": // batch activities methods
 		// feed auth
-		auth = "feed"
-		sig = "sig"
+		auth = feedAuthentication
+		sig = signatureAuthentication
 	case path == "feed/add_to_many/": // add activity to many feeds
 		// application auth
-		auth = "app"
-		sig = "sig"
+		auth = appAuthentication
+		sig = signatureAuthentication
 	case path[:5] == "feed": // add activity to many feeds
 		// feed auth
-		auth = "feed"
-		sig = "jwt"
+		auth = feedAuthentication
+		sig = jwtAuthentication
 	default: // everything else sig/httpsig and feed auth
-		auth = "feed"
-		sig = "sig"
+		auth = feedAuthentication
+		sig = signatureAuthentication
 	}
 
 	// fallback: if we were going to use jwt and we don't have a client token, use regular sig instead
@@ -333,10 +332,9 @@ func (c *Client) setRequestParams(query url.Values, params map[string]string) ur
 	return query
 }
 
-/* setBaseHeaders - set common headers for every request
- * params:
- *    request, pointer to http.Request
- */
+// setBaseHeaders - set common headers for every request
+// 	params:
+// 	request, pointer to http.Request
 func (c *Client) setBaseHeaders(request *http.Request) {
 	request.Header.Set("X-Stream-Client", "stream-go-client-"+VERSION)
 	request.Header.Set("Content-Type", "application/json")
@@ -346,8 +344,8 @@ func (c *Client) setBaseHeaders(request *http.Request) {
 	request.Header.Set("Date", t.Format("Mon, 2 Jan 2006 15:04:05 MST"))
 }
 
-func (c *Client) setAuthSigAndHeaders(request *http.Request, f Feed, auth string, sig string) error {
-	if sig == "jwt" {
+func (c *Client) setAuthSigAndHeaders(request *http.Request, f Feed, auth authenticationKind, sig authenticationMethod) error {
+	if sig == jwtAuthentication {
 		request.Header.Set("stream-auth-type", "jwt")
 		if f == nil {
 			request.Header.Set("Authorization", c.Config.Token)
@@ -355,13 +353,13 @@ func (c *Client) setAuthSigAndHeaders(request *http.Request, f Feed, auth string
 		return nil
 	}
 
-	if sig == "sig" {
-		if auth == "feed" {
+	if sig == signatureAuthentication {
+		if auth == feedAuthentication {
 			if f.Token() == "" {
 				f.GenerateToken(c.Signer)
 			}
 			request.Header.Set("Authorization", f.Signature())
-		} else if auth == "app" {
+		} else if auth == appAuthentication {
 			signer, _ := httpsig.NewRequestSigner(c.Config.APIKey, c.Config.APISecret, "hmac-sha256")
 			signer.SignRequest(request, []string{}, nil)
 		}
@@ -371,57 +369,23 @@ func (c *Client) setAuthSigAndHeaders(request *http.Request, f Feed, auth string
 	return errors.New("No API Secret or config/feed Token")
 }
 
-type PostFlatFeedFollowingManyInput struct {
-	Source string `json:"source"`
-	Target string `json:"target"`
-}
-
-/** PrepFollowFlatFeed - prepares JSON needed for one feed to follow another
-
-Params:
-targetFeed, FlatFeed which wants to follow another
-sourceFeed, FlatFeed which is to be followed
-
-Returns:
-[]byte, array of bytes of JSON suitable for API consumption
-*/
-func (c *Client) PrepFollowFlatFeed(targetFeed *FlatFeed, sourceFeed *FlatFeed) *PostFlatFeedFollowingManyInput {
-	return &PostFlatFeedFollowingManyInput{
-		Source: sourceFeed.FeedSlug + ":" + sourceFeed.UserID,
-		Target: targetFeed.FeedSlug + ":" + targetFeed.UserID,
-	}
-}
-func (c *Client) PrepFollowAggregatedFeed(targetFeed *FlatFeed, sourceFeed *AggregatedFeed) *PostFlatFeedFollowingManyInput {
-	return &PostFlatFeedFollowingManyInput{
-		Source: sourceFeed.FeedSlug + ":" + sourceFeed.UserID,
-		Target: targetFeed.FeedSlug + ":" + targetFeed.UserID,
-	}
-}
-func (c *Client) PrepFollowNotificationFeed(targetFeed *FlatFeed, sourceFeed *NotificationFeed) *PostFlatFeedFollowingManyInput {
-	return &PostFlatFeedFollowingManyInput{
-		Source: sourceFeed.FeedSlug + ":" + sourceFeed.UserID,
-		Target: targetFeed.FeedSlug + ":" + targetFeed.UserID,
-	}
-}
-
-type PostActivityToManyInput struct {
-	Activity Activity `json:"activity"`
-	FeedIDs  []string `json:"feeds"`
-}
-
+// AddActivityToMany is used to add an activity to many feeds at once
 func (c *Client) AddActivityToMany(activity Activity, feeds []string) error {
-	payload := &PostActivityToManyInput{
+
+	payload := struct {
+		Activity Activity `json:"activity"`
+		FeedIDs  []string `json:"feeds"`
+	}{
 		Activity: activity,
 		FeedIDs:  feeds,
 	}
 
-	final_payload, err := json.Marshal(payload)
+	finalPayload, err := json.Marshal(payload)
 	if err != nil {
 		return err
 	}
 
 	endpoint := "feed/add_to_many/"
-	params := map[string]string{}
-	_, err = c.post(nil, endpoint, final_payload, params)
+	_, err = c.post(nil, endpoint, finalPayload, nil)
 	return err
 }

@@ -6,6 +6,7 @@ import (
 	"strings"
 )
 
+// ValidateFeedSlug matches against the "word" regex and replaces "-" with "_"
 func ValidateFeedSlug(feedSlug string) (string, error) {
 	r, err := regexp.Compile(`^\w+$`)
 	if err != nil {
@@ -21,6 +22,7 @@ func ValidateFeedSlug(feedSlug string) (string, error) {
 	return feedSlug, nil
 }
 
+// ValidateFeedID matches against the "word" regex and replaces "-" with "_"
 func ValidateFeedID(feedID string) (string, error) {
 	r, err := regexp.Compile(`^\w+$`)
 	if err != nil {
@@ -36,6 +38,7 @@ func ValidateFeedID(feedID string) (string, error) {
 	return feedID, nil
 }
 
+// ValidateUserID matches against the "word" regex and replaces "-" with "_"
 func ValidateUserID(userID string) (string, error) {
 	r, err := regexp.Compile(`^\w+$`)
 	if err != nil {

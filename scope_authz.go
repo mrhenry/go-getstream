@@ -59,3 +59,23 @@ func (a ScopeContext) Value() string {
 		return ""
 	}
 }
+
+// authenticationKind :
+type authenticationKind uint32
+
+const (
+	// feedAuthentication :
+	feedAuthentication authenticationKind = 1
+	// appAuthentication :
+	appAuthentication authenticationKind = 2
+)
+
+// authenticationKind determines if a token or signature is used
+type authenticationMethod uint32
+
+const (
+	// signatureAuthentication :
+	signatureAuthentication authenticationMethod = 1
+	// jwtAuthentication :
+	jwtAuthentication authenticationMethod = 2
+)

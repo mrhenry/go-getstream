@@ -164,11 +164,17 @@ func (f *NotificationFeed) Signature() string {
 	return f.FeedIDWithoutColon() + " " + f.Token()
 }
 
-// FeedID is the combo if the FeedSlug and UserID : "FeedSlug:UserID"
+// FeedID is the combo of the FeedSlug and UserID : "FeedSlug:UserID"
 func (f *NotificationFeed) FeedID() FeedID {
 	return FeedID(f.FeedSlug + ":" + f.UserID)
 }
 
+// FeedIDWithColon is the combo of the FeedSlug and UserID : "FeedSlug:UserID"
+func (f *NotificationFeed) FeedIDWithColon() string {
+	return f.FeedSlug + ":" + f.UserID
+}
+
+// FeedIDWithoutColon is the combo of the FeedSlug and UserID : "FeedSlugUserID"
 func (f *NotificationFeed) FeedIDWithoutColon() string {
 	return f.FeedSlug + f.UserID
 }

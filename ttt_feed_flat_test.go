@@ -560,12 +560,7 @@ func TestFlatFeedMultiFollow(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	var follows []PostFlatFeedFollowingManyInput
-	follows = append(follows, *client.PrepFollowFlatFeed(bobFeed, sallyFeed))
-	follows = append(follows, *client.PrepFollowAggregatedFeed(bobFeed, joshFeed))
-	follows = append(follows, *client.PrepFollowNotificationFeed(bobFeed, ianFeed))
-
-	err = bobFeed.FollowManyFeeds(follows, 20)
+	err = bobFeed.FollowManyFeeds([]Feed{bobFeed, sallyFeed, joshFeed, ianFeed}, 20)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -71,11 +71,17 @@ func (f *FlatFeed) Signature() string {
 	return f.FeedIDWithoutColon() + " " + f.Token()
 }
 
-// FeedID is the combo if the FeedSlug and UserID : "FeedSlug:UserID"
+// FeedID is the combo of the FeedSlug and UserID : "FeedSlug:UserID"
 func (f *FlatFeed) FeedID() FeedID {
 	return FeedID(f.FeedSlug + ":" + f.UserID)
 }
 
+// FeedIDWithColon is the combo of the FeedSlug and UserID : "FeedSlug:UserID"
+func (f *FlatFeed) FeedIDWithColon() string {
+	return f.FeedSlug + ":" + f.UserID
+}
+
+// FeedIDWithoutColon is the combo of the FeedSlug and UserID : "FeedSlugUserID"
 func (f *FlatFeed) FeedIDWithoutColon() string {
 	return f.FeedSlug + f.UserID
 }
@@ -241,14 +247,14 @@ func (f *FlatFeed) Unfollow(target *FlatFeed) error {
 	return f.Client.del(f, endpoint, nil, nil)
 }
 
-// Unfollow is used to Unfollow a target Aggregated Feed
+// UnfollowAggregated is used to Unfollow a target Aggregated Feed
 func (f *FlatFeed) UnfollowAggregated(target *AggregatedFeed) error {
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/" + target.FeedID().Value() + "/"
 
 	return f.Client.del(f, endpoint, nil, nil)
 }
 
-// Unfollow is used to Unfollow a target Notification Feed
+// UnfollowNotification is used to Unfollow a target Notification Feed
 func (f *FlatFeed) UnfollowNotification(target *NotificationFeed) error {
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/" + target.FeedID().Value() + "/"
 
@@ -363,19 +369,27 @@ func (f *FlatFeed) FollowingWithLimitAndSkip(limit int, skip int) ([]*GeneralFee
 	return outputFeeds, err
 }
 
-/** FollowFeedsWithCopyLimit sets a Feed to follow one or more other target Feeds
-	This method only exists within FlatFeed because only flat feeds can follow other feeds
+// FollowManyFeeds sets a Feed to follow one or more other target Feeds
+// 	This method only exists within FlatFeed because only flat feeds can follow other feeds
+//
+// 	Params:
+// 	sourceFeeds, a list of feeds this feed can follow
+// 	copyLimit, optional number of items to copy from history, defaults to 100
+//
+// 		Returns:
+// 		error, if any
+func (f *FlatFeed) FollowManyFeeds(sourceFeeds []Feed, copyLimit int) error {
 
-	Params:
-	sourceFeeds, a list of feeds this feed can follow
-	copyLimit, optional number of items to copy from history, defaults to 100
+	var payload []postFeedFollowingManyInput
 
- 	Returns:
- 	error, if any
-*/
-func (f *FlatFeed) FollowManyFeeds(sourceFeeds []PostFlatFeedFollowingManyInput, copyLimit int) error {
+	for _, sourcef := range sourceFeeds {
+		payload = append(payload, postFeedFollowingManyInput{
+			Source: sourcef.FeedIDWithColon(),
+			Target: f.FeedIDWithColon(),
+		})
+	}
 
-	final_payload, err := json.Marshal(sourceFeeds)
+	finalPayload, err := json.Marshal(payload)
 	if err != nil {
 		return err
 	}
@@ -396,7 +410,7 @@ func (f *FlatFeed) FollowManyFeeds(sourceFeeds []PostFlatFeedFollowingManyInput,
 	//save_token = f.token
 	//f.token = ""
 	//}
-	_, err = f.Client.post(f, endpoint, final_payload, params)
+	_, err = f.Client.post(f, endpoint, finalPayload, params)
 	//if save_token != "" {
 	//fmt.Println("restoring token")
 	//f.token = save_token
@@ -408,6 +422,7 @@ type postMultipleActivities struct {
 	Activities []*Activity `json:"activities"`
 }
 
+// UpdateActivities updates up to a 100 activities
 func (f *FlatFeed) UpdateActivities(activities []*Activity) error {
 	if len(activities) == 0 {
 		return errors.New("No activities to update")
@@ -429,7 +444,7 @@ func (f *FlatFeed) UpdateActivities(activities []*Activity) error {
 		return errors.New("No activities to update (no ForeignID values)")
 	}
 
-	final_payload, err := json.Marshal(&postMultipleActivities{
+	finalPayload, err := json.Marshal(&postMultipleActivities{
 		Activities: verifiedActivities,
 	})
 	if err != nil {
@@ -437,9 +452,8 @@ func (f *FlatFeed) UpdateActivities(activities []*Activity) error {
 	}
 
 	endpoint := "activities/"
-	params := map[string]string{}
 
-	_, err = f.Client.post(f, endpoint, final_payload, params)
+	_, err = f.Client.post(f, endpoint, finalPayload, nil)
 	if err != nil {
 		return err
 	}
@@ -447,6 +461,7 @@ func (f *FlatFeed) UpdateActivities(activities []*Activity) error {
 	return nil
 }
 
+// UpdateActivity update a single activity
 func (f *FlatFeed) UpdateActivity(activity *Activity) error {
 	return f.UpdateActivities([]*Activity{activity})
 }
