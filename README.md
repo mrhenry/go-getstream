@@ -3,6 +3,7 @@
 [![wercker status](https://app.wercker.com/status/adc2bf440cb3e5b8f4fa3abf9244624d/s/master "wercker status")](https://app.wercker.com/project/byKey/adc2bf440cb3e5b8f4fa3abf9244624d)
 [![godoc](https://godoc.org/github.com/mrhenry/go-getstream?status.svg)](https://godoc.org/github.com/mrhenry/go-getstream)
 [![codecov](https://codecov.io/gh/mrhenry/go-getstream/branch/master/graph/badge.svg)](https://codecov.io/gh/mrhenry/go-getstream)
+[![Go Report Card](https://goreportcard.com/badge/mrhenry/go-getstream)](https://goreportcard.com/report/mrhenry/go-getstream)
 
 Beta client library for [GetStream.io](//getstream.io).
 
