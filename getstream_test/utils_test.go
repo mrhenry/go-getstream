@@ -3,7 +3,7 @@ package getstream_test
 import (
 	"testing"
 
-	getstream "github.com/mrhenry/go-getstream"
+	getstream "../"
 )
 
 func TestFeedSlug(t *testing.T) {
