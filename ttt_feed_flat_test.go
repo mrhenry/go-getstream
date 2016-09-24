@@ -560,7 +560,7 @@ func TestFlatFeedMultiFollow(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	err = bobFeed.FollowManyFeeds([]Feed{bobFeed, sallyFeed, joshFeed, ianFeed}, 20)
+	err = bobFeed.FollowManyFeeds([]Feed{sallyFeed, joshFeed, ianFeed}, 20)
 	if err != nil {
 		t.Fatal(err)
 	}
