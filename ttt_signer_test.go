@@ -1,13 +1,10 @@
-package getstream_test
+package getstream
 
-import (
-	"github.com/GetStream/stream-go"
-	"testing"
-)
+import "testing"
 
 func TestGenerateToken(t *testing.T) {
 
-	signer := getstream.Signer{
+	signer := Signer{
 		Secret: "test_secret",
 	}
 
@@ -20,7 +17,7 @@ func TestGenerateToken(t *testing.T) {
 
 func TestURLSafe(t *testing.T) {
 
-	signer := getstream.Signer{}
+	signer := Signer{}
 
 	result := signer.UrlSafe("some+test/string=foo=")
 	if result != "some-test_string=foo" {
@@ -31,7 +28,7 @@ func TestURLSafe(t *testing.T) {
 
 func TestFeedScopeToken(t *testing.T) {
 
-	client, err := getstream.New(&getstream.Config{
+	client, err := New(&Config{
 		APIKey:    "a_key",
 		APISecret: "tfq2sdqpj9g446sbv653x3aqmgn33hsn8uzdc9jpskaw8mj6vsnhzswuwptuj9su",
 		AppID:     "123456",
@@ -47,38 +44,38 @@ func TestFeedScopeToken(t *testing.T) {
 	}
 
 	_, err = client.Signer.GenerateFeedScopeToken(
-		getstream.ScopeContextFeed,
-		getstream.ScopeActionRead,
+		ScopeContextFeed,
+		ScopeActionRead,
 		feed.FeedIDWithoutColon())
 	if err != nil {
 		t.Fail()
 	}
 
 	_, err = client.Signer.GenerateFeedScopeToken(
-		getstream.ScopeContextActivities,
-		getstream.ScopeActionWrite,
+		ScopeContextActivities,
+		ScopeActionWrite,
 		feed.FeedIDWithoutColon())
 	if err != nil {
 		t.Fail()
 	}
 
 	_, err = client.Signer.GenerateFeedScopeToken(
-		getstream.ScopeContextFollower,
-		getstream.ScopeActionDelete,
+		ScopeContextFollower,
+		ScopeActionDelete,
 		feed.FeedIDWithoutColon())
 	if err != nil {
 		t.Fail()
 	}
 
 	_, err = client.Signer.GenerateFeedScopeToken(
-		getstream.ScopeContextAll,
-		getstream.ScopeActionAll,
+		ScopeContextAll,
+		ScopeActionAll,
 		feed.FeedIDWithoutColon())
 	if err != nil {
 		t.Fail()
 	}
 
-	_, err = client.Signer.GenerateFeedScopeToken(getstream.ScopeContextFeed, getstream.ScopeActionRead, "")
+	_, err = client.Signer.GenerateFeedScopeToken(ScopeContextFeed, ScopeActionRead, "")
 	if err != nil {
 		t.Fail()
 	}
@@ -86,7 +83,7 @@ func TestFeedScopeToken(t *testing.T) {
 
 func TestUserScopeToken(t *testing.T) {
 
-	client, err := getstream.New(&getstream.Config{
+	client, err := New(&Config{
 		APIKey:    "a_key",
 		APISecret: "tfq2sdqpj9g446sbv653x3aqmgn33hsn8uzdc9jpskaw8mj6vsnhzswuwptuj9su",
 		AppID:     "123456",
@@ -98,27 +95,27 @@ func TestUserScopeToken(t *testing.T) {
 
 	user := "bob"
 
-	_, err = client.Signer.GenerateUserScopeToken(getstream.ScopeContextFeed, getstream.ScopeActionRead, user)
+	_, err = client.Signer.GenerateUserScopeToken(ScopeContextFeed, ScopeActionRead, user)
 	if err != nil {
 		t.Fail()
 	}
 
-	_, err = client.Signer.GenerateUserScopeToken(getstream.ScopeContextActivities, getstream.ScopeActionWrite, user)
+	_, err = client.Signer.GenerateUserScopeToken(ScopeContextActivities, ScopeActionWrite, user)
 	if err != nil {
 		t.Fail()
 	}
 
-	_, err = client.Signer.GenerateUserScopeToken(getstream.ScopeContextFollower, getstream.ScopeActionDelete, user)
+	_, err = client.Signer.GenerateUserScopeToken(ScopeContextFollower, ScopeActionDelete, user)
 	if err != nil {
 		t.Fail()
 	}
 
-	_, err = client.Signer.GenerateUserScopeToken(getstream.ScopeContextAll, getstream.ScopeActionAll, user)
+	_, err = client.Signer.GenerateUserScopeToken(ScopeContextAll, ScopeActionAll, user)
 	if err != nil {
 		t.Fail()
 	}
 
-	_, err = client.Signer.GenerateUserScopeToken(getstream.ScopeContextFeed, getstream.ScopeActionRead, "")
+	_, err = client.Signer.GenerateUserScopeToken(ScopeContextFeed, ScopeActionRead, "")
 	if err != nil {
 		t.Fail()
 	}

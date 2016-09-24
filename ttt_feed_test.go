@@ -1,12 +1,9 @@
-package getstream_test
+package getstream
 
-import (
-	"github.com/GetStream/stream-go"
-	"testing"
-)
+import "testing"
 
 func TestGeneralFeedBasic(t *testing.T) {
-	client, err := getstream.New(&getstream.Config{
+	client, err := New(&Config{
 		APIKey:    "a key",
 		APISecret: "a secret",
 		AppID:     "11111",
@@ -15,7 +12,7 @@ func TestGeneralFeedBasic(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	general := getstream.GeneralFeed{
+	general := GeneralFeed{
 		Client:   client,
 		FeedSlug: "feedGroup",
 		UserID:   "feedName",
@@ -44,7 +41,7 @@ func TestGeneralFeedBasic(t *testing.T) {
 }
 
 func TestFlatFeedBasic(t *testing.T) {
-	client, err := getstream.New(&getstream.Config{
+	client, err := New(&Config{
 		APIKey:    "a key",
 		APISecret: "a secret",
 		AppID:     "11111",
@@ -53,7 +50,7 @@ func TestFlatFeedBasic(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	flatFeed := getstream.FlatFeed{
+	flatFeed := FlatFeed{
 		Client:   client,
 		FeedSlug: "feedGroup",
 		UserID:   "feedName",
@@ -82,7 +79,7 @@ func TestFlatFeedBasic(t *testing.T) {
 }
 
 func TestNotificationFeedBasic(t *testing.T) {
-	client, err := getstream.New(&getstream.Config{
+	client, err := New(&Config{
 		APIKey:    "a key",
 		APISecret: "a secret",
 		AppID:     "11111",
@@ -91,7 +88,7 @@ func TestNotificationFeedBasic(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	notificationFeed := getstream.NotificationFeed{
+	notificationFeed := NotificationFeed{
 		Client:   client,
 		FeedSlug: "feedGroup",
 		UserID:   "feedName",

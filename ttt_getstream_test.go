@@ -1,13 +1,9 @@
-package getstream_test
+package getstream
 
-import (
-	"os"
+import "os"
 
-	getstream "github.com/GetStream/stream-go"
-)
-
-func PreTestSetup() (*getstream.Client, error) {
-	return doTestSetup(&getstream.Config{
+func PreTestSetup() (*Client, error) {
+	return doTestSetup(&Config{
 		APIKey:     os.Getenv("key"),
 		APISecret:  os.Getenv("secret"),
 		AppID:      os.Getenv("app_id"),
@@ -16,8 +12,8 @@ func PreTestSetup() (*getstream.Client, error) {
 	})
 }
 
-func PreTestSetupWithToken() (*getstream.Client, error) {
-	return doTestSetup(&getstream.Config{
+func PreTestSetupWithToken() (*Client, error) {
+	return doTestSetup(&Config{
 		APIKey:     os.Getenv("key"),
 		Token:      os.Getenv("secret"), // instead of APISecret
 		AppID:      os.Getenv("app_id"),
@@ -26,15 +22,15 @@ func PreTestSetupWithToken() (*getstream.Client, error) {
 	})
 }
 
-func doTestSetup(cfg *getstream.Config) (*getstream.Client, error) {
-	return getstream.New(cfg)
+func doTestSetup(cfg *Config) (*Client, error) {
+	return New(cfg)
 }
 
 func PostTestCleanUp(
-	client *getstream.Client,
-	flats []*getstream.Activity,
-	notifications []*getstream.Activity,
-	aggregations []*getstream.Activity) error {
+	client *Client,
+	flats []*Activity,
+	notifications []*Activity,
+	aggregations []*Activity) error {
 
 	if len(flats) > 0 {
 
@@ -82,7 +78,7 @@ func PostTestCleanUp(
 	return nil
 }
 
-func PostTestCleanUpFlatFeedFollows(client *getstream.Client, feeds []*getstream.FlatFeed) error {
+func PostTestCleanUpFlatFeedFollows(client *Client, feeds []*FlatFeed) error {
 	for _, feed := range feeds {
 		followers, _ := feed.FollowersWithLimitAndSkip(300, 0)
 
@@ -92,7 +88,7 @@ func PostTestCleanUpFlatFeedFollows(client *getstream.Client, feeds []*getstream
 	}
 	return nil
 }
-func PostTestCleanUpAggregatedFeedFollows(client *getstream.Client, feeds []*getstream.AggregatedFeed) error {
+func PostTestCleanUpAggregatedFeedFollows(client *Client, feeds []*AggregatedFeed) error {
 	for _, feed := range feeds {
 		followers, _ := feed.FollowersWithLimitAndSkip(300, 0)
 
@@ -102,7 +98,7 @@ func PostTestCleanUpAggregatedFeedFollows(client *getstream.Client, feeds []*get
 	}
 	return nil
 }
-func PostTestCleanUpNotificationFeedFollows(client *getstream.Client, feeds []*getstream.NotificationFeed) error {
+func PostTestCleanUpNotificationFeedFollows(client *Client, feeds []*NotificationFeed) error {
 	for _, feed := range feeds {
 		followers, _ := feed.FollowersWithLimitAndSkip(300, 0)
 

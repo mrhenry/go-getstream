@@ -1,4 +1,4 @@
-package getstream_test
+package getstream
 
 import (
 	"errors"
@@ -7,8 +7,6 @@ import (
 	"os"
 	"testing"
 	"time"
-
-	getstream "github.com/GetStream/stream-go"
 )
 
 func TestWerckerConfig(t *testing.T) {
@@ -24,7 +22,7 @@ func TestWerckerConfig(t *testing.T) {
 }
 
 func TestConfig_SetAPIKey(t *testing.T) {
-	cfg := getstream.Config{APIKey: "123"}
+	cfg := Config{APIKey: "123"}
 	if cfg.APIKey != "123" {
 		t.Error(fmt.Sprintf("building cfg didn't set APIKey to '234', got %s", cfg.APIKey))
 	}
@@ -39,7 +37,7 @@ func TestConfig_SetAPIKey(t *testing.T) {
 }
 
 func TestConfig_SetAPISecret(t *testing.T) {
-	cfg := getstream.Config{APISecret: "123"}
+	cfg := Config{APISecret: "123"}
 	if cfg.APISecret != "123" {
 		t.Error(fmt.Sprintf("building cfg didn't set APISecret to '234', got %s", cfg.APISecret))
 	}
@@ -54,7 +52,7 @@ func TestConfig_SetAPISecret(t *testing.T) {
 }
 
 func TestConfig_SetAppID(t *testing.T) {
-	cfg := getstream.Config{AppID: "123"}
+	cfg := Config{AppID: "123"}
 	if cfg.AppID != "123" {
 		t.Error(fmt.Sprintf("building cfg didn't set AppID to '234', got %s", cfg.AppID))
 	}
@@ -69,7 +67,7 @@ func TestConfig_SetAppID(t *testing.T) {
 }
 
 func TestConfig_SetLocation(t *testing.T) {
-	cfg := getstream.Config{Location: "123"}
+	cfg := Config{Location: "123"}
 	if cfg.Location != "123" {
 		t.Error(errors.New(fmt.Sprintf("building cfg didn't set Location to '234', got %s", cfg.Location)))
 	}
@@ -84,7 +82,7 @@ func TestConfig_SetLocation(t *testing.T) {
 }
 
 func TestConfig_SetTimeout(t *testing.T) {
-	cfg := getstream.Config{TimeoutInt: 123, TimeoutDuration: time.Duration(456)}
+	cfg := Config{TimeoutInt: 123, TimeoutDuration: time.Duration(456)}
 	if cfg.TimeoutInt != 123 {
 		t.Error(fmt.Sprintf("building cfg didn't set TimeoutInt to '123', got %d", cfg.TimeoutInt))
 	}
@@ -105,7 +103,7 @@ func TestConfig_SetTimeout(t *testing.T) {
 }
 
 func TestConfig_SetVersion(t *testing.T) {
-	cfg := getstream.Config{Version: "123"}
+	cfg := Config{Version: "123"}
 	if cfg.Version != "123" {
 		t.Error(fmt.Sprintf("building cfg didn't set Version to '234', got %s", cfg.Version))
 	}
@@ -120,7 +118,7 @@ func TestConfig_SetVersion(t *testing.T) {
 }
 
 func TestConfig_SetToken(t *testing.T) {
-	cfg := getstream.Config{Token: "123"}
+	cfg := Config{Token: "123"}
 	if cfg.Token != "123" {
 		t.Error(fmt.Sprintf("building cfg didn't set Token to '234', got %s", cfg.Token))
 	}
@@ -136,7 +134,7 @@ func TestConfig_SetToken(t *testing.T) {
 
 func TestConfig_SetBaseURL(t *testing.T) {
 	url, _ := url.Parse("http://api.getstream.io")
-	cfg := getstream.Config{BaseURL: url}
+	cfg := Config{BaseURL: url}
 	if cfg.BaseURL != url {
 		t.Error(fmt.Sprintf("building cfg didn't set BaseURL to 'http://use-east-api.getstream.io', got %s", cfg.BaseURL))
 	}

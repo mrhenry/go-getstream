@@ -1,11 +1,10 @@
-package getstream_test
+package getstream
 
 import (
 	"encoding/json"
 	"testing"
 	"time"
 
-	getstream "github.com/GetStream/stream-go"
 	"github.com/pborman/uuid"
 )
 
@@ -20,11 +19,11 @@ func TestExampleAggregatedFeed_AddActivity(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	activity, err := feed.AddActivity(&getstream.Activity{
+	activity, err := feed.AddActivity(&Activity{
 		Verb:      "post",
 		ForeignID: uuid.New(),
-		Object:    getstream.FeedID("flat:eric"),
-		Actor:     getstream.FeedID("flat:john"),
+		Object:    FeedID("flat:eric"),
+		Actor:     FeedID("flat:john"),
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -44,11 +43,11 @@ func TestAggregatedFeedAddActivity(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	activity, err := feed.AddActivity(&getstream.Activity{
+	activity, err := feed.AddActivity(&Activity{
 		Verb:      "post",
 		ForeignID: uuid.New(),
-		Object:    getstream.FeedID("flat:eric"),
-		Actor:     getstream.FeedID("flat:john"),
+		Object:    FeedID("flat:eric"),
+		Actor:     FeedID("flat:john"),
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -58,7 +57,7 @@ func TestAggregatedFeedAddActivity(t *testing.T) {
 		t.Error(err)
 	}
 
-	err = PostTestCleanUp(client, nil, nil, []*getstream.Activity{activity})
+	err = PostTestCleanUp(client, nil, nil, []*Activity{activity})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -80,12 +79,12 @@ func TestAggregatedFeedAddActivityWithTo(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	activity, err := feed.AddActivity(&getstream.Activity{
+	activity, err := feed.AddActivity(&Activity{
 		Verb:      "post",
 		ForeignID: uuid.New(),
-		Object:    getstream.FeedID("flat:eric"),
-		Actor:     getstream.FeedID("flat:john"),
-		To:        []getstream.Feed{toFeed},
+		Object:    FeedID("flat:eric"),
+		Actor:     FeedID("flat:john"),
+		To:        []Feed{toFeed},
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -95,7 +94,7 @@ func TestAggregatedFeedAddActivityWithTo(t *testing.T) {
 		t.Fail()
 	}
 
-	err = PostTestCleanUp(client, nil, nil, []*getstream.Activity{activity})
+	err = PostTestCleanUp(client, nil, nil, []*Activity{activity})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -112,10 +111,10 @@ func TestAggregatedFeedRemoveActivity(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	activity, err := feed.AddActivity(&getstream.Activity{
+	activity, err := feed.AddActivity(&Activity{
 		Verb:   "post",
-		Object: getstream.FeedID("flat:eric"),
-		Actor:  getstream.FeedID("flat:john"),
+		Object: FeedID("flat:eric"),
+		Actor:  FeedID("flat:john"),
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -125,7 +124,7 @@ func TestAggregatedFeedRemoveActivity(t *testing.T) {
 		t.Fail()
 	}
 
-	rmActivity := getstream.Activity{
+	rmActivity := Activity{
 		ID: activity.ID,
 	}
 
@@ -146,11 +145,11 @@ func TestAggregatedFeedRemoveByForeignIDActivity(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	activity, err := feed.AddActivity(&getstream.Activity{
+	activity, err := feed.AddActivity(&Activity{
 		Verb:      "post",
 		ForeignID: uuid.New(),
-		Object:    getstream.FeedID("flat:eric"),
-		Actor:     getstream.FeedID("flat:john"),
+		Object:    FeedID("flat:eric"),
+		Actor:     FeedID("flat:john"),
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -160,7 +159,7 @@ func TestAggregatedFeedRemoveByForeignIDActivity(t *testing.T) {
 		t.Fail()
 	}
 
-	rmActivity := getstream.Activity{
+	rmActivity := Activity{
 		ForeignID: activity.ForeignID,
 	}
 	_ = rmActivity
@@ -170,7 +169,7 @@ func TestAggregatedFeedRemoveByForeignIDActivity(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	PostTestCleanUp(client, nil, nil, []*getstream.Activity{activity})
+	PostTestCleanUp(client, nil, nil, []*Activity{activity})
 }
 
 func TestAggregatedFeedActivities(t *testing.T) {
@@ -184,17 +183,17 @@ func TestAggregatedFeedActivities(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	_, err = feed.AddActivity(&getstream.Activity{
+	_, err = feed.AddActivity(&Activity{
 		Verb:      "post",
 		ForeignID: uuid.New(),
-		Object:    getstream.FeedID("flat:eric"),
-		Actor:     getstream.FeedID("flat:john"),
+		Object:    FeedID("flat:eric"),
+		Actor:     FeedID("flat:john"),
 	})
 	if err != nil {
 		t.Error(err)
 	}
 
-	activities, err := feed.Activities(&getstream.GetAggregatedFeedInput{})
+	activities, err := feed.Activities(&GetAggregatedFeedInput{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -218,17 +217,17 @@ func TestAggregatedFeedAddActivities(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	activities, err := feed.AddActivities([]*getstream.Activity{
+	activities, err := feed.AddActivities([]*Activity{
 		{
 			Verb:      "post",
 			ForeignID: uuid.New(),
-			Object:    getstream.FeedID("flat:eric"),
-			Actor:     getstream.FeedID("flat:john"),
+			Object:    FeedID("flat:eric"),
+			Actor:     FeedID("flat:john"),
 		}, {
 			Verb:      "walk",
 			ForeignID: uuid.New(),
-			Object:    getstream.FeedID("flat:john"),
-			Actor:     getstream.FeedID("flat:eric"),
+			Object:    FeedID("flat:john"),
+			Actor:     FeedID("flat:eric"),
 		},
 	})
 	if err != nil {
@@ -285,7 +284,7 @@ func TestAggregatedFeedFollowUnfollow(t *testing.T) {
 		t.Fail()
 	}
 
-	PostTestCleanUpFlatFeedFollows(client, []*getstream.FlatFeed{feedB})
+	PostTestCleanUpFlatFeedFollows(client, []*FlatFeed{feedB})
 }
 
 func TestAggregatedFeedFollowKeepingHistory(t *testing.T) {
@@ -314,7 +313,7 @@ func TestAggregatedFeedFollowKeepingHistory(t *testing.T) {
 		t.Fail()
 	}
 
-	PostTestCleanUpFlatFeedFollows(client, []*getstream.FlatFeed{feedB})
+	PostTestCleanUpFlatFeedFollows(client, []*FlatFeed{feedB})
 }
 
 func TestAggregatedFeedFollowingFollowers(t *testing.T) {
@@ -353,7 +352,7 @@ func TestAggregatedFeedFollowingFollowers(t *testing.T) {
 		t.Fail()
 	}
 
-	PostTestCleanUpFlatFeedFollows(client, []*getstream.FlatFeed{feedB, feedC})
+	PostTestCleanUpFlatFeedFollows(client, []*FlatFeed{feedB, feedC})
 }
 
 func TestAggregatedActivityMetaData(t *testing.T) {
@@ -374,16 +373,16 @@ func TestAggregatedActivityMetaData(t *testing.T) {
 
 	raw := json.RawMessage(dataB)
 
-	activity := getstream.Activity{
+	activity := Activity{
 		ForeignID: uuid.New(),
-		Actor:     getstream.FeedID("user:eric"),
-		Object:    getstream.FeedID("user:bob"),
-		Target:    getstream.FeedID("user:john"),
-		Origin:    getstream.FeedID("user:barry"),
+		Actor:     FeedID("user:eric"),
+		Object:    FeedID("user:bob"),
+		Target:    FeedID("user:john"),
+		Origin:    FeedID("user:barry"),
 		Verb:      "post",
 		TimeStamp: &now,
 		Data:      &raw,
-		MetaData: map[string]string{
+		MetaData: map[string]interface{}{
 			"meta": "data",
 		},
 	}
@@ -398,13 +397,13 @@ func TestAggregatedActivityMetaData(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	resultActivity := getstream.Activity{}
+	resultActivity := Activity{}
 	err = json.Unmarshal(b, &resultActivity)
 	if err != nil {
 		t.Error(err)
 	}
 
-	resultActivity2 := getstream.Activity{}
+	resultActivity2 := Activity{}
 	err = json.Unmarshal(b2, &resultActivity2)
 	if err != nil {
 		t.Error(err)

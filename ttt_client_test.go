@@ -1,14 +1,13 @@
-package getstream_test
+package getstream
 
 import (
 	"testing"
 
-	getstream "github.com/GetStream/stream-go"
 	"github.com/pborman/uuid"
 )
 
 func TestClient(t *testing.T) {
-	_, err := getstream.New(&getstream.Config{
+	_, err := New(&Config{
 		APIKey:    "my_key",
 		APISecret: "my_secret",
 		AppID:     "111111",
@@ -20,7 +19,7 @@ func TestClient(t *testing.T) {
 }
 
 func TestClientMissingAPIKey(t *testing.T) {
-	_, err := getstream.New(&getstream.Config{
+	_, err := New(&Config{
 		APISecret: "my_secret",
 		AppID:     "111111",
 		Location:  "us-east",
@@ -34,7 +33,7 @@ func TestClientMissingAPIKey(t *testing.T) {
 }
 
 func TestClientMissingAPISecretAndToken(t *testing.T) {
-	_, err := getstream.New(&getstream.Config{
+	_, err := New(&Config{
 		APIKey:   "my_secret",
 		AppID:    "111111",
 		Location: "us-east",
@@ -48,7 +47,7 @@ func TestClientMissingAPISecretAndToken(t *testing.T) {
 }
 
 func TestClientLocalhost(t *testing.T) {
-	client, err := getstream.New(&getstream.Config{
+	client, err := New(&Config{
 		APIKey:    "my_key",
 		APISecret: "my_secret",
 		AppID:     "111111",
@@ -63,7 +62,7 @@ func TestClientLocalhost(t *testing.T) {
 }
 
 func TestClientToken(t *testing.T) {
-	client, err := getstream.New(&getstream.Config{
+	client, err := New(&Config{
 		APIKey:    "my_key",
 		APISecret: "my_secret",
 		AppID:     "111111",
@@ -79,7 +78,7 @@ func TestClientToken(t *testing.T) {
 
 func TestClient_FlatFeed(t *testing.T) {
 
-	client, err := getstream.New(&getstream.Config{
+	client, err := New(&Config{
 		APIKey:    "my_key",
 		APISecret: "my_secret",
 		AppID:     "111111",
@@ -98,7 +97,7 @@ func TestClient_FlatFeed(t *testing.T) {
 
 func TestClient_FlatFeedBadSlug(t *testing.T) {
 
-	client, err := getstream.New(&getstream.Config{
+	client, err := New(&Config{
 		APIKey:    "my_key",
 		APISecret: "my_secret",
 		AppID:     "111111",
@@ -117,7 +116,7 @@ func TestClient_FlatFeedBadSlug(t *testing.T) {
 }
 
 func TestClient_NotificationFeed(t *testing.T) {
-	client, err := getstream.New(&getstream.Config{
+	client, err := New(&Config{
 		APIKey:    "my_key",
 		APISecret: "my_secret",
 		AppID:     "111111",
@@ -135,7 +134,7 @@ func TestClient_NotificationFeed(t *testing.T) {
 }
 
 func TestClient_NotificationFeedBadSlug(t *testing.T) {
-	client, err := getstream.New(&getstream.Config{
+	client, err := New(&Config{
 		APIKey:    "my_key",
 		APISecret: "my_secret",
 		AppID:     "111111",
@@ -154,7 +153,7 @@ func TestClient_NotificationFeedBadSlug(t *testing.T) {
 }
 
 func TestClient_AggregatedFeed(t *testing.T) {
-	client, err := getstream.New(&getstream.Config{
+	client, err := New(&Config{
 		APIKey:    "my_key",
 		APISecret: "my_secret",
 		AppID:     "111111",
@@ -172,7 +171,7 @@ func TestClient_AggregatedFeed(t *testing.T) {
 }
 
 func TestClient_AggregatedFeedBadSlug(t *testing.T) {
-	client, err := getstream.New(&getstream.Config{
+	client, err := New(&Config{
 		APIKey:    "my_key",
 		APISecret: "my_secret",
 		AppID:     "111111",
@@ -191,7 +190,7 @@ func TestClient_AggregatedFeedBadSlug(t *testing.T) {
 }
 
 func TestClient_AggregatedFeedBadUserID(t *testing.T) {
-	client, err := getstream.New(&getstream.Config{
+	client, err := New(&Config{
 		APIKey:    "my_key",
 		APISecret: "my_secret",
 		AppID:     "111111",
@@ -210,7 +209,7 @@ func TestClient_AggregatedFeedBadUserID(t *testing.T) {
 }
 
 func TestFlatFeedInputValidation(t *testing.T) {
-	client, err := getstream.New(&getstream.Config{
+	client, err := New(&Config{
 		APIKey:    "my_key",
 		APISecret: "my_secret",
 		AppID:     "111111",
@@ -231,7 +230,7 @@ func TestFlatFeedInputValidation(t *testing.T) {
 }
 
 func TestNotificationFeedInputValidation(t *testing.T) {
-	client, err := getstream.New(&getstream.Config{
+	client, err := New(&Config{
 		APIKey:    "my_key",
 		APISecret: "my_secret",
 		AppID:     "111111",
@@ -252,7 +251,7 @@ func TestNotificationFeedInputValidation(t *testing.T) {
 }
 
 func TestClientInit(t *testing.T) {
-	_, err := getstream.New(&getstream.Config{
+	_, err := New(&Config{
 		APIKey:    "my_key",
 		APISecret: "my_secret",
 		AppID:     "111111",
@@ -261,7 +260,7 @@ func TestClientInit(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	_, err = getstream.New(&getstream.Config{
+	_, err = New(&Config{
 		APIKey:    "my_key",
 		APISecret: "my_secret",
 		AppID:     "111111",
@@ -270,7 +269,7 @@ func TestClientInit(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	_, err = getstream.New(&getstream.Config{
+	_, err = New(&Config{
 		APIKey:    "my_key",
 		APISecret: "my_secret",
 		AppID:     "111111",
@@ -346,7 +345,7 @@ func TestClientInitWithToken(t *testing.T) {
 */
 
 func TestClientBaseURL(t *testing.T) {
-	client, err := getstream.New(&getstream.Config{
+	client, err := New(&Config{
 		APIKey:    "my_key",
 		APISecret: "my_secret",
 		AppID:     "111111",
@@ -361,7 +360,7 @@ func TestClientBaseURL(t *testing.T) {
 }
 
 func TestClientAbsoluteURL(t *testing.T) {
-	client, err := getstream.New(&getstream.Config{
+	client, err := New(&Config{
 		APIKey:    "my_key",
 		APISecret: "my_secret",
 		AppID:     "111111",
@@ -379,7 +378,7 @@ func TestClientAbsoluteURL(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	client, err = getstream.New(&getstream.Config{
+	client, err = New(&Config{
 		APIKey:    "my_key",
 		APISecret: "my_secret",
 		AppID:     "111111",
@@ -397,7 +396,7 @@ func TestClientAbsoluteURL(t *testing.T) {
 		t.Fatal()
 	}
 
-	client, err = getstream.New(&getstream.Config{
+	client, err = New(&Config{
 		APIKey:    "my_key",
 		APISecret: "my_secret",
 		AppID:     "111111",
@@ -432,11 +431,11 @@ func TestAddActivityToMany(t *testing.T) {
 	}
 	feeds = append(feeds, string(sallyFeed.FeedID()))
 
-	activity := &getstream.Activity{
+	activity := &Activity{
 		Verb:      "post",
 		ForeignID: uuid.New(),
-		Object:    getstream.FeedID("flat:eric"),
-		Actor:     getstream.FeedID("flat:john"),
+		Object:    FeedID("flat:eric"),
+		Actor:     FeedID("flat:john"),
 	}
 
 	err = client.AddActivityToMany(*activity, feeds)
@@ -457,7 +456,7 @@ func TestAddActivityToMany(t *testing.T) {
 
 func TestConvertUUIDToWord(t *testing.T) {
 	expected := "f_o_o"
-	foo := getstream.ConvertUUIDToWord("f-o-o")
+	foo := ConvertUUIDToWord("f-o-o")
 
 	if foo != expected {
 		t.Fatal("ConvertUUIDToWord mismatch, expected '", expected, "', got:", foo)

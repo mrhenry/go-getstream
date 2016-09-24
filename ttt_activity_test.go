@@ -1,19 +1,18 @@
-package getstream_test
+package getstream
 
 import (
 	"errors"
 	"testing"
 
-	getstream "github.com/GetStream/stream-go"
 	"github.com/pborman/uuid"
 )
 
 func TestActivityMarshallJson(t *testing.T) {
-	activity := &getstream.Activity{
+	activity := &Activity{
 		Verb:      "post",
 		ForeignID: uuid.New(),
-		Object:    getstream.FeedID("flat:eric"),
-		Actor:     getstream.FeedID("flat:john"),
+		Object:    FeedID("flat:eric"),
+		Actor:     FeedID("flat:john"),
 	}
 
 	_, err := activity.MarshalJSON()
@@ -23,11 +22,11 @@ func TestActivityMarshallJson(t *testing.T) {
 }
 
 func TestActivityBadForeignKeyMarshall(t *testing.T) {
-	activity := &getstream.Activity{
+	activity := &Activity{
 		Verb:      "post",
 		ForeignID: "not a real foreign id",
-		Object:    getstream.FeedID("flat:eric"),
-		Actor:     getstream.FeedID("flat:john"),
+		Object:    FeedID("flat:eric"),
+		Actor:     FeedID("flat:john"),
 	}
 
 	_, err := activity.MarshalJSON()
@@ -40,7 +39,7 @@ func TestActivityBadForeignKeyMarshall(t *testing.T) {
 }
 
 func TestActivityUnmarshall(t *testing.T) {
-	activity := &getstream.Activity{}
+	activity := &Activity{}
 	payload := []byte("{\"actor\":\"flat:john\",\"foreign_id\":\"82d2bb81-069d-427b-9238-8d822012e6d7\",\"object\":\"flat:eric\",\"origin\":\"\",\"time\":\"2016-09-22T21:44:58.821577\",\"verb\":\"post\"}")
 
 	err := activity.UnmarshalJSON(payload)
@@ -50,7 +49,7 @@ func TestActivityUnmarshall(t *testing.T) {
 }
 
 func TestActivityUnmarshallEmptyPayload(t *testing.T) {
-	activity := &getstream.Activity{}
+	activity := &Activity{}
 
 	err := activity.UnmarshalJSON([]byte{})
 	if err == nil {
@@ -63,7 +62,7 @@ func TestActivityUnmarshallEmptyPayload(t *testing.T) {
 
 func TestActivityUnmarshallBadPayloadTime(t *testing.T) {
 	var err error
-	activity := &getstream.Activity{}
+	activity := &Activity{}
 	payload := []byte("{\"actor\":\"flat:john\",\"foreign_id\":\"82d2bb81-069d-427b-9238-8d822012e6d7\",\"object\":\"flat:eric\",\"origin\":\"\",\"time\":\"2016-09-22T21:44:58.821577\",\"verb\":\"post\"}")
 
 	// empty json value for "time" should still set "time" to nil
@@ -88,7 +87,7 @@ func TestActivityUnmarshallBadPayloadTime(t *testing.T) {
 
 func TestActivityUnmarshallBadPayloadTo(t *testing.T) {
 	var err error
-	activity := &getstream.Activity{}
+	activity := &Activity{}
 	payload := []byte("{\"actor\":\"flat:john\",\"foreign_id\":\"82d2bb81-069d-427b-9238-8d822012e6d7\",\"object\":\"flat:eric\",\"origin\":\"\",\"time\":\"2016-09-22T21:44:58.821577\",\"verb\":\"post\"}")
 	// empty json value for "to" should set "to" to nil
 	payload = []byte("{\"to\":null,\"actor\":\"flat:john\",\"foreign_id\":\"82d2bb81-069d-427b-9238-8d822012e6d7\",\"object\":\"flat:eric\",\"origin\":\"\",\"time\":\"2016-09-22T21:44:58.821577\",\"verb\":\"post\"}")

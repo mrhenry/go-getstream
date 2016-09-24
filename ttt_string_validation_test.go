@@ -1,13 +1,9 @@
-package getstream_test
+package getstream
 
-import (
-	"testing"
-
-	getstream "github.com/GetStream/stream-go"
-)
+import "testing"
 
 func TestFeedSlug(t *testing.T) {
-	feedSlug, err := getstream.ValidateFeedSlug("foo")
+	feedSlug, err := ValidateFeedSlug("foo")
 	if err != nil {
 		t.Error(err)
 	}
@@ -15,7 +11,7 @@ func TestFeedSlug(t *testing.T) {
 		t.Error("feedSlug not 'foo'")
 	}
 
-	feedSlug, err = getstream.ValidateFeedSlug("f-o-o")
+	feedSlug, err = ValidateFeedSlug("f-o-o")
 	if err != nil {
 		t.Error(err)
 	}
@@ -25,7 +21,7 @@ func TestFeedSlug(t *testing.T) {
 }
 
 func TestFeedID(t *testing.T) {
-	feedID, err := getstream.ValidateFeedID("123")
+	feedID, err := ValidateFeedID("123")
 	if err != nil {
 		t.Error(err)
 	}
@@ -33,7 +29,7 @@ func TestFeedID(t *testing.T) {
 		t.Error("feedID not '123'")
 	}
 
-	feedID, err = getstream.ValidateFeedID("1-2-3")
+	feedID, err = ValidateFeedID("1-2-3")
 	if err != nil {
 		t.Error(err)
 	}
@@ -43,7 +39,7 @@ func TestFeedID(t *testing.T) {
 }
 
 func TestUserID(t *testing.T) {
-	userID, err := getstream.ValidateUserID("123")
+	userID, err := ValidateUserID("123")
 	if err != nil {
 		t.Error(err)
 	}
@@ -51,7 +47,7 @@ func TestUserID(t *testing.T) {
 		t.Error("userID not '123'")
 	}
 
-	userID, err = getstream.ValidateUserID("1-2-3")
+	userID, err = ValidateUserID("1-2-3")
 	if err != nil {
 		t.Error(err)
 	}
