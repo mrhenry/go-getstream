@@ -17,7 +17,7 @@ build:
         go get github.com/pborman/uuid
         go get gopkg.in/dgrijalva/jwt-go.v3
         go get gopkg.in/LeisureLink/httpsig.v1
-        ./test.sh
+        ./yyy_run-test.sh
   - script:
       name: codecov
       code: |
