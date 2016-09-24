@@ -95,7 +95,7 @@ func TestConfig_SetTimeout(t *testing.T) {
 		t.Error(fmt.Sprintf("SetTimeoutInt didn't return time.Duration(234), got %d", chk))
 	}
 	if cfg.TimeoutInt != 234 {
-		t.Error(fmt.Sprintf("cfg.TimeoutInt isn't int(234), got %s", cfg.TimeoutInt))
+		t.Error(fmt.Sprintf("cfg.TimeoutInt isn't int(234), got %d", cfg.TimeoutInt))
 	}
 	if cfg.TimeoutDuration != time.Duration(234*time.Second) {
 		t.Error(fmt.Sprintf("setting cfg.TimeoutInt didn't set timeoutDuraction to time.Duraction(234), got %d", cfg.TimeoutInt))
