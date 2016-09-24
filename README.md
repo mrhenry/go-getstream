@@ -1,28 +1,26 @@
-# stream-go
+# GO-GETSTREAM
 
-Master Branch: [![Build Status](https://travis-ci.org/GetStream/stream-go.svg?branch=master)](https://travis-ci.org/GetStream/stream-go)
-Dev Branch: [![Build Status](https://travis-ci.org/GetStream/stream-go.svg?branch=dev)](https://travis-ci.org/GetStream/stream-go)
-
-[![godoc](https://godoc.org/github.com/GetStream/stream-go?status.svg)](https://godoc.org/github.com/GetStream/stream-go)
-[![codecov](https://codecov.io/gh/GetStream/stream-go/branch/master/graph/badge.svg)](https://codecov.io/gh/GetStream/stream-go)
+[![wercker status](https://app.wercker.com/status/adc2bf440cb3e5b8f4fa3abf9244624d/s/master "wercker status")](https://app.wercker.com/project/byKey/adc2bf440cb3e5b8f4fa3abf9244624d)
+[![godoc](https://godoc.org/github.com/mrhenry/go-getstream?status.svg)](https://godoc.org/github.com/mrhenry/go-getstream)
+[![codecov](https://codecov.io/gh/mrhenry/go-getstream/branch/master/graph/badge.svg)](https://codecov.io/gh/mrhenry/go-getstream)
 
 Beta client library for [GetStream.io](//getstream.io).
 
-This library could not exist without the efforts of several open-source community members, 
-including the awesome folks at [MrHenry](//github.com/mrhenry) and 
+This library could not exist without the efforts of several open-source community members,
+including the awesome folks at [MrHenry](//github.com/mrhenry) and
 [HyperWorks](//github.com/hyperworks). Thank you so much for contributing
 to our community!
 
-The code provided by the MrHenry team is used with written permission; we are working 
-with them to get a final license in place. Stream will be modifying the codebase 
-together with MrHenry over time, so we especially want to point out how great they 
+The code provided by the MrHenry team is used with written permission; we are working
+with them to get a final license in place. Stream will be modifying the codebase
+together with MrHenry over time, so we especially want to point out how great they
 have been working with us to release this library.
 
 ### Beta
 
-We are releasing this as our v0.9.0 beta since there may be bugs, and inevitable cleanup 
+We are releasing this as our v0.9.0 beta since there may be bugs, and inevitable cleanup
 will happen along the way. Please do not hesitate to [contact us](mailto:support@getstream.io)
-if you see something strange happening. We'd be happy to consider any and all pull 
+if you see something strange happening. We'd be happy to consider any and all pull
 requests from the community as well!
 
 ### Roadmap
@@ -68,7 +66,7 @@ Location string = "us-east"
 // TimeoutInt is an optional integer parameter to define
 // the number of seconds before your connection will hang-up
 // during a request; you can set this to any non-negative
-// and non-zero whole number, and will default to 3 
+// and non-zero whole number, and will default to 3
 TimeoutInt: 3
 
 client, err := getstream.New(&getstream.Config{
@@ -139,8 +137,8 @@ if err != nil {
 
 // create a JWT token for the feed
 token, err := client.Signer.GenerateFeedScopeToken(
-    getstream.ScopeContextFeed, 
-    getstream.ScopeActionRead, 
+    getstream.ScopeContextFeed,
+    getstream.ScopeActionRead,
     bobFeed)
 if err != nil {
     fmt.Println(err)
@@ -160,7 +158,7 @@ if err != nil {
 }
 ```
 
-JWT support is not yet fully tested on the library, but we'd love to 
+JWT support is not yet fully tested on the library, but we'd love to
 hear any feedback you have as you try it out.
 
 ### API Support
@@ -205,7 +203,7 @@ Payload building Follows our API standards for all request payloads
 - `data` : Statically typed payloads as `json.RawMessage`
 - `metadata` : Top-level key/value pairs
 
-You can/should use `data` to send Go structures through the library. This 
+You can/should use `data` to send Go structures through the library. This
 will give you the benefit of Go's static type system. If you are unable
 to determine a type (or compatible type) for the contents of an Activity,
 you can use `metadata` which is a `map[string]string`; encoding this to
@@ -213,7 +211,7 @@ JSON will move these values to the top-level, so any keys you define in
 your `metadata` which conflict with our standard top-level keys will be
 overwritten.
 
-The benefit of this `metadata` structure is that these key/value pairs 
+The benefit of this `metadata` structure is that these key/value pairs
 will be exposed to Stream's internals such as ranking.
 
 ### Design Choices
@@ -224,9 +222,9 @@ package. This choice meant exposing some attributes that perhaps should
 be left private, and we expect this re-refactoring will take place over
 time.
 
-The MrHenry team noted this about the Flat / Aggregated / Notification 
+The MrHenry team noted this about the Flat / Aggregated / Notification
 Feed types:
-- they have separate structures and methods to prevent the impact of 
+- they have separate structures and methods to prevent the impact of
 future Stream changes
 - if two types of feeds grow farther apart, incorporated future changes
 in this client should not breaking everything
@@ -238,11 +236,10 @@ Have we mentioned the team at [MrHenry](//github.com/mrhenry) yet??
 ##### Credits from MrHenry that we wanted to pass along as well:
 
 This pkg started out as a fork from [HyperWorks](//github.com/hyperworks/go-getstream)
-and still borrows snippets (token & errors) from the original. We 
-decided to make this a separate repo entirely because drastic changes 
+and still borrows snippets (token & errors) from the original. We
+decided to make this a separate repo entirely because drastic changes
 were made to the interface and internal workings.
 
 We received great support from Stream while creating this pkg for which
-we are very grateful, and we also want to thank them for creating 
+we are very grateful, and we also want to thank them for creating
 Stream in the first place.
-
