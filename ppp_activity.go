@@ -29,7 +29,7 @@ type Activity struct {
 
 // MarshalJSON is the custom marshal function for Activities
 // It will be used by json.Marshal()
-func (a Activity) MarshalJSON() ([]byte, error) {
+func (a *Activity) MarshalJSON() ([]byte, error) {
 
 	payload := make(map[string]interface{})
 

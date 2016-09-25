@@ -193,7 +193,7 @@ func TestAggregatedFeedActivities(t *testing.T) {
 		t.Error(err)
 	}
 
-	activities, err := feed.Activities(&GetAggregatedFeedInput{})
+	activities, err := feed.Activities(&GetActivitiesInput{})
 	if err != nil {
 		t.Fatal(err)
 	}

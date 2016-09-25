@@ -193,7 +193,7 @@ func TestNotificationFeedActivities(t *testing.T) {
 		t.Error(err)
 	}
 
-	activities, err := feed.Activities(&GetNotificationFeedInput{})
+	activities, err := feed.Activities(&GetActivitiesInput{})
 	if err != nil {
 		t.Error(err)
 	}

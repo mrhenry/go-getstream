@@ -262,7 +262,7 @@ func TestFlatFeedGetActivities(t *testing.T) {
 		t.Error(err)
 	}
 
-	activities, err := feed.Activities(&GetFlatFeedInput{})
+	activities, err := feed.Activities(&GetActivitiesInput{})
 	if err != nil {
 		t.Error(err)
 	}

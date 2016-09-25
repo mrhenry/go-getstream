@@ -109,6 +109,7 @@ func New(cfg *Config) (*Client, error) {
 // id is the Specific FlatFeed inside a FlatFeed Group
 // to get the feed for Bob you would pass something like "user" as slug and "bob" as the id
 func (c *Client) FlatFeed(feedSlug string, userID string) (*FlatFeed, error) {
+
 	var err error
 
 	feedSlug, err = ValidateFeedSlug(feedSlug)
@@ -135,6 +136,7 @@ func (c *Client) FlatFeed(feedSlug string, userID string) (*FlatFeed, error) {
 // id is the Specific NotificationFeed inside a NotificationFeed Group
 // to get the feed for Bob you would pass something like "user" as slug and "bob" as the id
 func (c *Client) NotificationFeed(feedSlug string, userID string) (*NotificationFeed, error) {
+
 	var err error
 
 	feedSlug, err = ValidateFeedSlug(feedSlug)
@@ -161,6 +163,7 @@ func (c *Client) NotificationFeed(feedSlug string, userID string) (*Notification
 // id is the Specific AggregatedFeed inside a AggregatedFeed Group
 // to get the feed for Bob you would pass something like "user" as slug and "bob" as the id
 func (c *Client) AggregatedFeed(feedSlug string, userID string) (*AggregatedFeed, error) {
+
 	var err error
 
 	feedSlug, err = ValidateFeedSlug(feedSlug)

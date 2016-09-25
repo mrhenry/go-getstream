@@ -8,52 +8,6 @@ import (
 	"strings"
 )
 
-type postFlatFeedOutputActivities struct {
-	Activities []*Activity `json:"activities"`
-}
-
-// GetFlatFeedInput is used to Get a list of Activities from a FlatFeed
-type GetFlatFeedInput struct {
-	Limit  int `json:"limit,omitempty"`
-	Offset int `json:"offset,omitempty"`
-
-	IDGTE string `json:"id_gte,omitempty"`
-	IDGT  string `json:"id_gt,omitempty"`
-	IDLTE string `json:"id_lte,omitempty"`
-	IDLT  string `json:"id_lt,omitempty"`
-
-	Ranking string `json:"ranking,omitempty"`
-}
-
-// GetFlatFeedOutput is the response from a FlatFeed Activities Get Request
-type GetFlatFeedOutput struct {
-	Duration   string      `json:"duration"`
-	Next       string      `json:"next"`
-	Activities []*Activity `json:"results"`
-}
-
-type getFlatFeedFollowersInput struct {
-	Limit int `json:"limit"`
-	Skip  int `json:"offset"`
-}
-
-type getFlatFeedFollowersOutput struct {
-	Duration string                              `json:"duration"`
-	Results  []*getFlatFeedFollowersOutputResult `json:"results"`
-}
-
-type getFlatFeedFollowersOutputResult struct {
-	CreatedAt string `json:"created_at"`
-	UpdatedAt string `json:"updated_at"`
-	FeedID    string `json:"feed_id"`
-	TargetID  string `json:"target_id"`
-}
-
-type postFlatFeedFollowingInput struct {
-	Target            string `json:"target"`
-	ActivityCopyLimit int    `json:"activity_copy_limit"`
-}
-
 // FlatFeed is a getstream FlatFeed
 // Use it to for CRUD on FlatFeed Groups
 type FlatFeed struct {
@@ -167,7 +121,7 @@ func (f *FlatFeed) AddActivities(activities []*Activity) ([]*Activity, error) {
 }
 
 // Activities returns a list of Activities for a FlatFeedGroup
-func (f *FlatFeed) Activities(input *GetFlatFeedInput) (*GetFlatFeedOutput, error) {
+func (f *FlatFeed) Activities(input *GetActivitiesInput) (*GetFlatFeedOutput, error) {
 
 	var payload []byte
 	var err error
@@ -459,11 +413,8 @@ func (f *FlatFeed) UpdateActivities(activities []*Activity) error {
 	endpoint := "activities/"
 
 	_, err = f.Client.post(f, endpoint, finalPayload, nil)
-	if err != nil {
-		return err
-	}
+	return err
 
-	return nil
 }
 
 // UpdateActivity update a single activity
