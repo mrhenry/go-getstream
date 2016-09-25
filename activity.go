@@ -13,11 +13,11 @@ import (
 // It is also the response from Fetch and List Requests
 type Activity struct {
 	ID        string
-	Actor     FeedID
+	Actor     string
 	Verb      string
-	Object    FeedID
-	Target    FeedID
-	Origin    FeedID
+	Object    string
+	Target    string
+	Origin    string
 	TimeStamp *time.Time
 
 	ForeignID string
@@ -37,16 +37,16 @@ func (a Activity) MarshalJSON() ([]byte, error) {
 		payload[key] = value
 	}
 
-	payload["actor"] = a.Actor.Value()
+	payload["actor"] = a.Actor
 	payload["verb"] = a.Verb
-	payload["object"] = a.Object.Value()
-	payload["origin"] = a.Origin.Value()
+	payload["object"] = a.Object
+	payload["origin"] = a.Origin
 
 	if a.ID != "" {
 		payload["id"] = a.ID
 	}
 	if a.Target != "" {
-		payload["target"] = a.Target.Value()
+		payload["target"] = a.Target
 	}
 
 	if a.Data != nil {
@@ -72,7 +72,7 @@ func (a Activity) MarshalJSON() ([]byte, error) {
 
 	var tos []string
 	for _, feed := range a.To {
-		to := feed.FeedID().Value()
+		to := feed.FeedIDWithColon()
 		if feed.Token() != "" {
 			to += " " + feed.Token()
 		}
@@ -113,7 +113,7 @@ func (a *Activity) UnmarshalJSON(b []byte) (err error) {
 		} else if lowerKey == "actor" {
 			var strValue string
 			json.Unmarshal(*value, &strValue)
-			a.Actor = FeedID(strValue)
+			a.Actor = strValue
 		} else if lowerKey == "verb" {
 			var strValue string
 			json.Unmarshal(*value, &strValue)
@@ -125,15 +125,15 @@ func (a *Activity) UnmarshalJSON(b []byte) (err error) {
 		} else if lowerKey == "object" {
 			var strValue string
 			json.Unmarshal(*value, &strValue)
-			a.Object = FeedID(strValue)
+			a.Object = strValue
 		} else if lowerKey == "origin" {
 			var strValue string
 			json.Unmarshal(*value, &strValue)
-			a.Origin = FeedID(strValue)
+			a.Origin = strValue
 		} else if lowerKey == "target" {
 			var strValue string
 			json.Unmarshal(*value, &strValue)
-			a.Target = FeedID(strValue)
+			a.Target = strValue
 		} else if lowerKey == "time" {
 			var strValue string
 			err := json.Unmarshal(*value, &strValue)
@@ -182,8 +182,8 @@ func (a *Activity) UnmarshalJSON(b []byte) (err error) {
 					firstSplit := strings.Split(to, ":")
 					secondSplit := strings.Split(firstSplit[1], " ")
 
-					feed.FeedSlug = firstSplit[0]
-					feed.UserID = secondSplit[0]
+					feed.feedSlug = firstSplit[0]
+					feed.userID = secondSplit[0]
 					feed.token = secondSplit[1]
 					a.To = append(a.To, &feed)
 					continue
@@ -200,8 +200,8 @@ func (a *Activity) UnmarshalJSON(b []byte) (err error) {
 				if match {
 					firstSplit := strings.Split(to, ":")
 
-					feed.FeedSlug = firstSplit[0]
-					feed.UserID = firstSplit[1]
+					feed.feedSlug = firstSplit[0]
+					feed.userID = firstSplit[1]
 					a.To = append(a.To, &feed)
 					continue
 				}

@@ -11,8 +11,8 @@ func TestActivityMarshallJson(t *testing.T) {
 	activity := &Activity{
 		Verb:      "post",
 		ForeignID: uuid.New(),
-		Object:    FeedID("flat:eric"),
-		Actor:     FeedID("flat:john"),
+		Object:    "flat:eric",
+		Actor:     "flat:john",
 	}
 
 	_, err := activity.MarshalJSON()
@@ -25,8 +25,8 @@ func TestActivityBadForeignKeyMarshall(t *testing.T) {
 	activity := &Activity{
 		Verb:      "post",
 		ForeignID: "not a real foreign id",
-		Object:    FeedID("flat:eric"),
-		Actor:     FeedID("flat:john"),
+		Object:    "flat:eric",
+		Actor:     "flat:john",
 	}
 
 	_, err := activity.MarshalJSON()

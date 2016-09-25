@@ -93,7 +93,7 @@ func PostTestCleanUpAggregatedFeedFollows(client *Client, feeds []*AggregatedFee
 		followers, _ := feed.FollowersWithLimitAndSkip(300, 0)
 
 		for _, follower := range followers {
-			follower.UnfollowAggregated(client, feed)
+			follower.Unfollow(client, feed)
 		}
 	}
 	return nil
@@ -103,7 +103,7 @@ func PostTestCleanUpNotificationFeedFollows(client *Client, feeds []*Notificatio
 		followers, _ := feed.FollowersWithLimitAndSkip(300, 0)
 
 		for _, follower := range followers {
-			follower.UnfollowNotification(client, feed)
+			follower.Unfollow(client, feed)
 		}
 	}
 	return nil

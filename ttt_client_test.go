@@ -323,8 +323,8 @@ func TestClientInit(t *testing.T) {
 // 	activity, err := feed.AddActivity(&getstream.Activity{
 // 		Verb:      "post",
 // 		ForeignID: uuid.New(),
-// 		Object:    getstream.FeedID("flat:eric"),
-// 		Actor:     getstream.FeedID("flat:john"),
+// 		Object:    getstream."flat:eric",
+// 		Actor:     getstream."flat:john",
 // 	})
 // 	if err != nil {
 // 		t.Fatal(err)
@@ -421,19 +421,19 @@ func TestAddActivityToMany(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	feeds = append(feeds, string(bobFeed.FeedID()))
+	feeds = append(feeds, bobFeed.FeedIDWithColon())
 
 	sallyFeed, err := client.FlatFeed("flat", "sally")
 	if err != nil {
 		t.Fatal(err)
 	}
-	feeds = append(feeds, string(sallyFeed.FeedID()))
+	feeds = append(feeds, sallyFeed.FeedIDWithColon())
 
 	activity := &Activity{
 		Verb:      "post",
 		ForeignID: uuid.New(),
-		Object:    FeedID("flat:eric"),
-		Actor:     FeedID("flat:john"),
+		Object:    "flat:eric",
+		Actor:     "flat:john",
 	}
 
 	err = client.AddActivityToMany(*activity, feeds)

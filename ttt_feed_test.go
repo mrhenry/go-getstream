@@ -14,15 +14,15 @@ func TestGeneralFeedBasic(t *testing.T) {
 
 	general := GeneralFeed{
 		Client:   client,
-		FeedSlug: "feedGroup",
-		UserID:   "feedName",
+		feedSlug: "feedGroup",
+		userID:   "feedName",
 	}
 
 	if "feedGroupfeedName" != general.Signature() {
 		t.Fatal()
 	}
 
-	if "feedGroup:feedName" != string(general.FeedID()) {
+	if "feedGroup:feedName" != string(general.FeedIDWithColon()) {
 		t.Fatal()
 	}
 
@@ -52,15 +52,15 @@ func TestFlatFeedBasic(t *testing.T) {
 
 	flatFeed := FlatFeed{
 		Client:   client,
-		FeedSlug: "feedGroup",
-		UserID:   "feedName",
+		feedSlug: "feedGroup",
+		userID:   "feedName",
 	}
 
 	if "feedGroupfeedName" != flatFeed.Signature() {
 		t.Fatal()
 	}
 
-	if "feedGroup:feedName" != string(flatFeed.FeedID()) {
+	if "feedGroup:feedName" != string(flatFeed.FeedIDWithColon()) {
 		t.Fatal()
 	}
 
@@ -90,15 +90,15 @@ func TestNotificationFeedBasic(t *testing.T) {
 
 	notificationFeed := NotificationFeed{
 		Client:   client,
-		FeedSlug: "feedGroup",
-		UserID:   "feedName",
+		feedSlug: "feedGroup",
+		userID:   "feedName",
 	}
 
 	if "feedGroupfeedName" != notificationFeed.Signature() {
 		t.Fatal()
 	}
 
-	if "feedGroup:feedName" != string(notificationFeed.FeedID()) {
+	if "feedGroup:feedName" != string(notificationFeed.FeedIDWithColon()) {
 		t.Fatal()
 	}
 

@@ -22,8 +22,8 @@ func TestExampleAggregatedFeed_AddActivity(t *testing.T) {
 	activity, err := feed.AddActivity(&Activity{
 		Verb:      "post",
 		ForeignID: uuid.New(),
-		Object:    FeedID("flat:eric"),
-		Actor:     FeedID("flat:john"),
+		Object:    "flat:eric",
+		Actor:     "flat:john",
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -46,8 +46,8 @@ func TestAggregatedFeedAddActivity(t *testing.T) {
 	activity, err := feed.AddActivity(&Activity{
 		Verb:      "post",
 		ForeignID: uuid.New(),
-		Object:    FeedID("flat:eric"),
-		Actor:     FeedID("flat:john"),
+		Object:    "flat:eric",
+		Actor:     "flat:john",
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -82,8 +82,8 @@ func TestAggregatedFeedAddActivityWithTo(t *testing.T) {
 	activity, err := feed.AddActivity(&Activity{
 		Verb:      "post",
 		ForeignID: uuid.New(),
-		Object:    FeedID("flat:eric"),
-		Actor:     FeedID("flat:john"),
+		Object:    "flat:eric",
+		Actor:     "flat:john",
 		To:        []Feed{toFeed},
 	})
 	if err != nil {
@@ -113,8 +113,8 @@ func TestAggregatedFeedRemoveActivity(t *testing.T) {
 
 	activity, err := feed.AddActivity(&Activity{
 		Verb:   "post",
-		Object: FeedID("flat:eric"),
-		Actor:  FeedID("flat:john"),
+		Object: "flat:eric",
+		Actor:  "flat:john",
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -148,8 +148,8 @@ func TestAggregatedFeedRemoveByForeignIDActivity(t *testing.T) {
 	activity, err := feed.AddActivity(&Activity{
 		Verb:      "post",
 		ForeignID: uuid.New(),
-		Object:    FeedID("flat:eric"),
-		Actor:     FeedID("flat:john"),
+		Object:    "flat:eric",
+		Actor:     "flat:john",
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -186,8 +186,8 @@ func TestAggregatedFeedActivities(t *testing.T) {
 	_, err = feed.AddActivity(&Activity{
 		Verb:      "post",
 		ForeignID: uuid.New(),
-		Object:    FeedID("flat:eric"),
-		Actor:     FeedID("flat:john"),
+		Object:    "flat:eric",
+		Actor:     "flat:john",
 	})
 	if err != nil {
 		t.Error(err)
@@ -221,13 +221,13 @@ func TestAggregatedFeedAddActivities(t *testing.T) {
 		{
 			Verb:      "post",
 			ForeignID: uuid.New(),
-			Object:    FeedID("flat:eric"),
-			Actor:     FeedID("flat:john"),
+			Object:    "flat:eric",
+			Actor:     "flat:john",
 		}, {
 			Verb:      "walk",
 			ForeignID: uuid.New(),
-			Object:    FeedID("flat:john"),
-			Actor:     FeedID("flat:eric"),
+			Object:    "flat:john",
+			Actor:     "flat:eric",
 		},
 	})
 	if err != nil {
@@ -266,7 +266,7 @@ func TestAggregatedFeedFollowUnfollow(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	if followers[0].UserID != "bob" {
+	if followers[0].UserID() != "bob" {
 		t.Error("Bob's aggregated feed is not a follower of FeedB")
 	}
 
@@ -275,7 +275,7 @@ func TestAggregatedFeedFollowUnfollow(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	if following[0].UserID != "eric" {
+	if following[0].UserID() != "eric" {
 		t.Error("Eric's FeedB is not a follower of FeedA")
 	}
 
@@ -375,10 +375,10 @@ func TestAggregatedActivityMetaData(t *testing.T) {
 
 	activity := Activity{
 		ForeignID: uuid.New(),
-		Actor:     FeedID("user:eric"),
-		Object:    FeedID("user:bob"),
-		Target:    FeedID("user:john"),
-		Origin:    FeedID("user:barry"),
+		Actor:     "user:eric",
+		Object:    "user:bob",
+		Target:    "user:john",
+		Origin:    "user:barry",
 		Verb:      "post",
 		TimeStamp: &now,
 		Data:      &raw,

@@ -22,8 +22,8 @@ func TestExampleNotificationFeed_AddActivity(t *testing.T) {
 	activity, err := feed.AddActivity(&Activity{
 		Verb:      "post",
 		ForeignID: uuid.New(),
-		Object:    FeedID("flat:eric"),
-		Actor:     FeedID("flat:john"),
+		Object:    "flat:eric",
+		Actor:     "flat:john",
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -46,8 +46,8 @@ func TestNotificationFeedAddActivity(t *testing.T) {
 	activity, err := feed.AddActivity(&Activity{
 		Verb:      "post",
 		ForeignID: uuid.New(),
-		Object:    FeedID("flat:eric"),
-		Actor:     FeedID("flat:john"),
+		Object:    "flat:eric",
+		Actor:     "flat:john",
 	})
 	if err != nil {
 		t.Error(err)
@@ -82,8 +82,8 @@ func TestNotificationFeedAddActivityWithTo(t *testing.T) {
 	activity, err := feed.AddActivity(&Activity{
 		Verb:      "post",
 		ForeignID: uuid.New(),
-		Object:    FeedID("flat:eric"),
-		Actor:     FeedID("flat:john"),
+		Object:    "flat:eric",
+		Actor:     "flat:john",
 		To:        []Feed{feedTo},
 	})
 	if err != nil {
@@ -113,8 +113,8 @@ func TestNotificationFeedRemoveActivity(t *testing.T) {
 
 	activity, err := feed.AddActivity(&Activity{
 		Verb:   "post",
-		Object: FeedID("flat:eric"),
-		Actor:  FeedID("flat:john"),
+		Object: "flat:eric",
+		Actor:  "flat:john",
 	})
 	if err != nil {
 		t.Error(err)
@@ -148,8 +148,8 @@ func TestNotificationFeedRemoveByForeignIDActivity(t *testing.T) {
 	activity, err := feed.AddActivity(&Activity{
 		Verb:      "post",
 		ForeignID: uuid.New(),
-		Object:    FeedID("flat:eric"),
-		Actor:     FeedID("flat:john"),
+		Object:    "flat:eric",
+		Actor:     "flat:john",
 	})
 	if err != nil {
 		t.Error(err)
@@ -186,8 +186,8 @@ func TestNotificationFeedActivities(t *testing.T) {
 	_, err = feed.AddActivity(&Activity{
 		Verb:      "post",
 		ForeignID: uuid.New(),
-		Object:    FeedID("flat:eric"),
-		Actor:     FeedID("flat:john"),
+		Object:    "flat:eric",
+		Actor:     "flat:john",
 	})
 	if err != nil {
 		t.Error(err)
@@ -221,13 +221,13 @@ func TestNotificationFeedAddActivities(t *testing.T) {
 		&Activity{
 			Verb:      "post",
 			ForeignID: uuid.New(),
-			Object:    FeedID("flat:eric"),
-			Actor:     FeedID("flat:john"),
+			Object:    "flat:eric",
+			Actor:     "flat:john",
 		}, &Activity{
 			Verb:      "walk",
 			ForeignID: uuid.New(),
-			Object:    FeedID("flat:john"),
-			Actor:     FeedID("flat:eric"),
+			Object:    "flat:john",
+			Actor:     "flat:eric",
 		},
 	})
 	if err != nil {
@@ -350,8 +350,8 @@ func TestMarkAsSeen(t *testing.T) {
 
 	feed.AddActivities([]*Activity{
 		&Activity{
-			Actor:  FeedID("flat:larry"),
-			Object: FeedID("notification:larry"),
+			Actor:  "flat:larry",
+			Object: "notification:larry",
 			Verb:   "post",
 		},
 	})
@@ -393,8 +393,8 @@ func TestMarkAsRead(t *testing.T) {
 
 	feed.AddActivities([]*Activity{
 		&Activity{
-			Actor:  FeedID("flat:larry"),
-			Object: FeedID("notification:larry"),
+			Actor:  "flat:larry",
+			Object: "notification:larry",
 			Verb:   "post",
 		},
 	})
@@ -449,10 +449,10 @@ func TestNotificationActivityMetaData(t *testing.T) {
 
 	activity := Activity{
 		ForeignID: uuid.New(),
-		Actor:     FeedID("user:eric"),
-		Object:    FeedID("user:bob"),
-		Target:    FeedID("user:john"),
-		Origin:    FeedID("user:barry"),
+		Actor:     "user:eric",
+		Object:    "user:bob",
+		Target:    "user:john",
+		Origin:    "user:barry",
 		Verb:      "post",
 		TimeStamp: &now,
 		Data:      &raw,

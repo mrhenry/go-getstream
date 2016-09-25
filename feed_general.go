@@ -4,8 +4,8 @@ package getstream
 // The specific Type will be unknown so no Actions are associated with a GeneralFeed
 type GeneralFeed struct {
 	Client   *Client
-	FeedSlug string
-	UserID   string
+	feedSlug string
+	userID   string
 	token    string
 }
 
@@ -17,19 +17,24 @@ func (f *GeneralFeed) Signature() string {
 	return f.FeedIDWithoutColon() + " " + f.Token()
 }
 
-// FeedID is the combo of the FeedSlug and UserID : "FeedSlug:UserID"
-func (f *GeneralFeed) FeedID() FeedID {
-	return FeedID(f.FeedSlug + ":" + f.UserID)
+// FeedSlug returns the feed slug, it is needed to conform to the Feed interface
+func (f *GeneralFeed) FeedSlug() string {
+	return f.feedSlug
+}
+
+// UserID returns the user id, it is needed to conform to the Feed interface
+func (f *GeneralFeed) UserID() string {
+	return f.userID
 }
 
 // FeedIDWithColon is the combo of the FeedSlug and UserID : "FeedSlug:UserID"
 func (f *GeneralFeed) FeedIDWithColon() string {
-	return f.FeedSlug + ":" + f.UserID
+	return f.FeedSlug() + ":" + f.UserID()
 }
 
 // FeedIDWithoutColon is the combo of the FeedSlug and UserID : "FeedSlugUserID"
 func (f *GeneralFeed) FeedIDWithoutColon() string {
-	return f.FeedSlug + f.UserID
+	return f.FeedSlug() + f.UserID()
 }
 
 // SignFeed sets the token on a Feed
@@ -47,37 +52,17 @@ func (f *GeneralFeed) Token() string {
 // GenerateToken returns a new Token for a Feed without setting it to the Feed
 func (f *GeneralFeed) GenerateToken(signer *Signer) string {
 	if f.Client.Signer != nil {
-		return signer.GenerateToken(f.FeedSlug + f.UserID)
+		return signer.GenerateToken(f.FeedSlug() + f.UserID())
 	}
 	return ""
 }
 
 // Unfollow is used to Unfollow a target Feed
-func (f *GeneralFeed) Unfollow(client *Client, target *FlatFeed) error {
+func (f *GeneralFeed) Unfollow(client *Client, target Feed) error {
 	f.Client = client
 	f.SignFeed(f.Client.Signer)
 
-	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/" + target.FeedID().Value() + "/"
-
-	return f.Client.del(f, endpoint, nil, nil)
-}
-
-// UnfollowAggregated is used to Unfollow a target Aggregated Feed
-func (f *GeneralFeed) UnfollowAggregated(client *Client, target *AggregatedFeed) error {
-	f.Client = client
-	f.SignFeed(f.Client.Signer)
-
-	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/" + target.FeedID().Value() + "/"
-
-	return f.Client.del(f, endpoint, nil, nil)
-}
-
-// UnfollowNotification is used to Unfollow a target Notification Feed
-func (f *GeneralFeed) UnfollowNotification(client *Client, target *NotificationFeed) error {
-	f.Client = client
-	f.SignFeed(f.Client.Signer)
-
-	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/" + target.FeedID().Value() + "/"
+	endpoint := "feed/" + f.FeedSlug() + "/" + f.UserID() + "/" + "following" + "/" + target.FeedIDWithColon() + "/"
 
 	return f.Client.del(f, endpoint, nil, nil)
 }
