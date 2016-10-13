@@ -309,10 +309,10 @@ func TestClientInitWithToken(t *testing.T) {
 	// now we're going to pass that token from above into a new client instead of APISecret
 
 	clientClient, err := getstream.New(&getstream.Config{
-		APIKey:   os.Getenv("key"),
+		APIKey:   os.Getenv("STREAM_API_KEY"),
 		Token:    token, // pass token instead of API Secret
-		AppID:    os.Getenv("app_id"),
-		Location: os.Getenv("region")})
+		AppID:    os.Getenv("STREAM_APP_ID"),
+		Location: os.Getenv("STREAM_REGION")})
 	if err != nil {
 		t.Fatal(err)
 	}

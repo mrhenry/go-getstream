@@ -8,20 +8,20 @@ import (
 
 func PreTestSetup() (*getstream.Client, error) {
 	return doTestSetup(&getstream.Config{
-		APIKey:     os.Getenv("key"),
-		APISecret:  os.Getenv("secret"),
-		AppID:      os.Getenv("app_id"),
-		Location:   os.Getenv("region"),
+		APIKey:     os.Getenv("STREAM_API_KEY"),
+		APISecret:  os.Getenv("STREAM_API_SECRET"),
+		AppID:      os.Getenv("STREAM_APP_ID"),
+		Location:   os.Getenv("STREAM_REGION"),
 		TimeoutInt: 1000,
 	})
 }
 
 func PreTestSetupWithToken() (*getstream.Client, error) {
 	return doTestSetup(&getstream.Config{
-		APIKey:     os.Getenv("key"),
-		Token:      os.Getenv("secret"), // instead of APISecret
-		AppID:      os.Getenv("app_id"),
-		Location:   os.Getenv("region"),
+		APIKey:     os.Getenv("STREAM_API_KEY"),
+		Token:      os.Getenv("STREAM_API_SECRET"), // instead of APISecret
+		AppID:      os.Getenv("STREAM_APP_ID"),
+		Location:   os.Getenv("STREAM_REGION"),
 		TimeoutInt: 1000,
 	})
 }
@@ -88,26 +88,6 @@ func PostTestCleanUpFlatFeedFollows(client *getstream.Client, feeds []*getstream
 
 		for _, follower := range followers {
 			follower.Unfollow(client, feed)
-		}
-	}
-	return nil
-}
-func PostTestCleanUpAggregatedFeedFollows(client *getstream.Client, feeds []*getstream.AggregatedFeed) error {
-	for _, feed := range feeds {
-		followers, _ := feed.FollowersWithLimitAndSkip(300, 0)
-
-		for _, follower := range followers {
-			follower.UnfollowAggregated(client, feed)
-		}
-	}
-	return nil
-}
-func PostTestCleanUpNotificationFeedFollows(client *getstream.Client, feeds []*getstream.NotificationFeed) error {
-	for _, feed := range feeds {
-		followers, _ := feed.FollowersWithLimitAndSkip(300, 0)
-
-		for _, follower := range followers {
-			follower.UnfollowNotification(client, feed)
 		}
 	}
 	return nil

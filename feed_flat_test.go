@@ -290,12 +290,12 @@ func TestFlatFeedAddActivities(t *testing.T) {
 	}
 
 	activities, err := feed.AddActivities([]*getstream.Activity{
-		&getstream.Activity{
+		{
 			Verb:      "post",
 			ForeignID: uuid.New(),
 			Object:    getstream.FeedID("flat:eric"),
 			Actor:     getstream.FeedID("flat:john"),
-		}, &getstream.Activity{
+		}, {
 			Verb:      "walk",
 			ForeignID: uuid.New(),
 			Object:    getstream.FeedID("flat:john"),
@@ -606,8 +606,6 @@ func TestFlatFeedMultiFollow(t *testing.T) {
 	//}
 
 	PostTestCleanUpFlatFeedFollows(client, []*getstream.FlatFeed{bobFeed, sallyFeed})
-	PostTestCleanUpAggregatedFeedFollows(client, []*getstream.AggregatedFeed{joshFeed})
-	PostTestCleanUpNotificationFeedFollows(client, []*getstream.NotificationFeed{ianFeed})
 }
 
 func TestFlatFeedUpdateActivities(t *testing.T) {

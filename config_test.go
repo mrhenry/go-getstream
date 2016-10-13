@@ -13,10 +13,10 @@ import (
 
 func TestWerckerConfig(t *testing.T) {
 
-	testAPIKey := os.Getenv("key")
-	testAPISecret := os.Getenv("secret")
-	testAppID := os.Getenv("app_id")
-	testRegion := os.Getenv("region")
+	testAPIKey := os.Getenv("STREAM_API_KEY")
+	testAPISecret := os.Getenv("STREAM_API_SECRET")
+	testAppID := os.Getenv("STREAM_APP_ID")
+	testRegion := os.Getenv("STREAM_REGION")
 
 	if testAPIKey == "" || testAPISecret == "" || testAppID == "" || testRegion == "" {
 		t.Fatal()
