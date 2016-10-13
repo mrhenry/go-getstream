@@ -1,0 +1,15 @@
+================
+ Change history
+================
+
+0.9.1
+=====
+* fixed bugs against Go 1.5 and 1.6 for some http.Transport flags that weren't introduced until 1.7
+* added additional logic and code to test against our QA environment
+* removed code and tests for following Aggregated and Notification feeds, which wasn't possible on the API anyway
+* added GPLv3 LICENSE from mrhenry's build from which we did our original fork
+
+0.9.0
+=====
+* initial beta release
+
