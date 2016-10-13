@@ -606,8 +606,6 @@ func TestFlatFeedMultiFollow(t *testing.T) {
 	//}
 
 	PostTestCleanUpFlatFeedFollows(client, []*getstream.FlatFeed{bobFeed, sallyFeed})
-	PostTestCleanUpAggregatedFeedFollows(client, []*getstream.AggregatedFeed{joshFeed})
-	PostTestCleanUpNotificationFeedFollows(client, []*getstream.NotificationFeed{ianFeed})
 }
 
 func TestFlatFeedUpdateActivities(t *testing.T) {
