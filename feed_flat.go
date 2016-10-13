@@ -49,7 +49,7 @@ type getFlatFeedFollowersOutputResult struct {
 	TargetID  string `json:"target_id"`
 }
 
-type postFlatFeedFollowingInput struct {
+type postFeedFollowingInput struct {
 	Target            string `json:"target"`
 	ActivityCopyLimit int    `json:"activity_copy_limit"`
 }
@@ -220,7 +220,7 @@ func (f *FlatFeed) FollowFeedWithCopyLimit(target *FlatFeed, copyLimit int) erro
 
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/"
 
-	input := postFlatFeedFollowingInput{
+	input := postFeedFollowingInput{
 		Target:            target.FeedID().Value(),
 		ActivityCopyLimit: copyLimit,
 	}
@@ -236,20 +236,6 @@ func (f *FlatFeed) FollowFeedWithCopyLimit(target *FlatFeed, copyLimit int) erro
 
 // Unfollow is used to Unfollow a target Feed
 func (f *FlatFeed) Unfollow(target *FlatFeed) error {
-	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/" + target.FeedID().Value() + "/"
-
-	return f.Client.del(f, endpoint, nil, nil)
-}
-
-// Unfollow is used to Unfollow a target Aggregated Feed
-func (f *FlatFeed) UnfollowAggregated(target *AggregatedFeed) error {
-	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/" + target.FeedID().Value() + "/"
-
-	return f.Client.del(f, endpoint, nil, nil)
-}
-
-// Unfollow is used to Unfollow a target Notification Feed
-func (f *FlatFeed) UnfollowNotification(target *NotificationFeed) error {
 	endpoint := "feed/" + f.FeedSlug + "/" + f.UserID + "/" + "following" + "/" + target.FeedID().Value() + "/"
 
 	return f.Client.del(f, endpoint, nil, nil)
@@ -318,6 +304,7 @@ func (f *FlatFeed) FollowersWithLimitAndSkip(limit int, skip int) ([]*GeneralFee
 }
 
 // FollowingWithLimitAndSkip returns a list of GeneralFeed followed by the current FlatFeed
+// TODO: need to support filters
 func (f *FlatFeed) FollowingWithLimitAndSkip(limit int, skip int) ([]*GeneralFeed, error) {
 	var err error
 

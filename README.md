@@ -42,10 +42,10 @@ import (
 
 // we recommend getting your API credentials using os.Getenv()
 client, err := getstream.New(&getstream.Config{
-    APIKey:      os.Getenv("STREAM_APIKEY"),
-    APISecret:   os.Getenv("STREAM_APISECRET"),
-    AppID:       os.Getenv("STREAM_APPID"),
-    Location:    os.Getenv("STREAM_LOCATION"),
+    APIKey:      os.Getenv("STREAM_API_KEY"),
+    APISecret:   os.Getenv("STREAM_APIS_ECRET"),
+    AppID:       os.Getenv("STREAM_APP_ID"),
+    Location:    os.Getenv("STREAM_REGION"),
     TimeoutInt:  os.Getenv("STREAM_TIMEOUT"),
 })
 if err != nil {
@@ -125,10 +125,10 @@ for a feed using the following example:
 ```go
 // create a client using your API key and secret
 client, err := getstream.New(&getstream.Config{
-    APIKey:    os.Getenv("STREAM_APIKEY"),
-    APISecret: os.Getenv("STREAM_APISECRET"),
-    AppID:     os.Getenv("STREAM_APPID"),
-    Location:  os.Getenv("STREAM_LOCATION"),
+    APIKey:    os.Getenv("STREAM_API_KEY"),
+    APISecret: os.Getenv("STREAM_API_SECRET"),
+    AppID:     os.Getenv("STREAM_APP_ID"),
+    Location:  os.Getenv("STREAM_REGION"),
 })
 
 // create a feed
@@ -150,10 +150,10 @@ if err != nil {
 // note in the struct below that we're not setting "APISecret"
 // but setting "Token" instead:
 bobFlatFeedJWTClient, err := getstream.NewWithToken(&getstream.Config{
-    APIKey:    os.Getenv("STREAM_APIKEY"),
+    APIKey:    os.Getenv("STREAM_API_KEY"),
     Token:     token, // not setting APISecret
-    AppID:     os.Getenv("STREAM_APPID"),
-    Location:  os.Getenv("STREAM_LOCATION"),
+    AppID:     os.Getenv("STREAM_APP_ID"),
+    Location:  os.Getenv("STREAM_REGION"),
 })
 if err != nil {
   return err

@@ -290,12 +290,12 @@ func TestFlatFeedAddActivities(t *testing.T) {
 	}
 
 	activities, err := feed.AddActivities([]*getstream.Activity{
-		&getstream.Activity{
+		{
 			Verb:      "post",
 			ForeignID: uuid.New(),
 			Object:    getstream.FeedID("flat:eric"),
 			Actor:     getstream.FeedID("flat:john"),
-		}, &getstream.Activity{
+		}, {
 			Verb:      "walk",
 			ForeignID: uuid.New(),
 			Object:    getstream.FeedID("flat:john"),
