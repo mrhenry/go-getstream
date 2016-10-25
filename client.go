@@ -59,7 +59,6 @@ func New(cfg *Config) (*Client, error) {
 	if cfg.Location != "" {
 		location = cfg.Location + "-api"
 		if cfg.Location == "qa" {
-			port = ":82"
 			secure = ""
 		}
 		if cfg.Location == "localhost" {
