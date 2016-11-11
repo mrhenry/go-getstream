@@ -43,7 +43,7 @@ import (
 // we recommend getting your API credentials using os.Getenv()
 client, err := getstream.New(&getstream.Config{
     APIKey:      os.Getenv("STREAM_API_KEY"),
-    APISecret:   os.Getenv("STREAM_APIS_ECRET"),
+    APISecret:   os.Getenv("STREAM_API_SECRET"),
     AppID:       os.Getenv("STREAM_APP_ID"),
     Location:    os.Getenv("STREAM_REGION"),
     TimeoutInt:  os.Getenv("STREAM_TIMEOUT"),
