@@ -257,7 +257,7 @@ func (c *Client) request(f Feed, method string, path string, payload []byte, par
 	case path == "activities/": // batch activities methods
 		// feed auth
 		auth = "feed"
-		sig = "sig"
+		sig = "jwt"
 	case path == "feed/add_to_many/": // add activity to many feeds
 		// application auth
 		auth = "app"
@@ -282,7 +282,7 @@ func (c *Client) request(f Feed, method string, path string, payload []byte, par
 	//	}
 	//}
 
-	c.setAuthSigAndHeaders(req, f, auth, sig)
+	c.setAuthSigAndHeaders(req, f, auth, sig, path)
 
 	// perform the http request
 	resp, err := c.HTTP.Do(req)
@@ -342,11 +342,21 @@ func (c *Client) setBaseHeaders(request *http.Request) {
 	request.Header.Set("Date", t.Format("Mon, 2 Jan 2006 15:04:05 MST"))
 }
 
-func (c *Client) setAuthSigAndHeaders(request *http.Request, f Feed, auth string, sig string) error {
+func (c *Client) setAuthSigAndHeaders(request *http.Request, f Feed, auth string, sig string, path string) error {
 	if sig == "jwt" {
 		request.Header.Set("stream-auth-type", "jwt")
 		if f == nil {
 			request.Header.Set("Authorization", c.Config.Token)
+		} else {
+			if path == "activities/" {
+				token, err := c.Signer.GenerateFeedScopeToken(ScopeContextActivities, ScopeActionWrite, "*")
+				if err != nil {
+					return err
+				}
+				request.Header.Set("Authorization", token)
+			} else {
+				request.Header.Set("Authorization", f.Token())
+			}
 		}
 		return nil
 	}
