@@ -2,6 +2,12 @@
  Change history
 ================
 
+0.9.2
+=====
+* fixed a permission issue with updated activities, and have changed the auth mechanism for them from
+being signature-based to being JWT-based instead; this will throw a permission error on our API in the
+future.
+
 0.9.1
 =====
 * fixed bugs against Go 1.5 and 1.6 for some http.Transport flags that weren't introduced until 1.7
