@@ -2,6 +2,11 @@
  Change history
 ================
 
+1.0.0
+=====
+* breaking changes:
+  * actors, objects and targets no longer need to be FeedID values, just strings
+
 0.9.2
 =====
 * fixed a permission issue with updated activities, and have changed the auth mechanism for them from
