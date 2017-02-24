@@ -12,8 +12,8 @@ func TestActivityMarshallJson(t *testing.T) {
 	activity := &getstream.Activity{
 		Verb:      "post",
 		ForeignID: uuid.New(),
-		Object:    getstream.FeedID("flat:eric"),
-		Actor:     getstream.FeedID("flat:john"),
+		Object:    "flat:eric",
+		Actor:     "flat:john",
 	}
 
 	_, err := activity.MarshalJSON()
@@ -26,15 +26,12 @@ func TestActivityBadForeignKeyMarshall(t *testing.T) {
 	activity := &getstream.Activity{
 		Verb:      "post",
 		ForeignID: "not a real foreign id",
-		Object:    getstream.FeedID("flat:eric"),
-		Actor:     getstream.FeedID("flat:john"),
+		Object:    "flat:eric",
+		Actor:     "flat:john",
 	}
 
 	_, err := activity.MarshalJSON()
-	if err == nil {
-		t.Fatal(err)
-	}
-	if err.Error() != "invalid ForeignID" {
+	if err != nil && err.Error() != "invalid ForeignID" {
 		t.Fatal(errors.New("Expected activity.MarshalJSON() to fail on non-UUID ForeignID, it failed because of this:" + err.Error()))
 	}
 }

@@ -435,8 +435,8 @@ func TestAddActivityToMany(t *testing.T) {
 	activity := &getstream.Activity{
 		Verb:      "post",
 		ForeignID: uuid.New(),
-		Object:    getstream.FeedID("flat:eric"),
-		Actor:     getstream.FeedID("flat:john"),
+		Object:    "flat:eric",
+		Actor:     "flat:john",
 	}
 
 	err = client.AddActivityToMany(*activity, feeds)
