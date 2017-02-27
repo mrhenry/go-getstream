@@ -2,6 +2,11 @@
  Change history
 ================
 
+1.0.1
+=====
+
+* forcing GET requests to not have a body payload; this shouldn't break anything
+
 1.0.0
 =====
 * breaking changes:
