@@ -10,6 +10,10 @@ go:
   - 1.6
   - 1.7
 
+env:
+  global:
+    - STREAM_REGION=qa
+
 notifications:
   email:
     - ian@getstream.io
