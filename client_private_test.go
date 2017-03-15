@@ -35,7 +35,7 @@ func TestClientSetStandardParams(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	tempURL := client.BaseURL.ResolveReference(tempURL)
+	apiURL := client.BaseURL.ResolveReference(tempURL)
 	query := apiURL.Query()
 	query = client.setStandardParams(query)
 
