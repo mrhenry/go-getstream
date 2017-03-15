@@ -23,8 +23,8 @@ func TestExampleAggregatedFeed_AddActivity(t *testing.T) {
 	activity, err := feed.AddActivity(&getstream.Activity{
 		Verb:      "post",
 		ForeignID: uuid.New(),
-		Object:    getstream.FeedID("flat:eric"),
-		Actor:     getstream.FeedID("flat:john"),
+		Object:    "flat:eric",
+		Actor:     "flat:john",
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -47,8 +47,8 @@ func TestAggregatedFeedAddActivity(t *testing.T) {
 	activity, err := feed.AddActivity(&getstream.Activity{
 		Verb:      "post",
 		ForeignID: uuid.New(),
-		Object:    getstream.FeedID("flat:eric"),
-		Actor:     getstream.FeedID("flat:john"),
+		Object:    "flat:eric",
+		Actor:     "flat:john",
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -83,8 +83,8 @@ func TestAggregatedFeedAddActivityWithTo(t *testing.T) {
 	activity, err := feed.AddActivity(&getstream.Activity{
 		Verb:      "post",
 		ForeignID: uuid.New(),
-		Object:    getstream.FeedID("flat:eric"),
-		Actor:     getstream.FeedID("flat:john"),
+		Object:    "flat:eric",
+		Actor:     "flat:john",
 		To:        []getstream.Feed{toFeed},
 	})
 	if err != nil {
@@ -114,8 +114,8 @@ func TestAggregatedFeedRemoveActivity(t *testing.T) {
 
 	activity, err := feed.AddActivity(&getstream.Activity{
 		Verb:   "post",
-		Object: getstream.FeedID("flat:eric"),
-		Actor:  getstream.FeedID("flat:john"),
+		Object: "flat:eric",
+		Actor:  "flat:john",
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -149,8 +149,8 @@ func TestAggregatedFeedRemoveByForeignIDActivity(t *testing.T) {
 	activity, err := feed.AddActivity(&getstream.Activity{
 		Verb:      "post",
 		ForeignID: uuid.New(),
-		Object:    getstream.FeedID("flat:eric"),
-		Actor:     getstream.FeedID("flat:john"),
+		Object:    "flat:eric",
+		Actor:     "flat:john",
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -187,8 +187,8 @@ func TestAggregatedFeedActivities(t *testing.T) {
 	_, err = feed.AddActivity(&getstream.Activity{
 		Verb:      "post",
 		ForeignID: uuid.New(),
-		Object:    getstream.FeedID("flat:eric"),
-		Actor:     getstream.FeedID("flat:john"),
+		Object:    "flat:eric",
+		Actor:     "flat:john",
 	})
 	if err != nil {
 		t.Error(err)
@@ -222,13 +222,13 @@ func TestAggregatedFeedAddActivities(t *testing.T) {
 		{
 			Verb:      "post",
 			ForeignID: uuid.New(),
-			Object:    getstream.FeedID("flat:eric"),
-			Actor:     getstream.FeedID("flat:john"),
+			Object:    "flat:eric",
+			Actor:     "flat:john",
 		}, {
 			Verb:      "walk",
 			ForeignID: uuid.New(),
-			Object:    getstream.FeedID("flat:john"),
-			Actor:     getstream.FeedID("flat:eric"),
+			Object:    "flat:john",
+			Actor:     "flat:eric",
 		},
 	})
 	if err != nil {
@@ -376,10 +376,10 @@ func TestAggregatedActivityMetaData(t *testing.T) {
 
 	activity := getstream.Activity{
 		ForeignID: uuid.New(),
-		Actor:     getstream.FeedID("user:eric"),
-		Object:    getstream.FeedID("user:bob"),
-		Target:    getstream.FeedID("user:john"),
-		Origin:    getstream.FeedID("user:barry"),
+		Actor:     "user:eric",
+		Object:    "user:bob",
+		Target:    "user:john",
+		Origin:    "user:barry",
 		Verb:      "post",
 		TimeStamp: &now,
 		Data:      &raw,

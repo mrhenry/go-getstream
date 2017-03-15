@@ -23,8 +23,8 @@ func TestExampleNotificationFeed_AddActivity(t *testing.T) {
 	activity, err := feed.AddActivity(&getstream.Activity{
 		Verb:      "post",
 		ForeignID: uuid.New(),
-		Object:    getstream.FeedID("flat:eric"),
-		Actor:     getstream.FeedID("flat:john"),
+		Object:    "flat:eric",
+		Actor:     "flat:john",
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -47,8 +47,8 @@ func TestNotificationFeedAddActivity(t *testing.T) {
 	activity, err := feed.AddActivity(&getstream.Activity{
 		Verb:      "post",
 		ForeignID: uuid.New(),
-		Object:    getstream.FeedID("flat:eric"),
-		Actor:     getstream.FeedID("flat:john"),
+		Object:    "flat:eric",
+		Actor:     "flat:john",
 	})
 	if err != nil {
 		t.Error(err)
@@ -83,8 +83,8 @@ func TestNotificationFeedAddActivityWithTo(t *testing.T) {
 	activity, err := feed.AddActivity(&getstream.Activity{
 		Verb:      "post",
 		ForeignID: uuid.New(),
-		Object:    getstream.FeedID("flat:eric"),
-		Actor:     getstream.FeedID("flat:john"),
+		Object:    "flat:eric",
+		Actor:     "flat:john",
 		To:        []getstream.Feed{feedTo},
 	})
 	if err != nil {
@@ -114,8 +114,8 @@ func TestNotificationFeedRemoveActivity(t *testing.T) {
 
 	activity, err := feed.AddActivity(&getstream.Activity{
 		Verb:   "post",
-		Object: getstream.FeedID("flat:eric"),
-		Actor:  getstream.FeedID("flat:john"),
+		Object: "flat:eric",
+		Actor:  "flat:john",
 	})
 	if err != nil {
 		t.Error(err)
@@ -149,8 +149,8 @@ func TestNotificationFeedRemoveByForeignIDActivity(t *testing.T) {
 	activity, err := feed.AddActivity(&getstream.Activity{
 		Verb:      "post",
 		ForeignID: uuid.New(),
-		Object:    getstream.FeedID("flat:eric"),
-		Actor:     getstream.FeedID("flat:john"),
+		Object:    "flat:eric",
+		Actor:     "flat:john",
 	})
 	if err != nil {
 		t.Error(err)
@@ -187,8 +187,8 @@ func TestNotificationFeedActivities(t *testing.T) {
 	_, err = feed.AddActivity(&getstream.Activity{
 		Verb:      "post",
 		ForeignID: uuid.New(),
-		Object:    getstream.FeedID("flat:eric"),
-		Actor:     getstream.FeedID("flat:john"),
+		Object:    "flat:eric",
+		Actor:     "flat:john",
 	})
 	if err != nil {
 		t.Error(err)
@@ -222,13 +222,13 @@ func TestNotificationFeedAddActivities(t *testing.T) {
 		&getstream.Activity{
 			Verb:      "post",
 			ForeignID: uuid.New(),
-			Object:    getstream.FeedID("flat:eric"),
-			Actor:     getstream.FeedID("flat:john"),
+			Object:    "flat:eric",
+			Actor:     "flat:john",
 		}, &getstream.Activity{
 			Verb:      "walk",
 			ForeignID: uuid.New(),
-			Object:    getstream.FeedID("flat:john"),
-			Actor:     getstream.FeedID("flat:eric"),
+			Object:    "flat:john",
+			Actor:     "flat:eric",
 		},
 	})
 	if err != nil {
@@ -351,8 +351,8 @@ func TestMarkAsSeen(t *testing.T) {
 
 	feed.AddActivities([]*getstream.Activity{
 		&getstream.Activity{
-			Actor:  getstream.FeedID("flat:larry"),
-			Object: getstream.FeedID("notification:larry"),
+			Actor:  "flat:larry",
+			Object: "notification:larry",
 			Verb:   "post",
 		},
 	})
@@ -394,8 +394,8 @@ func TestMarkAsRead(t *testing.T) {
 
 	feed.AddActivities([]*getstream.Activity{
 		&getstream.Activity{
-			Actor:  getstream.FeedID("flat:larry"),
-			Object: getstream.FeedID("notification:larry"),
+			Actor:  "flat:larry",
+			Object: "notification:larry",
 			Verb:   "post",
 		},
 	})
@@ -450,10 +450,10 @@ func TestNotificationActivityMetaData(t *testing.T) {
 
 	activity := getstream.Activity{
 		ForeignID: uuid.New(),
-		Actor:     getstream.FeedID("user:eric"),
-		Object:    getstream.FeedID("user:bob"),
-		Target:    getstream.FeedID("user:john"),
-		Origin:    getstream.FeedID("user:barry"),
+		Actor:     "user:eric",
+		Object:    "user:bob",
+		Target:    "user:john",
+		Origin:    "user:barry",
 		Verb:      "post",
 		TimeStamp: &now,
 		Data:      &raw,

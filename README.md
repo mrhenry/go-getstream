@@ -115,8 +115,8 @@ import "github.com/pborman/uuid"
 activity, err := bobFeed.AddActivity(&Activity{
     Verb:      "post",
     ForeignID: uuid.New(),
-    Object:    FeedID("flat:eric"),
-    Actor:     FeedID("flat:john"),
+    Object:    "flat:eric",
+    Actor:     "flat:john",
 })
 if err != nil {
     return err
