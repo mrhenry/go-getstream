@@ -211,7 +211,8 @@ func ConvertUUIDToWord(uuid string) string {
 
 // get request helper
 func (c *Client) get(f Feed, path string, payload []byte, params map[string]string) ([]byte, error) {
-	return c.request(f, "GET", path, payload, params)
+	// we force an empty body payload because GET requests cannot have a body with our API
+	return c.request(f, "GET", path, []byte{}, params)
 }
 
 // post request helper

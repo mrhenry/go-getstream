@@ -2,7 +2,6 @@ package getstream
 
 import (
 	"encoding/json"
-	"errors"
 	"regexp"
 	"strings"
 	"time"
@@ -13,10 +12,10 @@ import (
 // It is also the response from Fetch and List Requests
 type Activity struct {
 	ID        string
-	Actor     FeedID
+	Actor     string
 	Verb      string
-	Object    FeedID
-	Target    FeedID
+	Object    string
+	Target    string
 	Origin    FeedID
 	TimeStamp *time.Time
 
@@ -37,16 +36,16 @@ func (a Activity) MarshalJSON() ([]byte, error) {
 		payload[key] = value
 	}
 
-	payload["actor"] = a.Actor.Value()
+	payload["actor"] = a.Actor
 	payload["verb"] = a.Verb
-	payload["object"] = a.Object.Value()
+	payload["object"] = a.Object
 	payload["origin"] = a.Origin.Value()
 
 	if a.ID != "" {
 		payload["id"] = a.ID
 	}
 	if a.Target != "" {
-		payload["target"] = a.Target.Value()
+		payload["target"] = a.Target
 	}
 
 	if a.Data != nil {
@@ -54,13 +53,6 @@ func (a Activity) MarshalJSON() ([]byte, error) {
 	}
 
 	if a.ForeignID != "" {
-		r, err := regexp.Compile("^[a-z0-9]{8}-[a-z0-9]{4}-[1-5][a-z0-9]{3}-[a-z0-9]{4}-[a-z0-9]{12}$")
-		if err != nil {
-			return nil, err
-		}
-		if !r.MatchString(a.ForeignID) {
-			return nil, errors.New("invalid ForeignID")
-		}
 		payload["foreign_id"] = a.ForeignID
 	}
 
@@ -113,7 +105,7 @@ func (a *Activity) UnmarshalJSON(b []byte) (err error) {
 		} else if lowerKey == "actor" {
 			var strValue string
 			json.Unmarshal(*value, &strValue)
-			a.Actor = FeedID(strValue)
+			a.Actor = strValue
 		} else if lowerKey == "verb" {
 			var strValue string
 			json.Unmarshal(*value, &strValue)
@@ -125,7 +117,7 @@ func (a *Activity) UnmarshalJSON(b []byte) (err error) {
 		} else if lowerKey == "object" {
 			var strValue string
 			json.Unmarshal(*value, &strValue)
-			a.Object = FeedID(strValue)
+			a.Object = strValue
 		} else if lowerKey == "origin" {
 			var strValue string
 			json.Unmarshal(*value, &strValue)
@@ -133,7 +125,7 @@ func (a *Activity) UnmarshalJSON(b []byte) (err error) {
 		} else if lowerKey == "target" {
 			var strValue string
 			json.Unmarshal(*value, &strValue)
-			a.Target = FeedID(strValue)
+			a.Target = strValue
 		} else if lowerKey == "time" {
 			var strValue string
 			err := json.Unmarshal(*value, &strValue)
