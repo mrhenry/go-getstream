@@ -328,10 +328,9 @@ func (c *Client) setRequestParams(query url.Values, params map[string]string) ur
 	return query
 }
 
-/* setBaseHeaders - set common headers for every request
- * params:
- *    request, pointer to http.Request
- */
+// setBaseHeaders - set common headers for every request
+// params:
+// request, pointer to http.Request
 func (c *Client) setBaseHeaders(request *http.Request) {
 	request.Header.Set("X-Stream-Client", "stream-go-client-"+VERSION)
 	request.Header.Set("Content-Type", "application/json")
