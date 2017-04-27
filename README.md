@@ -1,12 +1,14 @@
 # stream-go
 
-Master Branch: [![Build Status](https://travis-ci.org/GetStream/stream-go.svg?branch=master)](https://travis-ci.org/GetStream/stream-go)
-Dev Branch: [![Build Status](https://travis-ci.org/GetStream/stream-go.svg?branch=dev)](https://travis-ci.org/GetStream/stream-go)
+[stream-go](https://github.com/GetStream/stream-go) is a (beta) Go client for [Stream](https://getstream.io/).
 
-[![godoc](https://godoc.org/github.com/GetStream/stream-go?status.svg)](https://godoc.org/github.com/GetStream/stream-go)
-[![codecov](https://codecov.io/gh/GetStream/stream-go/branch/master/graph/badge.svg)](https://codecov.io/gh/GetStream/stream-go)
+You can sign up for a Stream account at https://getstream.io/get_started.
 
-Beta client library for [GetStream.io](//getstream.io).
+-Master Branch: [![Build Status](https://travis-ci.org/GetStream/stream-go.svg?branch=master)](https://travis-ci.org/GetStream/stream-go)
+
+-Dev Branch: [![Build Status](https://travis-ci.org/GetStream/stream-go.svg?branch=dev)](https://travis-ci.org/GetStream/stream-go)
+
+[![godoc](https://godoc.org/github.com/GetStream/stream-go?status.svg)](https://godoc.org/github.com/GetStream/stream-go) [![codecov](https://codecov.io/gh/GetStream/stream-go/branch/master/graph/badge.svg)](https://codecov.io/gh/GetStream/stream-go)
 
 This library could not exist without the efforts of several open-source community members,
 including the awesome folks at [MrHenry](//github.com/mrhenry) and
@@ -30,6 +32,10 @@ requests from the community as well!
 - Improved test coverage (currently around 84%)
 - Refactoring to make some methods and attributes private which don't need exposure
 - Ensuring Go best practices
+
+### Full documentation
+
+Documentation for this Go client are available at the [Stream website](https://getstream.io/docs/?language=go).
 
 ### Example Usage
 
